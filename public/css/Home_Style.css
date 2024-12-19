@@ -1,0 +1,170 @@
+/* Ensure the container uses flexbox */
+.container {
+    display: flex;
+    height: 100vh; /* Full screen height */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px; /* Expanded sidebar */
+    height: 100vh; /* Full height */
+    transition: all 0.3s ease;
+}
+
+/* Minimized sidebar */
+.sidebar.minimized {
+    width: 60px; /* Minimized width */
+}
+
+/* Main content */
+.main-content {
+    flex-grow: 1; /* Take remaining space */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to the top */
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+/* When the sidebar is minimized, adjust the margin of the main content */
+.sidebar.minimized + .main-content {
+    margin-left: 60px; /* Adjust for minimized sidebar */
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+    padding-top: 10px;
+}
+
+/* Navbar Title Styling */
+.navbar-title {
+    color: #003067;
+    font-family:Monospace;
+    font-size: 24px; /* Default size */
+    font-weight: bold;
+    margin: 0;
+    transition: font-size 0.3s ease; /* Smooth transition when resizing */
+}
+
+/* Adjust navbar title size when the sidebar is minimized or on smaller screens */
+@media screen and (max-width: 768px) {
+    .navbar-title {
+        font-size: 20px; /* Smaller title size on smaller screens */
+    }
+}
+
+/* Navbar Icons Styling */
+.navbar-icons {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-icon {
+    font-size: 20px;
+    color: #003067;
+    margin-left: 20px; /* Space between icons */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect for icons */
+.navbar-icon:hover {
+    color: #00579d;
+}
+
+/* Wrapper for content */
+.content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+    gap: 20px; /* Space between image and metrics */
+}
+
+/* Image Container */
+.image-container {
+    position: relative;
+    flex: 1;
+    max-height: 400px; /* Adjust to your preferred height */
+    overflow: hidden;
+    height: 1000px; /* Fixed height */
+    max-width: 1920px; /* Fixed width */
+    border-radius: 15px;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fills the container while maintaining its aspect ratio */
+}
+
+/* Navigation Arrows */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 30px;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.nav-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.left-arrow {
+    left: 10px;
+}
+
+.right-arrow {
+    right: 10px;
+}
+
+/* Metrics Container */
+.metrics-container {
+    width: 300px; /* Fixed width */
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metrics-container h3 {
+    color: #003067;
+    margin-bottom: 10px;
+}
+
+.metrics-container p {
+    margin: 5px 0;
+    color: #555;
+}
+
+/* Summary Container */
+.summary-container {
+    width: 100%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin-top: 20px; /* Space above the summary */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summary-container h3 {
+    color: #003067;
+    margin-bottom: 10px;
+}
+
+.summary-container p {
+    color: #555;
+}
