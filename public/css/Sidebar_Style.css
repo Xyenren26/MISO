@@ -1,8 +1,8 @@
 /* Sidebar Styles */
 .sidebar {
-    position: fixed;
+    position: sticky; /* Sticky Sidebar */
     top: 0;
-    right: 0; /* Sidebar on the right */
+    right: 0;
     width: 250px;
     height: 100vh;
     background-color: white;
@@ -21,12 +21,12 @@
 }
 
 .sidebar .sidebar-logo {
-    width: 100px; /* Adjust the size of the logo */
+    width: 100px;
     height: auto;
     transition: width 0.3s ease-in-out;
 }
 
-/* Sidebar Toggle Button (Circle Button on the Top Right) */
+/* Sidebar Toggle Button (Circle Button) */
 .sidebar .sidebar-toggle-btn {
     position: absolute;
     top: 80px;
@@ -34,7 +34,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #003067; /* Button color */
+    background-color: #003067;
     color: white;
     font-size: 18px;
     border: none;
@@ -46,7 +46,7 @@
 }
 
 .sidebar .sidebar-toggle-btn:hover {
-    background-color: #00579d; /* Hover effect for button */
+    background-color: #00579d;
 }
 
 /* Menu Styling */
@@ -56,20 +56,30 @@
     margin-top: 60px;
 }
 
+/* Menu Styling */
+.sidebar .menu a {
+    text-decoration: none;
+    display: block; /* Ensures the entire li is clickable */
+    color: #003067; /* Default text color */
+    width: 100%; /* Ensure it takes up full width of li */
+}
+
+/* Menu Items */
 .sidebar .menu li {
     padding: 15px 20px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
-    font-family:Monospace;
-    text-align: center;
+    font-family: Monospace;
+    text-align: left;
     display: flex;
     align-items: center;
-    color: #003067; /* Non-hover color */
+    justify-content: start; /* Align content horizontally */
     transition: all 0.3s ease;
 }
 
+/* Icon Styling */
 .sidebar .menu li i {
-    margin-right: 15px; /* Space between icon and text */
+    margin-right: 15px;
     font-size: 20px;
 }
 
@@ -77,14 +87,14 @@
 .sidebar .menu li:hover {
     background-color: #003067;
     color: white;
-    border-radius: 25px; /* Oval shape when hovered */
+    border-radius: 25px;
 }
 
-.sidebar .menu li:hover i {
+.sidebar .menu li:hover i, .sidebar .menu li:hover a {
     color: white;
 }
 
-/* Social Icons at the Bottom */
+/* Social Icons Styling */
 .sidebar .social-icons {
     position: absolute;
     bottom: 40px;
@@ -106,45 +116,47 @@
     color: #00579d;
 }
 
-/* Sticky Sidebar (Follow when scrolling) */
-.sidebar {
-    position: sticky;
-    top: 0;
-}
-
 /* Minimized Sidebar Styling */
 .sidebar.minimized {
-    width: 60px; /* Reduce width */
-    padding-top: 10px; /* Adjust padding */
+    width: 60px;
+    padding-top: 10px;
 }
 
-/* Minimized Logo Styling */
+.sidebar.minimized .menu .label {
+    display: none;
+}
+
 .sidebar.minimized .sidebar-logo {
-    width: 60px; /* Resize logo when minimized */
-}
-
-/* Menu Items when Minimized */
-.sidebar.minimized .menu-label {
-    display: none; /* Hide labels when minimized */
+    width: 60px;
 }
 
 .sidebar.minimized .menu li {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 15px 0; /* Added gap of 10px at top and bottom */
-    width: 100%; /* Ensure it takes the full width */
+    padding: 15px 0;
+    width: 100%;
 }
 
-/* Show the labels under the logo when minimized */
 .sidebar.minimized .logo-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0; /* Remove padding */
+    padding: 0;
 }
 
-/* Social Icons hidden when minimized */
 .sidebar.minimized .social-icons {
     display: none;
+}
+
+.sidebar.minimized .menu-label{
+    display: none;
+}
+
+/* Disable Hover Effect on "General" and "Administrative" labels when sidebar is minimized */
+.sidebar .menu .label {
+    pointer-events: none;
+}
+.sidebar.minimized .menu a{
+    text-align: center;
 }

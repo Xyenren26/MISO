@@ -1,0 +1,68 @@
+/* Ensure the container uses flexbox */
+.container {
+    display: flex;
+    height: 100vh; /* Full screen height */
+}
+
+/* Main content */
+.main-content {
+    flex-grow: 1; /* Take remaining space */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to the top */
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+/* When the sidebar is minimized, adjust the margin of the main content */
+.sidebar.minimized + .main-content {
+    margin-left: 60px; /* Adjust for minimized sidebar */
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-top: 10px;
+}
+
+/* Navbar Title Styling */
+.navbar-title {
+    color: #003067;
+    font-family: Monospace;
+    font-size: 24px; /* Default size */
+    font-weight: bold;
+    margin: 0;
+    transition: font-size 0.3s ease; /* Smooth transition when resizing */
+}
+
+/* Adjust navbar title size when the sidebar is minimized or on smaller screens */
+@media screen and (max-width: 768px) {
+    .navbar-title {
+        font-size: 20px; /* Smaller title size on smaller screens */
+    }
+}
+
+/* Navbar Icons Styling */
+.navbar-icons {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-icon {
+    font-size: 20px;
+    color: #003067;
+    margin-left: 20px; /* Space between icons */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect for icons */
+.navbar-icon:hover {
+    color: #00579d;
+}

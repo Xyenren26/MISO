@@ -4,18 +4,6 @@
     height: 100vh; /* Full screen height */
 }
 
-/* Sidebar */
-.sidebar {
-    width: 250px; /* Expanded sidebar */
-    height: 100vh; /* Full height */
-    transition: all 0.3s ease;
-}
-
-/* Minimized sidebar */
-.sidebar.minimized {
-    width: 60px; /* Minimized width */
-}
-
 /* Main content */
 .main-content {
     flex-grow: 1; /* Take remaining space */
@@ -31,140 +19,84 @@
     margin-left: 60px; /* Adjust for minimized sidebar */
 }
 
-/* Navbar Styling */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-top: 0;
-    padding-top: 10px;
-}
-
-/* Navbar Title Styling */
-.navbar-title {
-    color: #003067;
-    font-family:Monospace;
-    font-size: 24px; /* Default size */
-    font-weight: bold;
-    margin: 0;
-    transition: font-size 0.3s ease; /* Smooth transition when resizing */
-}
-
-/* Adjust navbar title size when the sidebar is minimized or on smaller screens */
-@media screen and (max-width: 768px) {
-    .navbar-title {
-        font-size: 20px; /* Smaller title size on smaller screens */
-    }
-}
-
-/* Navbar Icons Styling */
-.navbar-icons {
-    display: flex;
-    align-items: center;
-}
-
-.navbar-icon {
-    font-size: 20px;
-    color: #003067;
-    margin-left: 20px; /* Space between icons */
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-/* Hover effect for icons */
-.navbar-icon:hover {
-    color: #00579d;
-}
-
 /* Wrapper for content */
 .content-wrapper {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
     margin-top: 20px;
-    gap: 20px; /* Space between image and metrics */
 }
 
-/* Image Container */
-.image-container {
-    position: relative;
-    flex: 1;
-    max-height: 400px; /* Adjust to your preferred height */
-    overflow: hidden;
-    height: 1000px; /* Fixed height */
-    max-width: 1920px; /* Fixed width */
-    border-radius: 15px;
-}
-
-.image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensures the image fills the container while maintaining its aspect ratio */
-}
-
-/* Navigation Arrows */
-.nav-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: white;
-    font-size: 30px;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
-    z-index: 10;
-    transition: background-color 0.3s ease;
-}
-
-.nav-arrow:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
-.left-arrow {
-    left: 10px;
-}
-
-.right-arrow {
-    right: 10px;
-}
-
-/* Metrics Container */
+/* Metrics Container (horizontal layout) */
 .metrics-container {
-    width: 300px; /* Fixed width */
-    background-color: #f4f4f4;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px; /* Space below the metrics */
+}
+
+.metrics-box {
+    flex: 1;
     padding: 20px;
+    background-color: #ffffff; /* White background */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left; /* Left-aligned text */
+    margin-right: 20px;
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
 }
 
-.metrics-container h3 {
+/* Remove the margin-right for the last box */
+.metrics-box:last-child {
+    margin-right: 0;
+}
+
+/* Label Styling */
+.metrics-box h4 {
+    font-size: 16px;
     color: #003067;
-    margin-bottom: 10px;
+    opacity: 0.5; /* Reduced opacity for label */
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+    margin-bottom: 8px; /* Space below the label */
 }
 
-.metrics-container p {
-    margin: 5px 0;
-    color: #555;
+/* Value Styling (number below the label) */
+.metrics-box p {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+    margin-top: 0; /* Remove top margin for better alignment */
 }
 
-/* Summary Container */
-.summary-container {
-    width: 100%;
-    background-color: #f9f9f9;
-    padding: 20px;
-    margin-top: 20px; /* Space above the summary */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Remove the margin-right for the last box */
+.metrics-box:last-child {
+    margin-right: 0;
 }
 
-.summary-container h3 {
-    color: #003067;
-    margin-bottom: 10px;
+/* Graph Summary Performance */
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px; /* Reduced space to avoid unnecessary shifting */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
 }
 
-.summary-container p {
-    color: #555;
+#ticketPerformanceGraph {
+    width: 100%; /* Make the graph take full width of its parent */
+    height: 400px;
+    min-width: 400px; /* Prevent the graph from getting too small */
+    margin: 0 auto; /* Center the graph horizontally */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+}
+
+/* Adjusting for screen size */
+@media (max-width: 768px) {
+    .graph-container {
+        margin-top: 10px; /* Reduce margin for smaller screens */
+    }
+
+    #ticketPerformanceGraph {
+        height: 300px; /* Adjust graph height for mobile */
+    }
 }
