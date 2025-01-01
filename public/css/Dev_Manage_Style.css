@@ -37,10 +37,14 @@
     font-size: 14px;
 }
 
+.header-buttons button.refresh .icon {
+    margin-right: 0; /* No margin for refresh button */
+}
+
 /* Hover Effect */
 .header-buttons button:hover {
     background-color: #003067;
-    color: white;
+    color: white; /* Text and icon color */
 }
 
 .header-buttons button:hover .icon {
@@ -75,6 +79,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     z-index: 1;
+    overflow: hidden;
 }
 
 .dropdown-content a {
@@ -83,6 +88,7 @@
     text-decoration: none;
     display: block;
     font-size: 14px;
+    transition: background-color 0.3s;
 }
 
 .dropdown-content a:hover {
@@ -98,27 +104,27 @@
 .table-container {
     margin-top: 20px;
     position: relative;
-    min-height: 300px;
+    min-height: 300px; /* Ensure space for the table or placeholders */
 }
 
-.tickets-table {
+.device-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 10px;
 }
 
-.tickets-table th, .tickets-table td {
+.device-table th, .device-table td {
     padding: 10px;
     text-align: left;
     border: 1px solid #ccc;
 }
 
-.tickets-table th {
+.device-table th {
     background-color: #f0f0f0;
     color: #003067;
 }
 
-.tickets-table td {
+.device-table td {
     color: #333;
 }
 
@@ -127,7 +133,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 550px;
+    height: 550px; /* Center message in available space */
     font-family: monospace;
     font-size: 24px;
     color: #003067;
@@ -143,26 +149,36 @@
     color: #003067;
 }
 
-/* Pagination Styling */
-.pagination-container {
+/* Align pagination buttons horizontally and remove dots */
+.pagination {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    list-style-type: none; /* Removes dots */
+    padding: 0;
+    margin: 0;
 }
 
-.pagination-buttons {
-    display: flex;
+.pagination li {
+    margin: 0 5px;
 }
 
-.pagination-buttons a {
+.pagination a, .pagination span {
     padding: 5px 10px;
-    color: #003067;
     text-decoration: none;
+    color: #003067;
     border: 1px solid #003067;
     border-radius: 3px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.pagination-buttons a:hover {
+.pagination a:hover {
     background-color: #003067;
     color: white;
 }
+
+.pagination .active span {
+    background-color: #003067;
+    color: white;
+    font-weight: bold;
+}
+

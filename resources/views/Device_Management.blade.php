@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Management Information System</title>
-    <link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Dev_Manage_Style.css') }}">
 </head>
 <body>
 <div class="container">
@@ -19,12 +19,11 @@
         <!-- Header Section -->
         <div class="header">
             <div class="header-title">
-                <h1>Tickets</h1>
+                <h1>Device Management</h1>
             </div>
             <div class="header-buttons">
-                <!-- Create Ticket Button -->
-                <button class="create-ticket">
-                    <span class="icon">➕</span> New Ticket
+                <button class="add-device">
+                    <span class="icon">➕</span> Add New Device
                 </button>
 
                 <!-- Dropdown Filter -->
@@ -33,46 +32,43 @@
                         <span class="icon">⚙️</span> Filter<span class="arrow">&#x25BC;</span>
                     </button>
                     <div class="dropdown-content">
-                        <a href="#">Solved Ticket</a>
-                        <a href="#">Pending Ticket</a>
-                        <a href="#">Endorsed</a>
-                        <a href="#">Technical Report</a>
+                        <a href="?filter=in-repairs">In Repairs</a>
+                        <a href="?filter=repaired">Repaired</a>
+                        <a href="?filter=new-device-distribution">New Device Distribution</a>
                     </div>
                 </div>
 
-                <!-- Refresh Button -->
                 <button class="refresh">
                     <span class="icon">&#x21bb;</span>
                 </button>
             </div>
         </div>
 
-        <!-- Tickets Table -->
+        <!-- Content Section -->
         <div class="content">
+            <!-- Table Section -->
             <div class="table-container">
-                @if ($tickets->count() > 0)
-                    <table class="tickets-table">
+                @if ($devices->count() > 0)
+                    <table class="device-table">
                         <thead>
                             <tr>
-                                <th>Control No</th>
+                                <th>Control No.</th>
                                 <th>Name</th>
-                                <th>Department</th>
-                                <th>Priority</th>
+                                <th>Device</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th>Technical Support</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($tickets as $ticket)
+                            @foreach ($devices as $device)
                                 <tr>
-                                    <td>{{ $ticket->control_no }}</td>
-                                    <td>{{ $ticket->name }}</td>
-                                    <td>{{ $ticket->department }}</td>
-                                    <td>{{ ucfirst($ticket->priority) }}</td>
-                                    <td>{{ ucfirst($ticket->status) }}</td>
-                                    <td>
-                                        <button class="action-button">View</button>
-                                    </td>
+                                    <td>{{ $device->control_no }}</td>
+                                    <td>{{ $device->name }}</td>
+                                    <td>{{ $device->device }}</td>
+                                    <td>{{ ucfirst($device->status) }}</td>
+                                    <td>{{ $device->technical_support }}</td>
+                                    <td>{{ $device->date }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -85,14 +81,14 @@
                 <!-- Results Count and Pagination Controls -->
                 <div class="pagination-container">
                     <div class="results-count">
-                        @if ($tickets->count() > 0)
-                            Showing {{ $tickets->firstItem() }} to {{ $tickets->lastItem() }} of {{ $tickets->total() }} results
+                        @if ($devices->count() > 0)
+                            Showing {{ $devices->firstItem() }} to {{ $devices->lastItem() }} of {{ $devices->total() }} results
                         @else
                             Showing 1 to 0 of 0 results
                         @endif
                     </div>
                     <div class="pagination-buttons">
-                        {{ $tickets->links('pagination::bootstrap-4') }}
+                        {{ $devices->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
@@ -101,6 +97,6 @@
 </div>
 
 <!-- Include custom scripts -->
-<script src="{{ asset('js/ticket.js') }}"></script>
+<script src="{{ asset('js/Dev_Manage_Script.js') }}"></script>
 </body>
 </html>

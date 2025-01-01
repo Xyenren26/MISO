@@ -23,7 +23,7 @@
             <li class="label">General</li>
             <li><a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a></li>
             <li><a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a></li>
-            <li><i class="fas fa-cogs"></i><span class="menu-label">Device Management</span></li>
+            <li><a href="{{ route('device_management') }}"><i class="fas fa-cogs"></i><span class="menu-label">Device Management</span></a></li>
         </ul>
 
         <!-- Administrative Section -->
