@@ -29,7 +29,7 @@
         <!-- Administrative Section -->
         <ul class="menu">
             <li class="label">Administrative</li>
-            <li><i class="fas fa-users"></i><span class="menu-label">User Management</span></li>
+            <li><a href="{{ route('user_management') }}"><i class="fas fa-users"></i><span class="menu-label">User Management</span></a></li>
             <li><i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span></li>
             <li><i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span></li>
         </ul>

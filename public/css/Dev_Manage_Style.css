@@ -11,7 +11,7 @@
 .header-title h1 {
     font-family: monospace;
     font-size: 24px;
-    color: black;
+    color: #003067;
     margin: 0;
 }
 
@@ -113,19 +113,21 @@
     margin-bottom: 10px;
 }
 
-.device-table th, .device-table td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ccc;
-}
-
+/* Table Header Styling */
 .device-table th {
-    background-color: #f0f0f0;
-    color: #003067;
+    background-color: #003067; /* Background color */
+    color: white; /* Text color */
+    text-align: center; /* Center align text */
+    padding: 10px; /* Padding for spacing */
+    border: 1px solid #ccc; /* Border */
 }
 
+/* Table Body Styling */
 .device-table td {
-    color: #333;
+    color: #333; /* Body text color */
+    text-align: left; /* Left-align body text */
+    padding: 10px; /* Padding for spacing */
+    border: 1px solid #ccc; /* Border */
 }
 
 /* No Records Message */
