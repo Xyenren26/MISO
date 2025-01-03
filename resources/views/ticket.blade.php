@@ -33,8 +33,8 @@
                         <span class="icon">⚙️</span> Filter<span class="arrow">&#x25BC;</span>
                     </button>
                     <div class="dropdown-content">
-                        <a href="#">Solved Ticket</a>
-                        <a href="#">Pending Ticket</a>
+                        <a href="#">Complete</a>
+                        <a href="#">Pending</a>
                         <a href="#">Endorsed</a>
                         <a href="#">Technical Report</a>
                     </div>

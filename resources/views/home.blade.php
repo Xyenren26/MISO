@@ -9,7 +9,7 @@
     <!-- Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- Include Chart.js for graph rendering (or your preferred graph library) -->
+    <!-- Include Chart.js for graph rendering -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -45,10 +45,26 @@
                 </div>
             </div>
 
-            <!-- Graph Summary Performance -->
-            <div class="graph-container">
-                <h3>Graph Summary Performance</h3>
-                <canvas id="ticketPerformanceGraph"></canvas>
+            <!-- Graph and Metrics -->
+            <div class="graph-metrics-container">
+                <!-- Graph Summary Performance -->
+                <div class="graph-container">
+                    <h3>Ticket Performance (Solved Tickets by Day)</h3>
+                    <canvas id="ticketPerformanceGraph"></canvas>
+                </div>
+
+                <!-- Metrics Section for Device Management -->
+                <div class="metrics-section">
+                    <h3>Device Management</h3>
+                    <div class="metrics-box">
+                        <h4>In Repairs</h4>
+                        <p>25</p> <!-- Example number -->
+                    </div>
+                    <div class="metrics-box">
+                        <h4>Repaired</h4>
+                        <p>25</p> <!-- Example number -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -56,32 +72,5 @@
 
 <!-- Include your JavaScript -->
 <script src="{{ asset('js/Home_Script.js') }}"></script>
-
-<!-- Chart.js Script to render the graph -->
-<script>
-    const ctx = document.getElementById('ticketPerformanceGraph').getContext('2d');
-    const ticketPerformanceGraph = new Chart(ctx, {
-        type: 'bar', // You can change this to 'line' or any other type of graph
-        data: {
-            labels: ['Pending Ticket Request', 'Solved Ticket Request', 'Endorsed Ticket', 'Technical Report'],
-            datasets: [{
-                label: 'Ticket Requests',
-                data: [0, 0, 0, 0], // Replace with dynamic data if needed
-                backgroundColor: ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99'],
-                borderColor: ['#ff6666', '#3399ff', '#66cc66', '#ff9966'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-</script>
-
 </body>
 </html>
