@@ -1,133 +1,223 @@
-/* Header Styling */
+/* General container for layout */
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+/* Header Section */
 .header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: flex-start;
     margin-bottom: 20px;
     padding: 10px;
     border-bottom: 1px solid #ccc;
 }
 
-.header-title h1 {
-    font-family: monospace;
-    font-size: 24px;
-    color: #003067;
-    margin: 0;
-}
-
-/* Buttons Container */
-.header-buttons {
-    display: flex;
-    gap: 15px; /* Space between buttons */
-}
-
-/* Button Styling */
-.header-buttons button {
-    border: 2px solid #003067;
-    background: transparent;
-    color: #003067;
-    padding: 5px 10px;
-    border-radius: 5px;
+/* Tab Button Styles */
+.tab-button {
+    background: none;  /* No background */
+    border: none;      /* No border */
+    color: #414040;       /* Default text color */
+    font-size: 16px;
+    padding: 10px 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    position: relative; /* For the line below */
+    transition: color 0.3s ease;
 }
 
-.header-buttons button .icon {
-    margin-right: 2px;
-    font-size: 14px;
+.tab-button i {
+    margin-right: 8px; /* Space between icon and text */
+    transition: color 0.3s ease;
 }
 
-.header-buttons button.refresh .icon {
-    margin-right: 0; /* No margin for refresh button */
+/* Active Tab Styles */
+.tab-button.active {
+    color: #003067; /* Active text color */
+    font-weight: bold; /* Optional: Makes the active tab bold */
+}
+
+.tab-button.active i {
+    color: #003067; /* Active icon color */
+}
+
+/* Line below active tab */
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #003067; /* Line color */
 }
 
 /* Hover Effect */
-.header-buttons button:hover {
+.tab-button:hover {
+    color: #003067; /* Hover text color */
+}
+
+.tab-button:hover i {
+    color: #003067; /* Hover icon color */
+}
+
+.tab-button:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #003067; /* Hover line color */
+}
+
+/* Filter and Add New Device Section */
+/* Actions Section */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Search Container */
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    padding: 10px;
+    border: 2px solid #003067;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.search-button {
     background-color: #003067;
-    color: white; /* Text and icon color */
-}
-
-.header-buttons button:hover .icon {
     color: white;
-}
-
-/* Dropdown Filter */
-.dropdown {
-    position: relative;
-}
-
-.dropdown-button {
-    background-color: #003067;
-    color: white;
-    padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 13px;
-    transition: background-color 0.3s;
 }
 
-.dropdown-button:hover {
-    background-color: #0056b3;
+.search-button:hover {
+    background-color: #00579d;
+}
+
+/* Spacer to create space between left and right items */
+.spacer {
+    flex-grow: 1;
+}
+
+/* Filter and Add New Device Section (Right side) */
+.filter-section,
+.add-device-section {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-button,
+.add-device {
+    background-color: #003067;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+.dropdown-button:hover,
+.add-device:hover {
+    background-color: #00579d;
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: white;
-    min-width: 200px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
+    background-color: #fff;
+    color: black;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1;
-    overflow: hidden;
-}
-
-.dropdown-content a {
-    color: #003067;
-    padding: 10px 15px;
-    text-decoration: none;
-    display: block;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-.dropdown-content a:hover {
-    background-color: #003067;
-    color: white;
 }
 
 .dropdown:hover .dropdown-content {
     display: block;
 }
 
-/* Table Styling */
-.table-container {
-    margin-top: 20px;
-    position: relative;
-    min-height: 300px; /* Ensure space for the table or placeholders */
+.dropdown-content a {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
 }
 
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Device Table */
 .device-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10px;
+    background-color: white;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Table Header Styling */
-.device-table th {
-    background-color: #003067; /* Background color */
-    color: white; /* Text color */
-    text-align: center; /* Center align text */
-    padding: 10px; /* Padding for spacing */
-    border: 1px solid #ccc; /* Border */
-}
-
-/* Table Body Styling */
+.device-table th,
 .device-table td {
-    color: #333; /* Body text color */
-    text-align: left; /* Left-align body text */
-    padding: 10px; /* Padding for spacing */
-    border: 1px solid #ccc; /* Border */
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.device-table th {
+    color: #003067;
+    border-bottom: 2px solid #003067;
+}
+
+.device-table td {
+    background-color: #f9f9f9;
+}
+
+.device-table td button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Tab Content Visibility */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Button Styling for Add New Device */
+.add-device {
+    display: flex;
+    align-items: center;
+    background-color: #003067;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.add-device .icon {
+    margin-right: 5px;
+}
+
+.add-device:hover {
+    background-color: #0056b3;
 }
 
 /* No Records Message */
@@ -135,7 +225,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 550px; /* Center message in available space */
+    height: 550px;
     font-family: monospace;
     font-size: 24px;
     color: #003067;
@@ -151,36 +241,26 @@
     color: #003067;
 }
 
-/* Align pagination buttons horizontally and remove dots */
-.pagination {
+/* Pagination Styling */
+.pagination-container {
     display: flex;
     justify-content: center;
-    list-style-type: none; /* Removes dots */
-    padding: 0;
-    margin: 0;
+    gap: 10px;
 }
 
-.pagination li {
-    margin: 0 5px;
+.pagination-buttons {
+    display: flex;
 }
 
-.pagination a, .pagination span {
+.pagination-buttons a {
     padding: 5px 10px;
-    text-decoration: none;
     color: #003067;
+    text-decoration: none;
     border: 1px solid #003067;
     border-radius: 3px;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.pagination a:hover {
+.pagination-buttons a:hover {
     background-color: #003067;
     color: white;
 }
-
-.pagination .active span {
-    background-color: #003067;
-    color: white;
-    font-weight: bold;
-}
-
