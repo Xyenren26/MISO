@@ -1,0 +1,142 @@
+.key-metrics-summary {
+    margin: 20px;
+    text-align: center;
+}
+
+.key-metrics-summary h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #003067;
+    font-weight: bold;
+}
+
+.metrics-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    justify-content: center;
+}
+
+.metric-card {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card i {
+    font-size: 32px;
+    color: #003067;
+    margin-bottom: 10px;
+}
+
+.metric-card h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.metric-card p {
+    font-size: 20px;
+    font-weight: bold;
+    color: #0073e6;
+}
+
+
+.charts-container {
+    display: flex; /* Arrange charts in a row */
+    gap: 30px; /* Add spacing between charts */
+    margin: 20px; /* Add margin around the container */
+    justify-content: center; /* Center the charts horizontally */
+    align-items: center; /* Align charts vertically */
+}
+
+.donut-chart, .line-chart {
+    padding: 20px; /* Add padding for inner spacing */
+    background-color: #f8f9fa; /* Light background for better contrast */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.donut-chart {
+    flex: 0 0 30%; /* Donut chart takes 30% of the container width */
+    height: 400px; /* Fixed height */
+}
+
+.line-chart {
+    flex: 0 0 65%; /* Line chart takes 65% of the container width */
+    height: 400px; /* Fixed height */
+}
+
+.donut-chart canvas, 
+.line-chart canvas {
+    height: 100% !important; /* Ensure the canvas fills the container height */
+    width: 100% !important; /* Adjust width dynamically to container */
+}
+
+/* Style the performance details section */
+.performance-details {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.performance-details h3 {
+    text-align: center;
+    font-size: 24px;
+    color: #003067;
+    margin-bottom: 20px;
+}
+
+.performance-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.performance-details th,
+.performance-details td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.performance-details th {
+    background-color: #003067;
+    color: white;
+}
+
+.performance-details td {
+    background-color: #f1f1f1;
+}
+
+.performance-details tr:nth-child(even) td {
+    background-color: #e9ecef;
+}
+
+.performance-details tr:hover td {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+/* Responsive Design for Table */
+@media (max-width: 768px) {
+    .performance-details table {
+        font-size: 14px;
+    }
+
+    .performance-details th,
+    .performance-details td {
+        padding: 8px;
+    }
+}

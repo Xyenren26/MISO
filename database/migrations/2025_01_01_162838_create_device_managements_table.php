@@ -17,7 +17,7 @@ class CreateDeviceManagementsTable extends Migration
             $table->id('control_no'); // Primary key
             $table->string('name');
             $table->string('device');
-            $table->string('status');
+            $table->enum('status', ['in-repairs', 'repaired', 'new-device-deployment', 'technical-report'])->default('in-repairs');
             $table->unsignedBigInteger('technical_support_id');
             $table->date('date');
             $table->timestamps(); // Adds created_at and updated_at columns

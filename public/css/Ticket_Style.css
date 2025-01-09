@@ -1,125 +1,206 @@
-/* Header Styling */
+/* General container for layout */
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+/* Main content area */
+.main-content {
+    width: 100%;
+    padding: 20px;
+}
+
+/* Header Section */
 .header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     margin-bottom: 20px;
     padding: 10px;
     border-bottom: 1px solid #ccc;
 }
 
-.header-title h1 {
-    font-family: monospace;
-    font-size: 24px;
-    color: #003067;
-    margin: 0;
-}
-
-/* Buttons Container */
-.header-buttons {
-    display: flex;
-    gap: 15px; /* Space between buttons */
-}
-
-/* Button Styling */
-.header-buttons button {
-    border: 2px solid #003067;
-    background: transparent;
-    color: #003067;
-    padding: 5px 10px;
-    border-radius: 5px;
+/* Tab Button Styles */
+.tab-button {
+    background: none; 
+    border: none;
+    color: #414040; 
+    font-size: 16px;
+    padding: 10px 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    position: relative; 
+    transition: color 0.3s ease;
 }
 
-.header-buttons button .icon {
-    margin-right: 2px;
-    font-size: 14px;
+.tab-button i {
+    margin-right: 8px; 
+    transition: color 0.3s ease;
+}
+
+/* Active Tab Styles */
+.tab-button.active {
+    color: #003067; 
+    font-weight: bold; 
+}
+
+.tab-button.active i {
+    color: #003067; 
+}
+
+/* Line below active tab */
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #003067; 
 }
 
 /* Hover Effect */
-.header-buttons button:hover {
+.tab-button:hover {
+    color: #003067; 
+}
+
+.tab-button:hover i {
+    color: #003067; 
+}
+
+.tab-button:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #003067; 
+}
+
+/* Filter and Add New Ticket Section */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Search Container */
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    padding: 10px;
+    border: 2px solid #003067;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.search-button {
     background-color: #003067;
     color: white;
-}
-
-.header-buttons button:hover .icon {
-    color: white;
-}
-
-/* Dropdown Filter */
-.dropdown {
-    position: relative;
-}
-
-.dropdown-button {
-    background-color: #003067;
-    color: white;
-    padding: 10px 15px;
     border: none;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 13px;
-    transition: background-color 0.3s;
 }
 
-.dropdown-button:hover {
-    background-color: #0056b3;
+.search-button:hover {
+    background-color: #00579d;
 }
 
+/* Spacer between left and right items */
+.spacer {
+    flex-grow: 1;
+}
+
+/* Filter and Add New Ticket Section (Right side) */
+.filter-section,
+.add-ticket-section {
+    display: flex;
+    align-items: center;
+}
+
+/* Dropdown, Add Ticket, and Refresh Button Styling */
+.dropdown-button,
+.add-ticket,
+.refresh {
+    background-color: white;
+    border: 2px solid #003067; /* Stroke color */
+    color: #003067; /* Text color */
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 20px;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+/* Hover Effects */
+.dropdown-button:hover,
+.add-ticket:hover,
+.refresh:hover {
+    background-color: #00579d;
+    color: white; /* Text color on hover */
+}
+
+/* Dropdown Content */
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: white;
-    min-width: 200px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
+    background-color: #fff;
+    color: black;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1;
-}
-
-.dropdown-content a {
-    color: #003067;
-    padding: 10px 15px;
-    text-decoration: none;
-    display: block;
-    font-size: 14px;
-}
-
-.dropdown-content a:hover {
-    background-color: #003067;
-    color: white;
 }
 
 .dropdown:hover .dropdown-content {
     display: block;
 }
 
-/* Table Styling */
-.table-container {
-    margin-top: 20px;
-    position: relative;
-    min-height: 300px;
+.dropdown-content a {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
 }
 
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Ticket Table */
 .tickets-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10px;
+    background-color: white;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.tickets-table th, .tickets-table td {
-    padding: 10px;
+.tickets-table th,
+.tickets-table td {
+    padding: 12px;
     text-align: left;
-    border: 1px solid #ccc;
+    border-bottom: 1px solid #ddd;
 }
 
 .tickets-table th {
-    background-color: #f0f0f0;
     color: #003067;
+    border-bottom: 2px solid #003067;
 }
 
 .tickets-table td {
-    color: #333;
+    background-color: #f9f9f9;
+}
+
+.tickets-table td button {
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 /* No Records Message */

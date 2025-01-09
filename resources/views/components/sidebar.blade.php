@@ -10,7 +10,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Logo Section -->
         <div class="logo-container">
-            <img src="{{ asset('images/pasiglogo.png') }}" alt="Logo" class="sidebar-logo">
+            <img src="{{ asset('images/SystemLogo.jpg') }}" alt="Logo" class="sidebar-logo">
         </div>
 
         <!-- Minimize Button -->
@@ -21,17 +21,19 @@
         <!-- General Section -->
         <ul class="menu">
             <li class="label">General</li>
-            <li><a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a></li>
-            <li><a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a></li>
-            <li><a href="{{ route('device_management') }}"><i class="fas fa-cogs"></i><span class="menu-label">Device Management</span></a></li>
+            <li class="{{ Request::is('home') ? 'active' : '' }}">
+                <a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
+            </li>
+            <li class="{{ Request::is('ticket') ? 'active' : '' }}"><a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a></li>
+            <li class="{{ Request::is('device_management') ? 'active' : '' }}"><a href="{{ route('device_management') }}"><i class="fas fa-cogs"></i><span class="menu-label">Device Management</span></a></li>
         </ul>
 
         <!-- Administrative Section -->
         <ul class="menu">
             <li class="label">Administrative</li>
-            <li><a href="{{ route('user_management') }}"><i class="fas fa-users"></i><span class="menu-label">User Management</span></a></li>
-            <li><i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span></li>
-            <li><i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span></li>
+            <li class="{{ Request::is('user_management') ? 'active' : '' }}"><a href="{{ route('user_management') }}"><i class="fas fa-users"></i><span class="menu-label">User Management</span></a></li>
+            <li class="{{ Request::is('report') ? 'active' : '' }}"><a href="{{ route('report') }}"><i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span></a></li>
+            <li class="{{ Request::is('audit_logs') ? 'active' : '' }}"><a href="{{ route('audit_logs') }}"><i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span></a></li>
         </ul>
 
         <!-- Social Media Icons -->
