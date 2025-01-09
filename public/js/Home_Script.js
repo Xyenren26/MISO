@@ -43,3 +43,31 @@ const ticketPerformanceGraph = new Chart(ctx, {
         }
     }
 });
+
+
+// Function to initialize a vertical bar chart
+function createVerticalBarChart(ctx, data, labels, backgroundColors, borderColors) {
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Ticket Status',
+                data: data,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Allow resizing without preserving aspect ratio
+            indexAxis: 'y', // Makes the bar chart vertical
+            scales: {
+                x: {
+                    beginAtZero: true
+                }
+            }
+        }        
+    });
+}

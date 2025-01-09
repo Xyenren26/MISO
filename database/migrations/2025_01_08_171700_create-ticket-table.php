@@ -13,19 +13,23 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id('control_no'); // Auto-incrementing primary key
-            $table->unsignedBigInteger('employee_id'); // Foreign key
+            $table->unsignedBigInteger('employee_id'); // Foreign key to users table (general employee)
+            $table->unsignedBigInteger('technical_support_id')->nullable(); // Foreign key to users table (specific to technical-support role)
             $table->string('name');
             $table->string('department');
             $table->enum('priority', ['urgent', 'semi-urgent', 'non-urgent']);
             $table->string('device');
             $table->text('concern');
             $table->text('remarks')->nullable();
-            $table->unsignedBigInteger('technical_support_id')->nullable(); // Foreign key
             $table->string('technical_support_name')->nullable();
-            $table->enum('status', ['open', 'closed', 'in-progress'])->default('open');
+            $table->enum('status', ['endorsed', 'completed', 'in-progress', 'technical-report'])->default('in-progress');
             $table->timestamp('time_in')->useCurrent(); // Default to current time
             $table->timestamp('time_out')->nullable(); // Nullable field
             $table->timestamps(); // Adds created_at and updated_at columns
+
+            // Foreign Key Constraints (both referencing users table)
+            $table->foreign('employee_id')->references('employee_id')->on('users')->onDelete('cascade');
+            $table->foreign('technical_support_id')->references('employee_id')->on('users')->onDelete('set null');
         });
     }
 

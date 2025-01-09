@@ -4,46 +4,12 @@
     height: 100vh; /* Full screen height */
 }
 
-/* Main content */
-.main-content {
-    flex-grow: 1; /* Take remaining space */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align content to the top */
-    padding: 20px;
-    transition: margin-left 0.3s ease;
-}
-
-/* When the sidebar is minimized, adjust the margin of the main content */
-.sidebar.minimized + .main-content {
-    margin-left: 60px; /* Adjust for minimized sidebar */
-}
-
 /* Wrapper for content */
 .content-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     margin-top: 20px;
-}
-
-/* Graph and Metrics combined container */
-.graph-metrics-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-}
-
-/* Graph Container */
-.graph-container {
-    flex: 2; /* Larger portion for the graph */
-    max-width: 75%; /* Adjust graph width */
-    height: 450px; /* Increased height for a larger graph */
-    background-color: #ffffff; /* Optional: white background for clarity */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
-    padding: 20px; /* Space inside the graph container */
 }
 
 /* Metrics Section for Device Management */
@@ -75,22 +41,30 @@
     margin-bottom: 40px; /* Space below the metrics */
 }
 
+/* General Container Styling */
 .metrics-box {
-    flex: 1;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: #ffffff; /* White background */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    flex: 1; /* Allow boxes to grow and shrink equally */
+    min-width: 150px; /* Minimum width to maintain original size */
+    max-width: 300px; /* Maximum width to limit growth */
+    transition: all 0.3s ease; /* Smooth transition */
     text-align: left; /* Left-aligned text */
     margin-right: 20px;
     font-family: 'Courier New', Courier, monospace; /* Monospace font */
 }
 
-
 /* Remove the margin-right for the fourth box */
 .metrics-box:nth-child(4) {
     margin-right: 0;
 }
+
 
 /* Label Styling */
 .metrics-box h4 {
@@ -107,6 +81,106 @@
     font-weight: bold;
     margin: 0;
     margin-top: 0; /* Remove top margin for better alignment */
+}
+
+/* Graph and Metrics combined container */
+.graph-metrics-container {
+    display: flex; /* Arrange charts in a row */
+    gap: 30px; /* Add spacing between charts */
+    margin: 20px; /* Add margin around the container */
+    justify-content: space-between; /* Center the charts horizontally */
+    align-items: flex-start; /* Align charts vertically */
+}
+
+
+/* Graph Container */
+.graph-container {
+    flex: 0 0 75%;
+    height: 500px; 
+    max-width: 75%;
+    background-color: #ffffff; /* Optional: white background for clarity */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
+    padding: 20px; /* Space inside the graph container */
+}
+
+.graph-container-donut {
+    flex: 0 0 15%;
+    height: 250px;
+    max-width: 15%;
+    margin: 20px auto; /* Center the container */
+    text-align: center; /* Center the content inside */
+    background-color: #ffffff; /* Optional: white background for clarity */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
+    padding: 20px;
+}
+
+/* General Canvas Styling (fallback or default) */
+canvas {
+    display: block;
+    width: 100%; /* Full width of the parent container */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 150px; /* Set a max height for smaller graphs */
+}
+
+.graph-container canvas, .graph-container-donut canvas{
+    width: 100%; /* Full width of the parent container */
+    height: 100%; /* Maintain aspect ratio */
+}
+
+
+
+/* Pending Ticket Graph Styling */
+#pendingTicketGraph {
+    background-color: #f8f9fa; /* Light gray background for clarity */
+    border: 1px solid #ddd; /* Subtle border for separation */
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Solved Ticket Graph Styling */
+#solvedTicketGraph {
+    background-color: #e7f6f2; /* Light green background for solved tickets */
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Endorsed Ticket Graph Styling */
+#endorsedTicketGraph {
+    background-color: #fff5e6; /* Light orange background for endorsed tickets */
+    border: 1px solid #ffcc80;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Technical Report Graph Styling */
+#technicalReportGraph {
+    background-color: #e8f1ff; /* Light blue background for technical reports */
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Ticket Performance Graph (Large Graph) */
+#ticketPerformanceGraph {
+    background-color: #ffffff; /* White background for clarity */
+    border: 2px solid #003067; /* Highlighted border for focus */
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 450px; /* Specific height for the main graph */
+}
+
+/* Canvas Styling for Donut Chart */
+#deviceManagementGraph {
+    display: block; /* Ensure the canvas is displayed as a block */
+    width: 100%; /* Make the canvas take full width of its container */
+    height: auto; /* Maintain aspect ratio of the donut chart */
+    max-height: 250px; /* Set a maximum height for smaller charts */
+    background-color: #ffffff; /* White background for clarity */
+    border: 2px solid #003067; /* Highlighted border for focus */
+    border-radius: 8px; /* Rounded corners for the canvas */
 }
 
 /* Adjusting for screen size */

@@ -1,18 +1,59 @@
 /* Sidebar Styles */
 .sidebar {
-    position: sticky; /* Sticky Sidebar */
+    position: fixed; /* Keep it sticky */
     top: 0;
-    right: 0;
     width: 250px;
-    height: 100vh;
-    background-color: white;
+    height: 90vh;
+    background-color: transparent; /* Make the background transparent to show the image */
     color: black;
-    margin-top: 50px;
+    margin-top: 60px;
     padding-top: 20px;
     z-index: 1000;
     box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
     border-radius: 15px;
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+/* Sidebar Background Image */
+.sidebar:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/Sidebar Background.jpg');
+    background-size: contain;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    opacity: 0.5; /* Optional: make the background semi-transparent */
+    z-index: -1; /* Keep the background behind the content */
+    border-radius: 15px;
+}
+
+
+
+/* Main Content */
+.main-content {
+    flex-grow: 1; /* Take remaining space */
+    display: flex;
+    flex-direction: column;
+    margin-left: 250px;
+    justify-content: flex-start; /* Align content to the top */
+    padding: 20px;
+    transition: margin-left 0.3s ease-in-out; /* Smooth transition */
+}
+
+
+/* Minimized Sidebar Styling */
+.sidebar.minimized {
+    width: 60px;
+    padding-top: 10px;
+}
+
+.sidebar.minimized + .main-content {
+    margin-left: 60px; /* Adjust margin for minimized sidebar */
 }
 
 /* Logo Styling */
@@ -22,7 +63,7 @@
 }
 
 .sidebar .sidebar-logo {
-    width: 100px;
+    width: 200px;
     height: auto;
     transition: width 0.3s ease-in-out;
 }
@@ -54,7 +95,7 @@
 .sidebar .menu {
     list-style-type: none;
     padding: 0;
-    margin-top: 60px;
+    margin-top: 40px;
 }
 
 /* Menu Styling */
@@ -129,6 +170,7 @@
 
 .sidebar.minimized .sidebar-logo {
     width: 60px;
+    margin-bottom: 50px;
 }
 
 .sidebar.minimized .menu li {
@@ -160,4 +202,33 @@
 }
 .sidebar.minimized .menu a{
     text-align: center;
+}
+
+/* Active menu item styling */
+.sidebar .menu li.active {
+    background-color: #003067;
+    opacity: 0.8;
+    color: white;
+    border-radius: 25px; /* Optional: add rounded corners */
+}
+
+.sidebar .menu li.active a {
+    color: white; /* Ensure link color is white when active */
+}
+
+.sidebar .menu li.active i {
+    color: white; /* Ensure icon color is white when active */
+}
+
+/* Hover Effect for Menu Items */
+.sidebar .menu li:hover {
+    background-color: #003067;
+    color: white;
+    border-radius: 25px;
+}
+
+/* Modify the hover effect so the active state doesn't interfere */
+.sidebar .menu li:hover:not(.active) {
+    background-color: #003067;
+    color: white;
 }
