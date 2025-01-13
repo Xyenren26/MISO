@@ -10,7 +10,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Logo Section -->
         <div class="logo-container">
-            <img src="{{ asset('images/SystemLogo.jpg') }}" alt="Logo" class="sidebar-logo">
+            <img src="{{ asset('images/SystemLogo.png') }}" alt="Logo" class="sidebar-logo">
         </div>
 
         <!-- Minimize Button -->

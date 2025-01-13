@@ -3,184 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Form</title>
+    <title>Enhanced Ticket Form</title>
     <style>
-        
-        h2 {
-            color: #003067;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-
-        .content-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .ticket-form-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            width: 80%;
-            max-width: 800px;
-        }
-
-        fieldset {
-            border: 1px solid #003067;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-
-        legend {
-            color: #003067;
-            font-weight: bold;
-        }
-
-        .personal-info-container, .form-row, .support-details-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .personal-info-field, .form-row label, .form-row input, .support-details-field {
-            display: flex;
-            flex-direction: column;
-            width: 48%;
-        }
-
-        .personal-info-field input, .support-details-field input, .form-row select {
-            padding: 5px;
-            border: 1px solid #003067;
-        }
-
-        .form-actions {
-            text-align: center;
-        }
-
-        .submit-btn {
-            background-color: #003067;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .submit-btn:hover {
-            background-color: #a2d1f8;
-        }
-
-        #errorMessage {
-            color: red;
-            display: none;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            width: 400px;
-        }
-
-        .modal-actions {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .modal-actions button {
-            background-color: #003067;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            margin: 5px;
-        }
-
-        .modal-actions button:hover {
-            background-color: #a2d1f8;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .data-box {
-            padding: 5px;
-            border: 1px solid #003067;
-            width: 100%;
-        }
-
-        /* Centering the content-wrapper */
-.content-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center; /* Vertically center */
-    height: 100vh; /* Use full viewport height */
-    margin-top: 0; /* Remove any top margin */
-}
-
-/* Ticket Form Container */
+/* Main Form Container Styling */
 .ticket-form-container {
-    background-color: white;
-    padding: 20px;
+            position: absolute;
+            width: 78%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000; /* Ensure the form is in front of the overlay */
+        }
+
+        /* Close Button Styling */
+        .close-modal {
+            font-size: 24px;
+            font-weight: bold;
+            color: #003067;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-modal:hover {
+            color: #ff0000; /* Change to red on hover */
+        }
+
+/* Fieldset and Legend Styling */
+fieldset {
+    border: 1px solid #ccc;
     border-radius: 5px;
-    width: 80%;
-    max-width: 800px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Adding a shadow for better visibility */
+    padding: 15px;
+    margin-bottom: 20px;
+}
+legend {
+    font-weight: bold;
+    font-size: 16px;
+    color: #003067;
 }
 
-/* Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
+/* Input, Textarea, and Select Styling */
+.ticket-form-container input[type="text"],
+.ticket-form-container textarea,
+.ticket-form-container select {
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
+    padding: 8px;
+    border: 2px solid #003067;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+input::placeholder,
+textarea::placeholder {
+    color: #007bff;
+    opacity: 0.6;
+}
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #0056b3;
+    outline: none;
+}
+
+/* Label Styling */
+label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Personal Information Row Layout */
+.personal-info-container {
+    display: flex;
+    gap: 15px;
     align-items: center;
 }
+.personal-info-field {
+    flex: 1;
+}
 
-.modal-content {
-    margin-left:700px;
-    background-color: white;
-    padding: 20px;
+/* Support Details Section */
+.support-details-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Time In Container */
+.time-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.time-container input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #007bff;
     border-radius: 5px;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Adding a shadow for the modal */
+    background-color: #f0f8ff;
+    color: #333;
+    font-size: 16px;
+}
+.time-container input[type="datetime-local"]:focus {
+    border-color: #0056b3;
+}
+
+/* Additional Concern Container */
+#otherConcernContainer {
+    display: none;
+    background-color: #a7d4f7;
+    padding: 10px;
+    border: 1px solid #0056b3;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+/* Control Number Styling */
+.control-number {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: red;
+}
+
+/* Heading for Technical Service Slip */
+.ticket-form-container h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #1165c6;
+    padding: 10px 20px;
+    background-color: #003067;
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* Button Styling */
+.submit-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s;
+    background-color: #007bff;
+}
+.submit-btn:hover {
+    background-color: #00214e;
 }
 
     </style>
 </head>
 <body>
-
     <!-- Ticket Form Container -->
     <div class="content-wrapper">
         <div class="ticket-form-container">
-            <h2>Technical Service Slip</h2>
-            <!-- Control Number Display -->
-            <div class="control-number" id="controlNumber">{{ $nextControlNo ?? 'Not Available' }}</div>
+        <button class="close-modal" onclick="closeTicketFormModal()">✖</button>
+            <h2>Technical Service Slip</h2> <!-- New heading added here -->
+            <form id="ticketForm" action="/ticket" method="POST">
+            <div class="control-number" id="controlNumber">{{ $nextControlNo }}</div>
             <form id="ticketForm" action="/ticket" method="POST">
                 @csrf
                 <!-- Row 1: Personal Information -->
@@ -222,7 +222,6 @@
                             <option value="other">Other: Specify</option>
                         </select>
 
-                        <!-- Specify Other Concern -->
                         <div id="otherConcernContainer" style="display: none;">
                             <label for="otherConcern">Please Specify:</label>
                             <input type="text" id="otherConcern" name="otherConcern" placeholder="Specify your concern">
@@ -235,13 +234,13 @@
                             <option value="Semi-Urgent">Semi-Urgent</option>
                             <option value="Non-Urgent">Non-Urgent</option>
                         </select>
-
+                        
                         <label for="employeeId">Employee ID:</label>
                         <input type="text" id="employeeId" name="employeeId" required>
                     </div>
                 </fieldset>
 
-                <!-- Row 3: Support Details -->
+                    <!-- Row 3: Support Details -->
                 <fieldset>
                     <legend>Support Details</legend>
                     <div class="support-details-container">
@@ -249,106 +248,43 @@
                             <label for="technicalSupport">Technical Support By:</label>
                             <select id="technicalSupport" name="technicalSupport" required>
                                 <option value="" disabled selected>Select Technical Support</option>
-                                @if(isset($techSupport))
-                                    @foreach($techSupport as $support)
-                                        <option value="{{ $support->EmployeeID }}">{{ $support->FirstName }} {{ $support->LastName }}</option>
-                                    @endforeach
-                                @else
-                                    <option value="" disabled>No Technical Support Available</option>
-                                @endif
+                                <!-- Loop through techSupport and populate the dropdown -->
+                               
                             </select>
-                        </div>
-                        <div class="time-container">
-                            <div class="support-details-field">
-                                <label for="timeIn">Time In:</label>
-                                <input type="datetime-local" id="timeIn" name="timeIn" required>
-                            </div>
                         </div>
                     </div>
                 </fieldset>
 
-                <!-- Error Message Container -->
+                <!-- Error message container -->
                 <div id="errorMessage" style="color: red; display: none; text-align:center; margin-top: 10px;">
                     <p>Please fill in all fields.</p>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="form-actions">
-                    <button type="button" class="submit-btn" onclick="validateAndSubmit()">Submit</button>
+                    <button type="button" class="submit-btn">Submit</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="confirmationModal" class="modal">
-        <div class="modal-content">
-            <h2>Confirmation Details</h2>
-            <div id="confirmationDetails">
-                <div class="detail-row">
-                    <label for="first-name">First Name:</label>
-                    <div class="data-box" id="first-name-data"></div>
-                    <label for="last-name">Last Name:</label>
-                    <div class="data-box" id="last-name-data"></div>
-                </div>
-                <div class="detail-row">
-                    <label for="department">Department:</label>
-                    <div class="data-box" id="department-data"></div>
-                </div>
-                <div class="detail-row">
-                    <label for="concern">Concern:</label>
-                    <div class="data-box" id="concern-data"></div>
-                </div>
-                <div class="detail-row">
-                    <label for="category">Category:</label>
-                    <div class="data-box" id="category-data"></div>
-                    <label for="employeeId">Employee ID:</label>
-                    <div class="data-box" id="employee-id-data"></div>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" onclick="submitForm()">Submit</button>
-                <button type="button" onclick="closeModal()">Close</button>
-            </div>
-        </div>
-    </div>
+
 
     <script>
-        // Toggle visibility of "Other Concern" input
-        function toggleOtherInput() {
-            const concern = document.getElementById('concern').value;
-            const otherConcernContainer = document.getElementById('otherConcernContainer');
-            otherConcernContainer.style.display = (concern === 'other') ? 'block' : 'none';
-        }
-
-        // Validate and submit the form
-        function validateAndSubmit() {
-            const form = document.getElementById('ticketForm');
-            const errorMessage = document.getElementById('errorMessage');
-            if (!form.checkValidity()) {
-                errorMessage.style.display = 'block';
-            } else {
-                errorMessage.style.display = 'none';
-                form.submit();
-            }
-        }
-
-        // Open modal for confirmation
+        // Open Modal
         function openModal() {
-            const modal = document.getElementById('confirmationModal');
-            modal.style.display = 'flex';
+            document.getElementById('confirmationModal').style.display = 'flex';
         }
 
-        // Close the modal
+        // Close Modal
         function closeModal() {
-            const modal = document.getElementById('confirmationModal');
-            modal.style.display = 'none';
+            document.getElementById('confirmationModal').style.display = 'none';
         }
 
-        // Submit the form inside modal
+        // Placeholder for form submission
         function submitForm() {
             document.getElementById('ticketForm').submit();
         }
     </script>
-
 </body>
 </html>

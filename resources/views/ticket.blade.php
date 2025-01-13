@@ -73,7 +73,6 @@
 <!-- Modal for Creating a New Ticket -->
 <div id="ticketFormModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <button class="close-modal" onclick="closeTicketFormModal()">✖</button>
         <x-ticket-form :techSupport="$techSupport" :nextControlNo="$nextControlNo" />
     </div>
 </div>
