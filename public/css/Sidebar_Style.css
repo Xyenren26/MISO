@@ -136,27 +136,6 @@
     color: white;
 }
 
-/* Social Icons Styling */
-.sidebar .social-icons {
-    position: absolute;
-    bottom: 40px;
-    left: 20px;
-    display: flex;
-    justify-content: space-between;
-    width: 90%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.sidebar .social-icon {
-    font-size: 20px;
-    color: #003067;
-    transition: color 0.3s ease;
-}
-
-.sidebar .social-icon:hover {
-    color: #00579d;
-}
 
 /* Minimized Sidebar Styling */
 .sidebar.minimized {
@@ -188,9 +167,6 @@
     padding: 0;
 }
 
-.sidebar.minimized .social-icons {
-    display: none;
-}
 
 .sidebar.minimized .menu-label{
     display: none;

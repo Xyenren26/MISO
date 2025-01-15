@@ -58,8 +58,8 @@
                 <tbody>
                     @forelse ($users as $user)
                         <tr>
-                            <td>{{ $user->id }}</td>
-                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->employee_id }}</td>
+                            <td>{{ $user->first_name . ', ' . $user->last_name }}</td>
                             <td>{{ $user->department }}</td>
                             <td>{{ $user->role }}</td>
                             <td>{{ $user->status }}</td>
