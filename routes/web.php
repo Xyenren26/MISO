@@ -1,12 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\Home_Controller;
 use App\Http\Controllers\Ticket_Controller;
 use App\Http\Controllers\Device_Management_Controller;
 use App\Http\Controllers\User_Management_Controller;
 use App\Http\Controllers\Audit_logs_Controller;
 use App\Http\Controllers\Report_Controller;
+
+Route::get('/login', [Login_Controller::class, 'showLogin'])->name('login');
+
+Route::get('/signup', [Login_Controller::class, 'showSignup'])->name('signup');
 
 Route::get('/home', [Home_Controller::class, 'showHome'])->name('home');
 

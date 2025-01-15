@@ -1,0 +1,420 @@
+/* Body Background */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background: url('../images/leftscreenbg3.1.png');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  width: 100%;
+  height: 100vh;
+  background-color: #f0f0f0; /* Fallback color */
+  background-repeat: no-repeat;
+}
+
+/* Logo Container */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* Space between logos */
+  padding: 15px 0; /* Balanced top and bottom padding */
+}
+
+.logo-container .logo {
+  width: 250px; /* Adjusted for a proportional size */
+  height: auto;
+  mix-blend-mode: multiply; /* Removes white background from the logo */
+}
+
+.pasig-logo img {
+  width: 200px; /* Adjusted for balance */
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+/* Container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  min-height: 100vh;
+  padding: 15px; /* Reduced padding for smaller screens */
+}
+
+/* Sign-Up Container Styles */
+.sign-up-container {
+  width: 100%;
+  max-width: 500px; /* Reduced for a better fit */
+  background-color: rgba(255, 255, 255, 0.95); /* Slightly more opaque */
+  border-radius: 8px; /* Softer corners */
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px; /* Even padding */
+  font-family: 'Arial', sans-serif;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border: 2px solid transparent;
+  background-image: linear-gradient(#fff, #fff),
+    linear-gradient(to right, #118df1, #2575fc); /* Gradient border */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.sign-up-container h2 {
+  text-align: center;
+  margin-bottom: 15px; /* Reduced margin */
+  font-size: 1.6rem; /* Balanced font size */
+  color: #333;
+}
+
+/* Form Row */
+.form-group-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Reduced gap for compact layout */
+  margin-bottom: 10px; /* Reduced margin */
+}
+
+/* Form Group */
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px; /* Reduced space between form groups */
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-size: 0.85rem; /* Smaller font for labels */
+  color: #555;
+}
+
+.form-group input {
+  padding: 8px; /* Reduced padding for input fields */
+  font-size: 0.95rem; /* Slightly smaller font size */
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Softer corners */
+  transition: border-color 0.3s;
+  margin-bottom: 8px; /* Reduced spacing */
+}
+
+.form-group input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    display: flex; /* Aligns items horizontally */
+    align-items: center; /* Vertically centers items */
+    justify-content: center;
+    gap: 8px; /* Adds space between checkbox and label */
+    font-size: 0.85rem; /* Smaller font size */
+    margin-bottom: 15px;
+  }
+  
+.checkbox-group input[type="checkbox"] {
+    margin: 0; /* Removes default margins */
+    width: auto; /* Ensures natural sizing */
+    height: auto; /* Ensures natural sizing */
+    cursor: pointer; /* Adds pointer cursor for better UX */
+  }
+  
+.checkbox-group label {
+    margin: 0; /* Removes default margins */
+    cursor: pointer; /* Adds pointer cursor */
+  }
+  
+  .checkbox-group a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .checkbox-group a:hover {
+    text-decoration: underline;
+  }
+  
+
+/* Sign-Up Button */
+.sign-up-btn {
+  width: 100%;
+  padding: 10px; /* Adjusted for balanced proportions */
+  font-size: 0.95rem; /* Slightly smaller font */
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sign-up-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Existing Account */
+.existing-account {
+  text-align: center;
+  margin-top: 10px; /* Reduced spacing */
+  font-size: 0.85rem; /* Smaller font size */
+}
+
+.existing-account a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.existing-account a:hover {
+  text-decoration: underline;
+}
+
+/* Footer styles */
+.footer {
+  background-color: #0e2f66; /* Deep blue background */
+  color: white;
+  padding: 20px 0; /* Reduced padding for a tighter look */
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.footer-content {
+  max-width: 1100px; /* Slightly narrower for balance */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Vertically align items */
+  padding: 0 20px;
+}
+
+/* Left Section */
+.footer-left {
+  flex: 1;
+  min-width: 200px; /* Reduced width */
+}
+
+.footer-logo img {
+  width: 100px; /* Smaller logo */
+  margin-bottom: 10px;
+}
+
+.contact-info {
+  margin-top: 5px;
+  line-height: 1.5; /* Tighter line spacing */
+  font-size: 13px;  /* Smaller text */
+}
+
+.contact-info i {
+  margin-right: 6px;
+  color: white;
+  font-size: 14px;
+}
+
+.contact-info a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+  color: #118df1;
+}
+
+/* Right Section */
+.footer-right {
+  flex: 1;
+  text-align: right;
+  min-width: 200px; /* Reduced width */
+}
+
+.footer-right p {
+  margin-bottom: 10px; /* Less margin */
+  font-size: 13px;     /* Smaller text */
+  opacity: 0.8;
+}
+
+/* Social Media Icons */
+.social-icons {
+  margin-top: 5px;
+}
+
+.social-icons a {
+  color: white;
+  font-size: 18px; /* Smaller icons */
+  margin-left: 8px;
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  background-color: #1b4172;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-align: center;
+}
+
+.social-icons a:hover {
+  background-color: #007bff;
+  transform: scale(1.1);
+}
+
+/* Divider Line */
+.footer-divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 15px 0; /* Reduced margin */
+}
+
+.error input, .error select, .error textarea {
+  border-color: red;
+}
+
+.error small {
+  color: red;
+  font-size: 12px;
+}
+
+/* Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; 
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-left, .footer-right {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .social-icons a {
+    margin: 0 6px;
+  }
+}
+
+/* Responsive Styles */
+
+/* For tablets (screens between 600px and 1024px) */
+@media screen and (max-width: 1024px) and (min-width: 600px) {
+  .sign-up-container {
+    max-width: 400px; /* Narrower container */
+    padding: 15px; /* Reduce padding */
+  }
+
+  .form-group input {
+    font-size: 0.9rem; /* Slightly smaller font */
+    padding: 6px; /* Reduce padding */
+  }
+
+  .sign-up-container h2 {
+    font-size: 1.4rem; /* Adjust font size for heading */
+  }
+
+  .checkbox-group {
+    font-size: 0.8rem; /* Reduce checkbox group font size */
+  }
+
+  .sign-up-btn {
+    font-size: 0.9rem; /* Adjust button font size */
+    padding: 8px; /* Reduce button padding */
+  }
+
+  .existing-account {
+    font-size: 0.8rem; /* Adjust font size */
+  }
+}
+
+/* For smartphones (screens less than 600px) */
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 10px; /* Reduce overall padding */
+    justify-content: flex-start; /* Align content to the top */
+  }
+
+  .sign-up-container {
+    max-width: 90%; /* Full width with some margin */
+    padding: 10px; /* Smaller padding */
+    border-radius: 6px; /* Reduce border radius */
+  }
+
+  .form-group input {
+    font-size: 0.85rem; /* Smaller font for input fields */
+    padding: 5px; /* Compact padding */
+  }
+
+  .form-group-row {
+    flex-direction: column; /* Stack rows vertically */
+    gap: 5px; /* Smaller gap */
+  }
+
+  .sign-up-container h2 {
+    font-size: 1.2rem; /* Smaller heading font size */
+    margin-bottom: 10px; /* Reduce margin */
+  }
+
+  .checkbox-group {
+    font-size: 0.75rem; /* Smaller font size for checkboxes */
+  }
+
+  .sign-up-btn {
+    font-size: 0.85rem; /* Reduce button font size */
+    padding: 8px; /* Adjust padding */
+  }
+
+  .existing-account {
+    font-size: 0.75rem; /* Smaller font size */
+  }
+
+  .logo-container {
+    flex-direction: column; /* Stack logos vertically */
+    gap: 10px; /* Reduce gap */
+  }
+
+  .logo-container .logo {
+    width: 150px; /* Reduce logo size */
+  }
+
+  .pasig-logo img {
+    width: 130px; /* Reduce logo size */
+  }
+}

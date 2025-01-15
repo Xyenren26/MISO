@@ -1,0 +1,481 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+  }
+  
+  /* Split Screen Layout */
+  .split-screen {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-wrap: wrap; /* Responsive wrapping for smaller screens */
+  }
+  
+  /* Footer styles */
+  .footer {
+    background-color: #0e2f66; /* Deep blue background */
+    color: white;
+    padding: 20px 0; /* Reduced padding for a tighter look */
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .footer-content {
+    max-width: 1100px; /* Slightly narrower for balance */
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Vertically align items */
+    padding: 0 20px;
+  }
+  
+  /* Left Section */
+  .footer-left {
+    flex: 1;
+    min-width: 200px; /* Reduced width */
+  }
+  
+  .footer-logo img {
+    width: 100px; /* Smaller logo */
+    margin-bottom: 10px;
+  }
+  
+  .contact-info {
+    margin-top: 5px;
+    line-height: 1.5; /* Tighter line spacing */
+    font-size: 13px;  /* Smaller text */
+  }
+  
+  .contact-info i {
+    margin-right: 6px;
+    color: white;
+    font-size: 14px;
+  }
+  
+  .contact-info a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+  
+  .contact-info a:hover {
+    text-decoration: underline;
+    color: #118df1;
+  }
+  
+  /* Right Section */
+  .footer-right {
+    flex: 1;
+    text-align: right;
+    min-width: 200px; /* Reduced width */
+  }
+  
+  .footer-right p {
+    margin-bottom: 10px; /* Less margin */
+    font-size: 13px;     /* Smaller text */
+    opacity: 0.8;
+  }
+  
+  /* Social Media Icons */
+  .social-icons {
+    margin-top: 5px;
+  }
+  
+  .social-icons a {
+    color: white;
+    font-size: 18px; /* Smaller icons */
+    margin-left: 8px;
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    background-color: #1b4172;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+  }
+  
+  .social-icons a:hover {
+    background-color: #007bff;
+    transform: scale(1.1);
+  }
+  
+  /* Divider Line */
+  .footer-divider {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 15px 0; /* Reduced margin */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .footer-left, .footer-right {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  
+    .social-icons a {
+      margin: 0 6px;
+    }
+  }
+  
+  
+  
+  .logo {
+    position: relative;
+    width: 275px;
+    height: auto;
+    z-index: 10;
+    mix-blend-mode: multiply; /* Blends the white logo into the background */
+  }
+  
+  /* Left Screen Styling */
+  .left-screen {
+    width: 50%;
+    height: 100%;
+    background: url('../images/leftscreenbg2.png') no-repeat center center;
+    background-size: cover; /* Ensures the image covers the container */
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    position: relative; /* Allows proper positioning for child elements */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Login Container */
+  .login-container {
+    width: 100%;
+    max-width: 320px;
+    background-color: #fff;
+    margin-top: 100px;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border: 2px solid transparent;
+    background-image: linear-gradient(#fff, #fff),
+    linear-gradient(to right, #118df1, #2575fc); /* Gradient border */
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+  
+  .login-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    background-image: linear-gradient(#f9f9f9, #f9f9f9),
+    linear-gradient(to right, #0e2f66, #2575fc);
+  }
+  
+  /* Heading Styling */
+  h2 {
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Form Styling */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Label Styling */
+  label {
+    text-align: left;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #555;
+    font-weight: 500;
+  }
+  
+  /* Input Fields Styling */
+  input {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+  
+  input:focus {
+    border-color: #007bff;
+    background-color: #eef7ff;
+    outline: none;
+  }
+  
+  /* Button Styling */
+  button.login-btn {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 200px; /* Adjust the width as needed */
+    margin: 0 auto; /* Center the button horizontally */
+    display: block; /* Make the button a block-level element */
+  }
+  
+  button.login-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+  }
+  
+  .password-container {
+    position: relative;
+  }
+  
+  .password-container input {
+    width: 100%;
+    padding-right: 40px;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+  }
+  
+  
+  /* Forgot Password Link */
+  .forgot-password {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .forgot-password:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+  
+  /* Create Account Link */
+  .create-account {
+    margin-top: 15px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .create-account a {
+    color: #007bff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .create-account a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+  
+  /* Right Screen (Slideshow) */
+  .right-screen {
+    width: 50%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .slideshow-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: relative;
+  }
+  
+      /* Slideshow Container */
+      .slideshow-container {
+        position: relative;
+        max-width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+  
+      .slide {
+        display: none;
+        width: 100%;
+        height: 100vh;
+        object-fit: cover;
+      }
+  
+      /* Navigation Buttons */
+      .prev, .next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0,0,0,0.5);
+        color: white;
+        padding: 12px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+  
+      .prev:hover, .next:hover {
+        background-color: rgba(0,0,0,0.8);
+      }
+  
+      .prev {
+        left: 20px;
+      }
+  
+      .next {
+        right: 20px;
+      }
+  
+      /* Dots (Indicators) */
+      .dot-container {
+        position: absolute;
+        bottom: 15px;
+        width: 100%;
+        text-align: center;
+      }
+  
+      .dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin: 0 5px;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+  
+      .active, .dot:hover {
+        background-color: #ffffff;
+      }
+  
+  .pasig-logo img {
+    display: none;
+  }
+  
+  /* Responsive Design */
+  
+  /* Tablets (768px and below) */
+  @media (max-width: 768px) {
+    .split-screen {
+      flex-direction: column;
+      height: 100vh; /* Set the container height to fill the viewport */
+    }
+  
+    .left-screen, .right-screen {
+      width: 100%;
+    }
+    
+    .right-screen {
+      display: none; /* Hide the right screen for mobile responsiveness */
+    }
+  
+    .left-screen {
+      background-size: contain; /* Ensures the image covers the entire container */
+      background: url('images/mobilebackground2.png') no-repeat center center;
+      height:100vh; /* Set the left screen to fill the viewport height */
+      width: 100%; /* Ensure it fills the container width */
+      padding:0;
+    }
+    
+    
+  
+    .login-container {
+      max-width: 50%;
+      padding: 20px;
+      height: auto; /* Ensure the login container adjusts based on content */
+    }
+  
+    .login-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      background-image: linear-gradient(#f9f9f9, #f9f9f9),
+        linear-gradient(to right, #0e2f66, #2575fc);
+    }
+  
+    /* Forgot Password Link */
+    .forgot-password {
+      display: inline-block; /* Change from 'block' to 'inline-block' */
+      margin-top: 8px;
+      font-size: 12px;
+      color: #007bff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      margin-left: auto; /* Aligns the link to the center */
+      margin-right: auto; /* Aligns the link to the center */
+    }
+  
+    .forgot-password:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+    
+  /* Style for the Logo Container */
+  .logo-container {
+    display: flex; /* Use flexbox to position the logos side by side */
+    align-items: center; /* Align both logos vertically in the center */
+    justify-content: flex-start; /* Position the logos starting from the left */
+    gap: 20px; /* Optional: Add space between the logos */
+  }
+  
+  /* Style for the first logo (Electronic Service Queuing) */
+  .logo {
+    width: 200px; /* Adjust the width as needed */
+    height: auto; /* Keep aspect ratio intact */
+    object-fit: contain; /* Ensure the image fits within its container */
+  }
+  
+  /* Style for the Pasig logo */
+  .pasig-logo img {
+    display:inline;
+    width: 140px; /* Adjust the width for the Pasig logo */
+    height: auto; /* Keep aspect ratio intact */
+    object-fit: contain; /* Ensure the image fits within its container */
+  }
+  
+  
+  }
+  
+  /* Mobile Devices (480px and below) */
+  @media (max-width: 480px) {
+    .top-navigation {
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: #118df1;
+      padding: 10px;
+      height: 50px; /* Set a fixed height for the top navigation */
+    }
+  }

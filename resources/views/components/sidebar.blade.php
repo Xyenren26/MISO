@@ -35,13 +35,6 @@
             <li class="{{ Request::is('report') ? 'active' : '' }}"><a href="{{ route('report') }}"><i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span></a></li>
             <li class="{{ Request::is('audit_logs') ? 'active' : '' }}"><a href="{{ route('audit_logs') }}"><i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span></a></li>
         </ul>
-
-        <!-- Social Media Icons -->
-        <div class="social-icons">
-            <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-            <a href="https://yourwebsite.com" target="_blank" class="social-icon"><i class="fas fa-globe"></i></a>
-        </div>
     </div>
 
     <script src="{{ asset('js/Sidebar_Script.js') }}"></script>
