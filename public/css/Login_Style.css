@@ -384,6 +384,15 @@
     display: none;
   }
   
+  .error-list {
+    list-style-type: none;  /* Removes the dot */
+    padding-left: 0;        /* Removes the default left padding for the list */
+  }
+  
+  .error-list li {
+    color: red;            
+    font-size: 14px;        
+  }
   /* Responsive Design */
   
   /* Tablets (768px and below) */

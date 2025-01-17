@@ -63,11 +63,6 @@
             <span class="icon">➕</span> Add Ticket
         </button>
     </div>
-
-    <!-- Refresh Button -->
-    <button class="refresh" onclick="window.location.reload();">
-        <span class="icon">&#x21bb;</span>
-    </button>
 </div>
 
 <!-- Modal for Creating a New Ticket -->

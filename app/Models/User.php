@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -17,6 +15,8 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
+     protected $primaryKey = 'employee_id';
     protected $fillable = [
         'employee_id',
         'first_name',
@@ -27,6 +27,7 @@ class User extends Authenticatable
         'phone_number',
         'username',
         'account_type',
+        'status',
     ];
 
     /**
@@ -38,6 +39,26 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * Get the name of the column used for authentication.
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'employee_id'; // Tell Laravel to use username as the unique identifier
+    }
+
+    /**
+     * Get the password for the authentication.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
 
     /**
      * Get the attributes that should be cast.

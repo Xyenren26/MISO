@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>ELECTRONIC SERVICE QUEUING MANAGEMENT SYSTEM</title>
   <link rel="stylesheet" href="{{ asset('css/Login_Style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
@@ -22,19 +23,39 @@
 
       <div class="login-container">
         <h2>Login</h2>
-        <form>
-          <label for="email">Username</label>
-          <input type="email" id="email" placeholder="Enter your Username" required>
+        @if(session('success'))
+          <div class="alert alert-success">
+              {{ session('success') }}
+          </div>
+        @endif
+
+         <!-- Display error messages -->
+        @if($errors->any())
+          <div class="alert alert-danger">
+            <ul class="error-list">
+              @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
+
+
+        <form action="{{ route('login.authenticate') }}" method="POST">
+          @csrf <!-- CSRF token for protection -->
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" placeholder="Enter your Username" required>
 
           <label for="password">Password</label>
           <div class="password-container">
-            <input type="password" id="password" placeholder="Enter your password" required>
-            <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+              <input type="password" name="password" id="password" placeholder="Enter your password" required>
+              <i class="fas fa-eye toggle-password" id="togglePassword"></i>
           </div>
 
           <button type="submit" class="login-btn">Login</button>
-          <a href="forgotpass.html" class="forgot-password">Forgot Password?</a>
-        </form>
+          
+      </form>
+      <a href="forgotpass.html" class="forgot-password">Forgot Password?</a>
         <div class="create-account">
           <span>Don't have an account?</span>
           <a href="/signup">Create an account</a> <!-- Link to Sign Up page -->

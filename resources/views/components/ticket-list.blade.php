@@ -21,6 +21,7 @@
                 <td>{{ ucfirst($ticket->status) }}</td>
                 <td>
                     <button class="action-button">View</button>
+                    <button class="action-button">Remarks</button>
                 </td>
             </tr>
         @endforeach

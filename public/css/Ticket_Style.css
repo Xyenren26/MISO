@@ -247,3 +247,23 @@
     background-color: #003067;
     color: white;
 }
+
+.action-button {
+    border: 2px solid #003067; /* Add border on hover */
+    color: #003067; /* Text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 15px; /* Spacing */
+    font-size: 14px; /* Font size */
+    font-family: Arial, sans-serif; /* Font style */
+    cursor: pointer; /* Pointer cursor */
+    transition: all 0.3s ease; /* Smooth hover effect */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  }
+
+  .action-button:hover {
+    background-color: #003067; /* Hover background color */
+    color: white; /* Hover text color */
+    border: 2px solid #003067; /* Add border on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow */
+  }

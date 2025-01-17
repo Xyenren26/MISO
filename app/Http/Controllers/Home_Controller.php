@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Ticket;
-use App\Models\DeviceManagement; // Import the model
+use App\Models\DeviceManagement;
+use Illuminate\Support\Facades\Log;
 
 class Home_Controller extends Controller
 {
     public function showHome()
     {
-        // Fetch counts for tickets by status
+        Log::info('Home page access attempt:', ['user' => Auth::user()]);
+
+        // Fetch ticket counts by status
         $ticketCountsByStatus = [
             'in-progress' => Ticket::where('status', 'in-progress')->count(),
             'completed' => Ticket::where('status', 'completed')->count(),
@@ -18,7 +22,7 @@ class Home_Controller extends Controller
             'technical-report' => Ticket::where('status', 'technical-report')->count(),
         ];
 
-        // Fetch counts for pending tickets by priority
+        // Fetch pending tickets by priority
         $pendingTickets = Ticket::select('priority', \DB::raw('count(*) as total'))
             ->where('status', 'in-progress')
             ->groupBy('priority')
@@ -26,29 +30,29 @@ class Home_Controller extends Controller
             ->pluck('total', 'priority')
             ->toArray(); // Convert to array for easier manipulation
 
-        // Fetch counts for solved tickets by priority
+        // Fetch solved tickets by priority
         $solvedTickets = Ticket::select('priority', \DB::raw('count(*) as total'))
             ->where('status', 'completed')
             ->groupBy('priority')
             ->get()
             ->pluck('total', 'priority')
-            ->toArray(); // Convert to array for easier manipulation
+            ->toArray();
 
-        // Fetch counts for endorsed tickets by priority
+        // Fetch endorsed tickets by priority
         $endorsedTickets = Ticket::select('priority', \DB::raw('count(*) as total'))
             ->where('status', 'endorsed')
             ->groupBy('priority')
             ->get()
             ->pluck('total', 'priority')
-            ->toArray(); // Convert to array for easier manipulation
+            ->toArray();
 
-        // Fetch counts for technical reports by priority
+        // Fetch technical report tickets by priority
         $technicalReports = Ticket::select('priority', \DB::raw('count(*) as total'))
             ->where('status', 'technical-report')
             ->groupBy('priority')
             ->get()
             ->pluck('total', 'priority')
-            ->toArray(); // Convert to array for easier manipulation
+            ->toArray();
 
         // Prepare data arrays for the charts
         $priorities = ['urgent', 'semi-urgent', 'non-urgent'];
@@ -57,13 +61,25 @@ class Home_Controller extends Controller
         $endorsedData = $this->prepareChartData($priorities, $endorsedTickets);
         $technicalReportData = $this->prepareChartData($priorities, $technicalReports);
 
-        // Fetch the count of "In Repairs" and "Repaired" devices
+        // Fetch the count of devices in repairs and repaired
         $inRepairsCount = DeviceManagement::where('status', 'in-repairs')->count();
         $repairedCount = DeviceManagement::where('status', 'repaired')->count();
 
-        return view('home', compact('ticketCountsByStatus','pendingData', 'solvedData', 'endorsedData', 'technicalReportData','inRepairsCount','repairedCount'));
+        
+
+        // Return the view with all the data
+        return view('home', compact(
+            'ticketCountsByStatus', 
+            'pendingData', 
+            'solvedData', 
+            'endorsedData', 
+            'technicalReportData', 
+            'inRepairsCount', 
+            'repairedCount'
+        ));
     }
 
+    // Prepare data for charts, ensuring that we match the priorities
     private function prepareChartData($priorities, $data)
     {
         // Normalize and ensure the priorities match (case-insensitive)
