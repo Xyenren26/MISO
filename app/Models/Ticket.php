@@ -15,11 +15,11 @@ class Ticket extends Model
     // Specify the primary key for the table
     protected $primaryKey = 'control_no';
 
-    // Indicates if the IDs are auto-incrementing
-    public $incrementing = true;
+
+    public $incrementing = false;
 
     // Specify the primary key type
-    protected $keyType = 'int';
+    protected $keyType = 'string';
 
     // Mass-assignable attributes
     protected $fillable = [
@@ -35,6 +35,8 @@ class Ticket extends Model
         'status',
         'time_in',
         'time_out',
+        'created_at',
+        'created_at',
     ];
 
     // Timestamps (created_at and updated_at) are enabled by default

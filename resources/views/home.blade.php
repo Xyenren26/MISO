@@ -31,7 +31,7 @@
                 <div class="metrics-box">
                     <h4>Pending Ticket Request</h4>
                     <div class="metrics-content">
-                        <p>{{ $ticketCountsByStatus['in-progress'] ?? 0 }}</p> <!-- Pending count -->
+                        <p id="pendingTicketCount">{{ $ticketCountsByStatus['in-progress'] ?? 0 }}</p> <!-- Pending count -->
                         <canvas id="pendingTicketGraph"></canvas> <!-- Bar graph -->
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                 <div class="metrics-box">
                     <h4>Solved Ticket Request</h4>
                     <div class="metrics-content">
-                        <p>{{ $ticketCountsByStatus['completed'] ?? 0 }}</p> <!-- Solved count -->
+                        <p id="solvedTicketCount">{{ $ticketCountsByStatus['completed'] ?? 0 }}</p> <!-- Solved count -->
                         <canvas id="solvedTicketGraph"></canvas>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                 <div class="metrics-box">
                     <h4>Endorsed Ticket</h4>
                     <div class="metrics-content">
-                        <p>{{ $ticketCountsByStatus['endorsed'] ?? 0 }}</p> <!-- Endorsed count -->
+                        <p id="endorsedTicketCount">{{ $ticketCountsByStatus['endorsed'] ?? 0 }}</p> <!-- Endorsed count -->
                         <canvas id="endorsedTicketGraph"></canvas>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                 <div class="metrics-box">
                     <h4>Technical Report</h4>
                     <div class="metrics-content">
-                        <p>{{ $ticketCountsByStatus['technical-report'] ?? 0 }}</p> <!-- Technical report count -->
+                        <p id="technicalReportCount">{{ $ticketCountsByStatus['technical-report'] ?? 0 }}</p> <!-- Technical report count -->
                         <canvas id="technicalReportGraph"></canvas>
                     </div>
                 </div>
@@ -69,6 +69,11 @@
                 <!-- Graph Summary Performance -->
                 <div class="graph-container">
                     <h3>Personal Performance</h3>
+                    <!-- Month Picker inside Graph -->
+                    <form id="monthForm" action="{{ route('home') }}" method="GET">
+                        <label for="monthPicker" class="month-label">Select Month: </label>
+                        <input type="month" id="monthPicker" name="month" class="month-picker" onchange="updatePerformanceGraph()">
+                    </form>
                     <canvas id="ticketPerformanceGraph"></canvas>
                 </div>
 
@@ -82,67 +87,34 @@
     </div>
 </div>
 
-<!-- Include your JavaScript -->
-<script src="{{ asset('js/Home_Script.js') }}"></script>
-
 <script>
-    // Labels and colors
-    const labels = ['Urgent', 'Semi-Urgent', 'Non-Urgent'];
-    const backgroundColors = ['#FF0000', '#FFA500', '#008000']; // Red, Orange, Green
-    const borderColors = ['#FF0000', '#FFA500', '#008000']; // Red, Orange, Green
 
-    // Data passed from the backend
+    // Keep the PHP variables in the Blade file
     const pendingData = @json($pendingData);
     const solvedData = @json($solvedData);
     const endorsedData = @json($endorsedData);
     const technicalReportData = @json($technicalReportData);
-
-    // Initialize charts
-    createVerticalBarChart(document.getElementById('pendingTicketGraph'), pendingData, labels, backgroundColors, borderColors);
-    createVerticalBarChart(document.getElementById('solvedTicketGraph'), solvedData, labels, backgroundColors, borderColors);
-    createVerticalBarChart(document.getElementById('endorsedTicketGraph'), endorsedData, labels, backgroundColors, borderColors);
-    createVerticalBarChart(document.getElementById('technicalReportGraph'), technicalReportData, labels, backgroundColors, borderColors);
     
-    const inRepairs = @json($inRepairsCount); // "In Repairs" devices
-    const repaired = @json($repairedCount);   // "Repaired" devices
+    const inRepairs = @json($inRepairsCount);
+    const repaired = @json($repairedCount);
+
+    const solvedDataByDay = @json($solvedDataByDay);
+    const technicalReportDataByDay = @json($technicalReportDataByDay);
+    const ticketCountsByStatus = @json($ticketCountsByStatus);
+    
+    console.log('Solved Data by Day:', @json($solvedDataByDay));
+    console.log('Technical Report Data by Day:', @json($technicalReportDataByDay));
 
 
-// Calculate the total number of devices
-var totalDevices = inRepairs + repaired;
 
-// Completing the Device Management Doughnut Chart
-var ctx2 = document.getElementById('deviceManagementGraph').getContext('2d');
-var deviceManagementGraph = new Chart(ctx2, {
-    type: 'doughnut', // Set chart type to doughnut
-    data: {
-        labels: ['In Repairs', 'Repaired'], // Labels for the chart sections
-        datasets: [{
-            data: [inRepairs, repaired], // Data for in repairs and repaired
-            backgroundColor: ['#FF6347', '#32CD32'], // Red and Green colors
-            borderColor: '#fff', // White border color for the chart sections
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        return tooltipItem.label + ': ' + tooltipItem.raw;
-                    }
-                }
-            }
-        }
-    }
-});
-
-
+    // Format the ticket count values
+    document.getElementById("pendingTicketCount").textContent = formatNumber(@json($ticketCountsByStatus['in-progress'] ?? 0));
+    document.getElementById("solvedTicketCount").textContent = formatNumber(@json($ticketCountsByStatus['completed'] ?? 0));
+    document.getElementById("endorsedTicketCount").textContent = formatNumber(@json($ticketCountsByStatus['endorsed'] ?? 0));
+    document.getElementById("technicalReportCount").textContent = formatNumber(@json($ticketCountsByStatus['technical-report'] ?? 0));
 </script>
 
-
+<!-- to me huwag mong galawain lagi mo kasing namomove-->
+<script src="{{ asset('js/Home_Script.js') }}"></script>
 </body>
 </html>

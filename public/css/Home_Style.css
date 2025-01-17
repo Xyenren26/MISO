@@ -183,6 +183,38 @@ canvas {
     border-radius: 8px; /* Rounded corners for the canvas */
 }
 
+/* Styling for the label */
+.month-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #003067; /* A deep blue color */
+    margin-right: 10px; /* Spacing between the label and the input */
+    display: inline-block;
+}
+
+/* Styling for the month picker input */
+.month-picker {
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #003067; /* Deep blue border */
+    border-radius: 5px;
+    background-color: #f7f7f7; /* Light background for the input */
+    color: #003067; /* Matching text color */
+    transition: border-color 0.3s ease-in-out;
+    margin-bottom: 10px;
+}
+
+/* Focus state for the month picker input */
+.month-picker:focus {
+    outline: none;
+    border-color: #0056b3; /* Lighter blue on focus */
+    background-color: #ffffff; /* White background when focused */
+}
+
+/* Hover effect for the input */
+.month-picker:hover {
+    border-color: #0056b3;
+}
 /* Adjusting for screen size */
 @media (max-width: 768px) {
     .metrics-container {

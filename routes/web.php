@@ -14,10 +14,12 @@ use App\Http\Controllers\Report_Controller;
 Route::middleware(['web'])->group(function() {
 Route::get('/', [Login_Controller::class, 'showLogin'])->name('login');
 Route::get('/login', [Login_Controller::class, 'showLogin']);
-Route::post('/login', [Login_Controller::class, 'authenticate'])->name('login.authenticate');
+Route::middleware('ClearExpiredSession')->post('/login', [Login_Controller::class, 'authenticate'])->name('login.authenticate');
 
 Route::get('/signup', [Login_Controller::class, 'showSignup'])->name('signup');
 Route::post('/signup', [Signup_Controller::class, 'storeSignup'])->name('signup.store');
+
+Route::post('/logout', [Login_Controller::class, 'logout'])->name('logout');
 });
 
 // Routes for technical-support and administrator (protected by 'auth' middleware)

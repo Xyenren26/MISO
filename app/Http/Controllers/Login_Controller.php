@@ -89,4 +89,33 @@ class Login_Controller extends Controller
     ])->withInput();
 }
 
+public function logout()
+{
+    $user = Auth::user();
+
+    if ($user) {
+        $user->session_id = null;
+        $user->remember_token = null; // Clear the remember token
+        $user->last_activity = null;
+        $user->save();
+
+        // Remove the session from the database based on user_id (EmployeeID)
+        \DB::table('sessions')
+            ->where('user_id', $user->employee_id) // Assuming user_id in the sessions table maps to EmployeeID
+            ->delete();
+    }
+
+    // Log the user out
+    Auth::logout();
+
+    // Clear all session data
+    session()->flush();
+
+    // Optionally regenerate the session to avoid session fixation attacks
+    session()->regenerate();
+
+    // Remove the remember_me cookie
+    return redirect()->route('login')->withCookie(\Cookie::forget('remember_web'));
+}
+
 }
