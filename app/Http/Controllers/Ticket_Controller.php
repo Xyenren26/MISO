@@ -26,7 +26,7 @@ class Ticket_Controller extends Controller
             ->paginate(20); // You can change the 20 if you'd like
     }
 
-    $techSupport = User::where('role', 'technical-support')->get();
+    $techSupport = User::where('account_type', 'technical_support')->get();
     $lastTicket = Ticket::orderBy('control_no', 'desc')->first();
     $nextControlNo = $lastTicket ? $lastTicket->control_no + 1 : 1;
     $devices = Ticket::distinct()->pluck('device');

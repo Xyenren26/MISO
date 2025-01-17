@@ -104,6 +104,20 @@ body {
   outline: none;
 }
 
+.form-group select {
+  padding: 8px; /* Reduced padding for input fields */
+  font-size: 0.95rem; /* Slightly smaller font size */
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Softer corners */
+  transition: border-color 0.3s;
+  margin-bottom: 8px; /* Reduced spacing */
+}
+
+.form-group select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
 /* Checkbox Group */
 .checkbox-group {
     display: flex; /* Aligns items horizontally */

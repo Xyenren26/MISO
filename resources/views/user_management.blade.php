@@ -61,7 +61,7 @@
                             <td>{{ $user->employee_id }}</td>
                             <td>{{ $user->first_name . ', ' . $user->last_name }}</td>
                             <td>{{ $user->department }}</td>
-                            <td>{{ $user->role }}</td>
+                            <td>{{ $user->account_type }}</td>
                             <td>{{ $user->status }}</td>
                             <td>
                                 <button class="action-button settings">

@@ -83,15 +83,38 @@ function checkPassword(input) {
   return true;
 }
 
-// Check if privacy policy is agreed
-function checkPrivacyPolicy(input) {
-  if (!input.checked) {
-    displayError(input, 'You must agree to the Privacy Policy');
-    return false;
-  }
-  clearError(input);
-  return true;
-}
+document.addEventListener('DOMContentLoaded', function() {
+  const employeeIDInput = document.getElementById('employee-id');
+  const errorMessage = document.getElementById('error-message');
+
+  employeeIDInput.addEventListener('input', function() {
+      // Remove any non-numeric characters as the user types
+      employeeIDInput.value = employeeIDInput.value.replace(/[^0-9]/g, '');
+
+      const employeeIDValue = employeeIDInput.value;
+
+      // Check if the value is exactly a 7-digit number
+      const isValid = /^\d{7}$/.test(employeeIDValue);
+
+      if (!isValid) {
+          errorMessage.style.display = 'inline';  // Show error message
+          employeeIDInput.style.borderColor = 'red';  // Optional: change border color to red
+      } else {
+          errorMessage.style.display = 'none';  // Hide error message
+          employeeIDInput.style.borderColor = 'green';  // Optional: change border color to green
+      }
+  });
+
+  // Optional: Add a submit handler for the form to ensure validation before submitting
+  document.querySelector('form').addEventListener('submit', function(e) {
+      const employeeIDValue = employeeIDInput.value;
+      if (!/^\d{7}$/.test(employeeIDValue)) {
+          e.preventDefault();  // Prevent form submission
+          errorMessage.style.display = 'inline';  // Show error message if not valid
+      }
+  });
+});
+
 
 // Suggest password strength dynamically
 password.addEventListener('input', () => {
@@ -114,22 +137,6 @@ password.addEventListener('input', () => {
   }
 });
 
-// Form submit event
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  const isFormValid =
-    checkRequired([firstName, lastName, department, employeeId, email, password]) &&
-    checkEmail(email) &&
-    checkPassword(password) &&
-    checkPrivacyPolicy(privacyPolicy);
-
-  if (isFormValid) {
-    // Submit the form data
-    alert('Account created successfully!');
-    form.reset();
-  }
-});
 
 // Get modal elements
 const modal = document.getElementById("privacy-policy-modal");
