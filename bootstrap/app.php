@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\CustomAuthenticate;
 use App\Http\Middleware\UpdateLastActivity; // Import your middleware
+use App\Http\Middleware\ClearExpiredSession; // Import your middleware
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'UpdateLastActivity'=> \App\Http\Middleware\UpdateLastActivity::class,
             'CustomAuthenticate' => \App\Http\Middleware\CustomAuthenticate::class,  // Alias for custom authentication middleware
+            'ClearExpiredSession' => \App\Http\Middleware\ClearExpiredSession::class,  // Alias for custom authentication middleware
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -3,11 +3,9 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Auth\Notifications\VerifyEmail;
 
 class WelcomeEmail extends Mailable
 {
@@ -15,26 +13,23 @@ class WelcomeEmail extends Mailable
 
     public $user;
 
-    /**
-     * Create a new message instance.
-     *
-     * @param $user
-     */
     public function __construct($user)
     {
         $this->user = $user;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build()
     {
-        return $this->view('emails.welcome')
+        $verificationUrl = route('verification.verify', [
+            'id' => $this->user->getKey(),  // User ID
+            'hash' => sha1($this->user->getEmailForVerification())  // Hashed email for verification
+        ]);
+
+        return $this->subject('Welcome to Our System!')
+                    ->view('emails.welcome')
                     ->with([
-                        'name' => $this->user->first_name,
+                        'name' => $this->user->name,
+                        'verification_url' => $verificationUrl,
                     ]);
     }
 }

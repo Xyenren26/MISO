@@ -191,6 +191,7 @@
 .tickets-table th {
     color: #003067;
     border-bottom: 2px solid #003067;
+    text-align: center
 }
 
 .tickets-table td {
@@ -208,11 +209,43 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 550px;
+    height: 100px; /* Adjust as necessary */
     font-family: monospace;
     font-size: 24px;
     color: #003067;
     text-align: center;
+    width: 100%; /* Ensure it takes up full table width */
+    text-align: center; /* Horizontally center text */
+}
+
+/* Priority color classes */
+.priority-urgent {
+    color: #ff0000; /* Red for urgent */
+}
+
+.priority-semi-urgent {
+    color: #ff9900; /* Orange for semi-urgent */
+}
+
+.priority-non-urgent {
+    color: #32cd32; /* Green for non-urgent */
+}
+
+/* Status color classes */
+.status-endorsed {
+    color: #007bff; /* Blue for endorsed */
+}
+
+.status-completed {
+    color: #28a745; /* Green for completed */
+}
+
+.status-in-progress {
+    color: #ffc107; /* Yellow for in-progress */
+}
+
+.status-technical-report {
+    color: #6f42c1; /* Purple for technical-report */
 }
 
 /* Results Count */
@@ -223,6 +256,7 @@
     font-size: 14px;
     color: #003067;
 }
+
 
 /* Pagination Styling */
 .pagination-container {
