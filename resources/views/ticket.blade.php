@@ -28,6 +28,9 @@
                 <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
                     <i class="fas fa-arrow-right"></i> Endorsed
                 </button>
+                <button class="tab-button" data-status="technical-report" onclick="filterTickets('technical-report', event)">
+                <i class="fas fa-times-circle"></i> Technical-Report
+                </button>
             </div>
         </div>
 
