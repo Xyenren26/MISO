@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->integers('employee_id'); // Primary key renamed
+            $table->integer('employee_id'); // Fixed the column definition
             $table->string('first_name'); // First name
             $table->string('last_name'); // Last name
             $table->string('email')->unique(); // Email
@@ -23,11 +23,12 @@ class CreateUsersTable extends Migration
             $table->string('department')->nullable(); // Department
             $table->string('phone_number')->nullable(); // Phone number
             $table->string('username')->unique(); // Username
-            $table->enum('account_type', ['administrator', 'technical_support', 'end_user'])->default('end_user'); // Account type
+            $table->enum('account_type', ['administrator', 'technical_support', 'end_user']); // Account type
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->rememberToken(); // Remember token
-            $table->string('session_id'); // Created at and updated at
+            $table->string('session_id'); // Session ID
             $table->timestamps(); // Created at and updated at
+            $table->timestamp('last_activity')->nullable();
         });
     }
 

@@ -16,16 +16,16 @@
         <div class="header">
             <!-- Tabs Section -->
             <div class="tabs">
-                <button class="tab-button active" onclick="filterTickets('recent', event)">
+                <button class="tab-button active" data-status="recent" onclick="filterTickets('recent', event)">
                     <i class="fas fa-laptop"></i> Recent
                 </button>
-                <button class="tab-button" onclick="filterTickets('in-progress', event)">
+                <button class="tab-button" data-status="in-progress" onclick="filterTickets('in-progress', event)">
                     <i class="fas fa-tools"></i> In-Progress
                 </button>
-                <button class="tab-button" onclick="filterTickets('complete', event)">
+                <button class="tab-button" data-status="completed" onclick="filterTickets('completed', event)">
                     <i class="fas fa-check-circle"></i> Solved
                 </button>
-                <button class="tab-button" onclick="filterTickets('endorsed', event)">
+                <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
                     <i class="fas fa-arrow-right"></i> Endorsed
                 </button>
             </div>
@@ -42,17 +42,17 @@
     <!-- Space Between Search and Filter/Add New Buttons -->
     <div class="spacer"></div>
 
-    <!-- Filter and Add New Ticket Section (Right side) -->
+   <!-- Filter and Add New Ticket Section (Right side) -->
     <div class="filter-section">
         <div class="dropdown">
             <button class="dropdown-button">
                 <i class="fas fa-filter"></i> Filter Record <span class="arrow">&#x25BC;</span>
             </button>
             <div class="dropdown-content">
-                <a href="{{ url()->current() }}">All Devices</a>
-                @foreach ($devices as $device)
-                    <a href="{{ url()->current() }}?device={{ urlencode($device) }}">{{ $device }}</a>
-                @endforeach
+                <a href="javascript:void(0);" onclick="filterByPriority(null)">All Priorities</a>
+                <a href="javascript:void(0);" onclick="filterByPriority('urgent')">Urgent</a>
+                <a href="javascript:void(0);" onclick="filterByPriority('semi-urgent')">Semi-Urgent</a>
+                <a href="javascript:void(0);" onclick="filterByPriority('non-urgent')">Non-Urgent</a>
             </div>
         </div>
     </div>
@@ -68,7 +68,9 @@
 <!-- Modal for Creating a New Ticket -->
 <div id="ticketFormModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <x-ticket-form :techSupport="$techSupport" :nextControlNo="$nextControlNo" />
+        <!-- Ensure data is passed to the component correctly -->
+        @include('components.ticket-form', ['technicalSupports' => $technicalSupports, 'formattedControlNo' => $formattedControlNo])
+
     </div>
 </div>
 
@@ -99,11 +101,6 @@
 
     </div>
 </div>
-<script>
-    function filterTickets(status) {
-        window.location.href = `?filter=${status}`;
-    }
-</script>
 <script src="{{ asset('js/Ticket_Script.js') }}"></script>
 </body>
 </html>

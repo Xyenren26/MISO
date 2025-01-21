@@ -12,16 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tickets', function (Blueprint $table) {
-            $table->id('control_no'); // Auto-incrementing primary key
+            $table->string('control_no')->primary(); // control_no as the primary key (if not auto-incrementing)
             $table->unsignedBigInteger('employee_id'); // Foreign key to users table (general employee)
             $table->unsignedBigInteger('technical_support_id')->nullable(); // Foreign key to users table (specific to technical-support role)
             $table->string('name');
             $table->string('department');
             $table->enum('priority', ['urgent', 'semi-urgent', 'non-urgent']);
-            $table->string('device');
             $table->text('concern');
             $table->text('remarks')->nullable();
-            $table->string('technical_support_name')->nullable();
+            $table->string('technical_support_name')->nullable(); // Name of technical support (just a string)
             $table->enum('status', ['endorsed', 'completed', 'in-progress', 'technical-report'])->default('in-progress');
             $table->timestamp('time_in')->useCurrent(); // Default to current time
             $table->timestamp('time_out')->nullable(); // Nullable field

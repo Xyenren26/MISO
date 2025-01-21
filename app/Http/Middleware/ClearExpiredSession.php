@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\User;
 
 class ClearExpiredSession
 {
@@ -25,13 +26,12 @@ class ClearExpiredSession
                 
                     if ($lastActivity->diffInMinutes(now()) >= $sessionLifetime) {
                         // Clear session_id and last_activity for expired sessions
-                        DB::table('last_activity')
+                        DB::table('users')
                             ->where('employee_id', $user->employee_id)
                             ->update([
                                 'session_id' => null,
                                 'remember_token' => null,
                                 'last_activity' => null,
-                                'time_in' => null,
                             ]);
                          // Remove the session from the database based on user_id (EmployeeID)
                         \DB::table('sessions')

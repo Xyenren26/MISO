@@ -13,98 +13,111 @@ use Illuminate\Support\Facades\DB;
 
 class Home_Controller extends Controller
 {
-    // Other code...
-
     public function showHome(Request $request)
     {
         Log::info('Home page access attempt:', ['user' => Auth::user()]);
+    
+        // Get the current or selected month and year
+        $selectedDate = $request->get('month', Carbon::now()->format('Y-m')); // Format: YYYY-MM
+        $selectedMonth = Carbon::parse($selectedDate)->format('m'); // Extract the month
+        $selectedYear = Carbon::parse($selectedDate)->format('Y');  // Extract the year
 
-        // Get the current month or selected month
-        $selectedMonth = Carbon::parse($request->get('month', Carbon::now()->format('Y-m')))->format('m');
-        $daysOfMonth = range(1, Carbon::createFromFormat('m', $selectedMonth)->daysInMonth);
+        // Days in the selected month
+        $daysOfMonth = range(1, Carbon::createFromDate($selectedYear, $selectedMonth)->daysInMonth);
 
-        // Fetch ticket counts by status for the currently logged-in user
+        // Ticket counts by status for the logged-in user
         $ticketCountsByStatus = [
             'in-progress' => Ticket::whereMonth('created_at', $selectedMonth)
+                ->whereYear('created_at', $selectedYear)
                 ->where('status', 'in-progress')
-                ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+                ->where('technical_support_id', Auth::user()->employee_id)
                 ->count(),
             'completed' => Ticket::whereMonth('created_at', $selectedMonth)
+                ->whereYear('created_at', $selectedYear)
                 ->where('status', 'completed')
-                ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+                ->where('technical_support_id', Auth::user()->employee_id)
                 ->count(),
             'endorsed' => Ticket::whereMonth('created_at', $selectedMonth)
+                ->whereYear('created_at', $selectedYear)
                 ->where('status', 'endorsed')
-                ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+                ->where('technical_support_id', Auth::user()->employee_id)
                 ->count(),
             'technical-report' => Ticket::whereMonth('created_at', $selectedMonth)
+                ->whereYear('created_at', $selectedYear)
                 ->where('status', 'technical-report')
-                ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+                ->where('technical_support_id', Auth::user()->employee_id)
                 ->count(),
         ];
 
-        // Fetch pending tickets by priority for the currently logged-in user
+        // Pending tickets by priority
         $pendingTickets = Ticket::select('priority', DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
             ->where('status', 'in-progress')
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->groupBy('priority')
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
 
-        // Fetch solved tickets by priority for the currently logged-in user
+        // Solved tickets by priority
         $solvedTickets = Ticket::select('priority', DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
             ->where('status', 'completed')
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->groupBy('priority')
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
 
-        // Fetch endorsed tickets by priority for the currently logged-in user
+        // Endorsed tickets by priority
         $endorsedTickets = Ticket::select('priority', DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
             ->where('status', 'endorsed')
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->groupBy('priority')
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
 
-        // Fetch technical report tickets by priority for the currently logged-in user
+        // Technical reports by priority
         $technicalReports = Ticket::select('priority', DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
             ->where('status', 'technical-report')
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->groupBy('priority')
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
 
-        // Prepare data arrays for the charts
+        // Chart data preparation
         $priorities = ['urgent', 'semi-urgent', 'non-urgent'];
         $pendingData = $this->prepareChartData($priorities, $pendingTickets);
         $solvedData = $this->prepareChartData($priorities, $solvedTickets);
         $endorsedData = $this->prepareChartData($priorities, $endorsedTickets);
         $technicalReportData = $this->prepareChartData($priorities, $technicalReports);
 
-        // Fetch the count of devices in repairs and repaired for the currently logged-in user
+        // Device management counts
         $inRepairsCount = DeviceManagement::whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
             ->where('status', 'in-repairs')
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->count();
         $repairedCount = DeviceManagement::whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
             ->where('status', 'repaired')
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->count();
 
-        // Fetch daily ticket performance for solved and technical reports with month filter for the logged-in user
+        // Daily ticket performance
         $dailySolvedTickets = Ticket::select(DB::raw('DAY(created_at) as day'), DB::raw('count(*) as total'))
-            ->where('status', 'completed')
             ->whereMonth('created_at', $selectedMonth)
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->whereYear('created_at', $selectedYear)
+            ->where('status', 'completed')
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->groupBy(DB::raw('DAY(created_at)'))
             ->orderBy(DB::raw('DAY(created_at)'))
             ->get()
@@ -112,16 +125,17 @@ class Home_Controller extends Controller
             ->toArray();
 
         $dailyTechnicalReports = Ticket::select(DB::raw('DAY(created_at) as day'), DB::raw('count(*) as total'))
-            ->where('status', 'technical-report')
             ->whereMonth('created_at', $selectedMonth)
-            ->where('technical_support_id', Auth::user()->employee_id) // Filter by logged-in user
+            ->whereYear('created_at', $selectedYear)
+            ->where('status', 'technical-report')
+            ->where('technical_support_id', Auth::user()->employee_id)
             ->groupBy(DB::raw('DAY(created_at)'))
             ->orderBy(DB::raw('DAY(created_at)'))
             ->get()
             ->pluck('total', 'day')
             ->toArray();
 
-        // Prepare data for the ticket performance graph
+        // Prepare data for daily performance charts
         $solvedDataByDay = $this->prepareChartDataForDays($daysOfMonth, $dailySolvedTickets);
         $technicalReportDataByDay = $this->prepareChartDataForDays($daysOfMonth, $dailyTechnicalReports);
 
@@ -136,11 +150,11 @@ class Home_Controller extends Controller
             'repairedCount',
             'solvedDataByDay',
             'technicalReportDataByDay',
-            'selectedMonth'
+            'selectedMonth',
+            'selectedYear'
         ));
     }
 
-    // Prepare data for charts, ensuring that we match the priorities
     private function prepareChartData($priorities, $data)
     {
         return array_map(function ($priority) use ($data) {
@@ -148,20 +162,14 @@ class Home_Controller extends Controller
         }, $priorities);
     }
 
-    // Helper function to prepare chart data by day (filling missing days with 0)
     private function prepareChartDataForDays($daysOfMonth, $dailyData)
     {
-        // Dynamically fill the data array based on the number of days in the selected month
         $dataByDay = array_fill_keys($daysOfMonth, 0);
-
         foreach ($dailyData as $day => $count) {
             if (isset($dataByDay[$day])) {
                 $dataByDay[$day] = $count;
             }
         }
-
-        // Return the final array for chart display
         return array_values($dataByDay);
     }
 }
-

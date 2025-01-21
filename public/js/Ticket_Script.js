@@ -1,59 +1,12 @@
+// Open the ticket form modal
 function openTicketFormModal() {
-    const modal = document.getElementById('ticketFormModal');
-    modal.style.display = 'block'; // Show the modal
+    document.getElementById('ticketFormModal').style.display = 'block';
 }
 
+// Close the ticket form modal
 function closeTicketFormModal() {
-    const modal = document.getElementById('ticketFormModal');
-    modal.style.display = 'none'; // Hide the modal
+    document.getElementById('ticketFormModal').style.display = 'none';
 }
-
-function filterTickets(status, event) {
-    // Prevent default action for the click event
-    event.preventDefault();
-
-    // Remove 'active' class from all tab buttons
-    const buttons = document.querySelectorAll('.tab-button');
-    buttons.forEach(button => button.classList.remove('active'));
-
-    // Add 'active' class to the clicked button
-    event.target.classList.add('active');
-
-    // Send AJAX request to the server to filter tickets based on the status
-    fetch(`/tickets/filter/${status}`)
-        .then(response => response.json())
-        .then(data => {
-            // Replace the content of the ticket list with the updated data
-            document.getElementById('ticket-list').innerHTML = data.html;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
-function filterTickets(status, event) {
-    // Prevent default action for the click event
-    event.preventDefault();
-
-    // Remove 'active' class from all tab buttons
-    const buttons = document.querySelectorAll('.tab-button');
-    buttons.forEach(button => button.classList.remove('active'));
-
-    // Add 'active' class to the clicked button
-    event.target.classList.add('active');
-
-    // Send AJAX request to the server to filter tickets based on the status
-    fetch(`/tickets/filter/${status}`)
-        .then(response => response.json())
-        .then(data => {
-            // Replace the content of the ticket list with the updated data
-            document.getElementById('ticket-list').innerHTML = data.html;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
-
-
 
 
 function updateTicketList(tickets) {
@@ -71,4 +24,60 @@ function updateTicketList(tickets) {
         ticketListContainer.appendChild(ticketItem);
     });
 }
+function filterTickets(status, event = null, priority = null) {
+    // Determine the active tab if an event is provided
+    if (event) {
+        // Remove the active class from all tab buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
 
+        // Add the active class to the clicked tab
+        event.target.classList.add('active');
+    }
+
+    // If no status is provided, use the active tab's status
+    const activeTab = document.querySelector('.tab-button.active');
+    if (!status && activeTab) {
+        status = activeTab.dataset.status; // Assuming tabs have a 'data-status' attribute
+    }
+
+    if (!status) {
+        console.error('No active tab or status detected.');
+        return;
+    }
+
+    // Build the URL for the AJAX request with status and optional priority
+    const url = `/filter-tickets/${status}` + (priority ? `?priority=${priority}` : '');
+
+    // Send AJAX request to filter tickets by status (and priority if provided)
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Update the ticket list with the new filtered tickets
+            document.getElementById('ticket-list').innerHTML = data.html;
+
+            // Update pagination (if pagination is included in the response)
+            const paginationContainer = document.querySelector('.pagination-container');
+            if (paginationContainer) {
+                paginationContainer.innerHTML = data.pagination;
+            }
+        })
+        .catch(error => console.error('Error fetching tickets:', error));
+}
+
+// Function to filter tickets by priority within the active tab
+function filterByPriority(priority) {
+    const activeTab = document.querySelector('.tab-button.active');
+    if (activeTab) {
+        const status = activeTab.dataset.status; // Assuming tabs have a 'data-status' attribute
+        filterTickets(status, null, priority);
+    } else {
+        console.error('No active tab detected.');
+    }
+}

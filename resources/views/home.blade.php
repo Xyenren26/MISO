@@ -72,7 +72,7 @@
                     <!-- Month Picker inside Graph -->
                     <form id="monthForm" action="{{ route('home') }}" method="GET">
                         <label for="monthPicker" class="month-label">Select Month: </label>
-                        <input type="month" id="monthPicker" name="month" class="month-picker" onchange="updatePerformanceGraph()">
+                        <input type="month" id="monthPicker" name="month" class="month-picker" max="" onchange="updatePerformanceGraph()" oninput="restrictFutureMonth(event)">
                     </form>
                     <canvas id="ticketPerformanceGraph"></canvas>
                 </div>

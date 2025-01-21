@@ -45,21 +45,30 @@ if (inRepairs === 0 && repaired === 0) {
 }
 
 
-// Update the Ticket Performance Graph based on month selection
+document.addEventListener('DOMContentLoaded', function () {
+    const monthPicker = document.getElementById('monthPicker');
+    const currentDate = new Date();
+    const maxMonth = currentDate.toISOString().slice(0, 7); // Format: YYYY-MM
+    monthPicker.setAttribute('max', maxMonth);
+});
+
+function restrictFutureMonth(event) {
+    const selectedMonth = event.target.value;
+    const maxMonth = event.target.getAttribute('max');
+    if (selectedMonth > maxMonth) {
+        event.target.value = maxMonth; // Revert to the max month if the user types a future month
+    }
+}
+
 function updatePerformanceGraph() {
     const selectedMonth = document.getElementById('monthPicker').value;
     console.log("Selected Month: " + selectedMonth);
 
-    // Update the form with the selected month and submit
-    const form = document.getElementById('monthForm');
-    const input = document.getElementById('monthPicker');
-    
-    // Set the form's month input value to the selected value
-    input.value = selectedMonth;
-    
     // Submit the form to reload the page with the new data
+    const form = document.getElementById('monthForm');
     form.submit();
 }
+
 // Function to format the number dynamically based on reports count
 function formatNumber(count) {
     if (count >= 1000000) {

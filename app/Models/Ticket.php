@@ -27,7 +27,6 @@ class Ticket extends Model
         'name',
         'department',
         'priority',
-        'device',
         'concern',
         'remarks',
         'technical_support_id',
