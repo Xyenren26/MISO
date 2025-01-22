@@ -9,28 +9,42 @@ use Illuminate\Support\Facades\DB;
 
 class Ticket_Controller extends Controller
 {
-
-public function showTicket()
-{
-    // Fetch tickets and technical support users
-    $status = request('filter');
-    $tickets = Ticket::orderBy('created_at', 'desc')->paginate(20);
-
-    $technicalSupports = User::where('account_type', 'technical_support')->get();
-
-    // Get the current year for control number formatting
-    $currentYear = now()->year;
-    $lastTicket = Ticket::whereYear('created_at', $currentYear)
-        ->orderBy('control_no', 'desc')
-        ->first();
-
-    // Calculate the next control number
-    $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
-    $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
-
-    // Pass 'formattedControlNo' to the view
-    return view('ticket', compact('tickets', 'technicalSupports', 'formattedControlNo', ));
-}
+    public function showTicket()
+    {
+        // Get the current logged-in user
+        $user = auth()->user();
+    
+        // Ensure the user is a technical support user
+        if ($user->account_type !== 'technical_support') {
+            abort(403, 'Unauthorized access');
+        }
+    
+        // Fetch tickets assigned to the logged-in technical support user
+        $status = request('filter');
+        $tickets = Ticket::where('technical_support_id', $user->employee_id)
+            ->when($status, function ($query, $status) {
+                return $query->where('status', $status);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+    
+        // Fetch all technical support users
+        $technicalSupports = User::where('account_type', 'technical_support')->get();
+    
+        // Get the current year for control number formatting
+        $currentYear = now()->year;
+        $lastTicket = Ticket::whereYear('created_at', $currentYear)
+            ->orderBy('control_no', 'desc')
+            ->first();
+    
+        // Calculate the next control number
+        $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
+        $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
+    
+        // Pass data to the view
+        return view('ticket', compact('tickets', 'technicalSupports', 'formattedControlNo'));
+    }
+    
 
 public function store(Request $request)
 {
@@ -138,6 +152,13 @@ public function filterTickets($status, Request $request)
         'html' => $html,
         'pagination' => (string) $tickets->links('pagination::bootstrap-4') // Return pagination as HTML
     ]);
+}
+public function show($control_no)
+{
+    $ticket = Ticket::where('control_no', $control_no)->first();
+    
+    // Return ticket details as a JSON response
+    return response()->json($ticket);
 }
 
 }

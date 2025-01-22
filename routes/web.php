@@ -36,6 +36,8 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
     Route::post('/ticket', [Ticket_Controller::class, 'store'])->name('ticket.store'); // POST request for submitting the form
     Route::get('/filter-tickets/{status}', [Ticket_Controller::class, 'filterTickets']);
+    // Route for fetching ticket details by control_no
+    Route::get('/ticket-details/{control_no}', [Ticket_Controller::class, 'show']);
 
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
     Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');

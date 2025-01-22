@@ -27,6 +27,7 @@
         }
     }
 @endphp
+<link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
 
 <table class="tickets-table">
     <thead>
@@ -50,7 +51,7 @@
                 <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
                 <td class="{{ getStatusClass($ticket->status) }}">{{ ucfirst($ticket->status) }}</td>
                 <td>
-                    <button class="action-button">View</button>
+                    <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">View</button>
                     <button class="action-button">Remarks</button>
                 </td>
             </tr>
@@ -75,3 +76,76 @@
         </div>
     @endif
 </div>
+
+
+<!-- Modal Popup (Initially Hidden) -->
+<div id="ticketModal" class="ticket-modal">
+    <div class="ticket-modal-content">
+        <button class="close-modal" onclick="closeModal()">✖</button>
+
+        <!-- Print Button -->
+        <button class="print-modal" onclick="printModal()">🖨️ Print</button>
+
+        <!-- Ticket Form (Inside Modal) -->
+        <h2 class="head">Technical Service Slip</h2> <!-- Title for the Modal -->
+
+        <!-- Display Ticket Data (Read-Only) -->
+        <form id="ticketFormModal">
+            <!-- Control Number with Image -->
+            <div class="control-numbers" id="controlNumber">
+                <img src="{{ asset('images/SystemLogo.png') }}" alt="System Logo" id="systemLogo" class="system-logo" />
+                <span id="ticketControlNumber" class="boxed-span"></span>
+                <span id="ticketPriority" class="boxed-span priority"></span>
+            </div>
+
+
+
+            <!-- Personal Information -->
+            <fieldset>
+                <legend>Personal Information</legend>
+                <div class="personal-info-container">
+                    <div class="personal-info-field">
+                        <label>First Name:</label>
+                        <span id="ticketFirstName" class="boxed-span"></span>
+                    </div>
+                    <div class="personal-info-field">
+                        <label>Department:</label>
+                        <span id="ticketDepartment" class="boxed-span"></span>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Ticket Details -->
+            <fieldset>
+                <legend>Ticket Details</legend>
+                <div class="personal-info-container"> 
+                    <div class="personal-info-field"> 
+                        <label>Concern/Problem:</label>
+                        <span id="ticketConcern" class="boxed-span"></span>
+                    </div>
+                    <div class="personal-info-field"> 
+                        <label>Employee ID:</label>
+                        <span id="ticketEmployeeId" class="boxed-span"></span>
+                    </div>
+                </div>
+            </fieldset>
+
+
+            <!-- Support Details -->
+            <fieldset>
+                <legend>Support Details</legend>
+                <div class="personal-info-container"> 
+                    <div class="personal-info-field"> 
+                        <label class="support-label">Technical Support By:</label>
+                        <span id="ticketTechnicalSupport" class="boxed-span support-value"></span>
+                    </div>
+                    <div class="personal-info-field"> 
+                        <label class="support-label">Created At:</label>
+                        <span id="ticketTimeIn" class="boxed-span support-value"></span>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<script src="{{ asset('js/Ticket_Components_Script.js') }}"></script>
