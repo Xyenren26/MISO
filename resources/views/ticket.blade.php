@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Management Information System</title>
     <link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dyHHyKfrpNltGPrdAPLoTrI1kSxU7+G+XKAGwJQ1Ng5wzrsBtceVrldwuhM12a3SWHiS+N/hdE4ZZhd1xKyWEw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
