@@ -216,6 +216,19 @@ gap: 15px;
 margin: 20px 0;
 }
 
+.action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    color: #333;
+    margin: 0 3px;
+}
+
+.action-button:hover {
+    color: #007bff; /* Change to desired hover color */
+}
+
 /* Button Styling */
 .submit-btn {
 padding: 10px 20px;
@@ -368,4 +381,114 @@ background-color: #00214e;
     font-weight: bold;
     color: #1165c6;
     padding: 0 10px;
+}
+
+#assistModal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;    /* Centers vertically */
+}
+
+#assistModal .modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: fixed; 
+    top: 50%;        
+    left: 50%;       
+    transform: translate(-50%, -50%); 
+}
+
+#closeAssistModal {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#assistForm label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+#assistForm select,
+#assistForm button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+#submitAssistForm {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#submitAssistForm:hover {
+    background-color: #0056b3;
+}
+
+/* Base modal styles */
+#remarksModal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Darkened background */
+}
+
+/* Modal content styling for the specific modal */
+#remarksModalContent {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* You can adjust this width */
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Close button */
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    float: right;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* Styling for the text area and select */
+#remarksInput, #statusDropdown {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }

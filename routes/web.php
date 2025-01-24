@@ -35,10 +35,10 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/home', [Home_Controller::class, 'showHome'])->name('home');
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
     Route::post('/ticket', [Ticket_Controller::class, 'store'])->name('ticket.store'); // POST request for submitting the form
-    Route::get('/filter-tickets/{status}', [Ticket_Controller::class, 'filterTickets']);
+    Route::get('/tickets/filter', [Ticket_Controller::class, 'filterTickets'])->name('tickets.filter');
     // Route for fetching ticket details by control_no
     Route::get('/ticket-details/{control_no}', [Ticket_Controller::class, 'show']);
-
+    Route::post('/api/pass-ticket', [Ticket_Controller::class, 'passTicket']);
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
     Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
     Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');

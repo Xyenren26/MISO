@@ -56,4 +56,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(TechnicalSupport::class, 'technical_support_id', 'id');
     }
+    public function history()
+    {
+        return $this->hasMany(TicketHistory::class, 'ticket_id');
+    }    
+
 }

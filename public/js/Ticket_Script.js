@@ -1,18 +1,35 @@
 // Open the ticket form modal
 function openTicketFormModal() {
-    document.getElementById('ticketFormModal').style.display = 'block';
+    toggleModal('ticketFormModal', true);
 }
 
 // Close the ticket form modal
 function closeTicketFormModal() {
-    document.getElementById('ticketFormModal').style.display = 'none';
+    toggleModal('ticketFormModal', false);
 }
 
+// Toggle modal visibility
+function toggleModal(modalId, show) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = show ? 'block' : 'none';
+    } else {
+        console.warn(`Modal with ID "${modalId}" not found.`);
+    }
+}
 
+// Update the ticket list UI dynamically
 function updateTicketList(tickets) {
-    const ticketListContainer = document.getElementById('ticket-list'); // Adjust with your container ID
-    ticketListContainer.innerHTML = ''; // Clear current list
+    const ticketListContainer = document.getElementById('ticket-list');
+    if (!ticketListContainer) {
+        console.error('Ticket list container not found.');
+        return;
+    }
 
+    // Clear the current list
+    ticketListContainer.innerHTML = '';
+
+    // Populate new tickets
     tickets.forEach(ticket => {
         const ticketItem = document.createElement('div');
         ticketItem.classList.add('ticket-item');
@@ -24,60 +41,77 @@ function updateTicketList(tickets) {
         ticketListContainer.appendChild(ticketItem);
     });
 }
-function filterTickets(status, event = null, priority = null) {
-    // Determine the active tab if an event is provided
-    if (event) {
-        // Remove the active class from all tab buttons
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.classList.remove('active');
-        });
 
-        // Add the active class to the clicked tab
-        event.target.classList.add('active');
+// Active filters
+let activeFilters = {
+    status: 'recent', // Default tab
+    priority: null    // Default priority (all)
+};
+
+// Filter tickets by status
+function filterTickets(status, event) {
+    if (!event) return;
+
+    // Update active status
+    activeFilters.status = status;
+
+    // Update active button styles
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    // Fetch and render filtered tickets
+    fetchAndRenderTickets();
+}
+
+// Filter tickets by priority
+function filterByPriority(priority) {
+    // Update active priority
+    activeFilters.priority = priority;
+
+    // Update dropdown button text
+    const dropdownButton = document.querySelector('.dropdown-button');
+    if (dropdownButton) {
+        dropdownButton.innerHTML = `
+            <i class="fas fa-filter"></i> ${priority ? capitalize(priority) : 'All Priorities'} <span class="arrow">&#x25BC;</span>
+        `;
     }
 
-    // If no status is provided, use the active tab's status
-    const activeTab = document.querySelector('.tab-button.active');
-    if (!status && activeTab) {
-        status = activeTab.dataset.status; // Assuming tabs have a 'data-status' attribute
-    }
+    // Fetch and render filtered tickets
+    fetchAndRenderTickets();
+}
 
-    if (!status) {
-        console.error('No active tab or status detected.');
+// Fetch and render tickets based on active filters
+function fetchAndRenderTickets() {
+    const ticketListContainer = document.getElementById('ticket-list');
+    if (!ticketListContainer) {
+        console.error('Ticket list container not found.');
         return;
     }
 
-    // Build the URL for the AJAX request with status and optional priority
-    const url = `/filter-tickets/${status}` + (priority ? `?priority=${priority}` : '');
+    // Fetch tickets with active filters
+    const { status, priority } = activeFilters;
+    const queryParams = new URLSearchParams({
+        status,
+        priority: priority || ''
+    }).toString();
 
-    // Send AJAX request to filter tickets by status (and priority if provided)
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            // Update the ticket list with the new filtered tickets
-            document.getElementById('ticket-list').innerHTML = data.html;
-
-            // Update pagination (if pagination is included in the response)
-            const paginationContainer = document.querySelector('.pagination-container');
-            if (paginationContainer) {
-                paginationContainer.innerHTML = data.pagination;
-            }
+    fetch(`/tickets/filter?${queryParams}`)
+        .then(response => response.text())
+        .then(html => {
+            ticketListContainer.innerHTML = html;
         })
-        .catch(error => console.error('Error fetching tickets:', error));
+        .catch(error => {
+            console.error('Error fetching filtered tickets:', error);
+            ticketListContainer.innerHTML = '<div class="error-message">Failed to load tickets. Please try again.</div>';
+        });
 }
 
-// Function to filter tickets by priority within the active tab
-function filterByPriority(priority) {
-    const activeTab = document.querySelector('.tab-button.active');
-    if (activeTab) {
-        const status = activeTab.dataset.status; // Assuming tabs have a 'data-status' attribute
-        filterTickets(status, null, priority);
-    } else {
-        console.error('No active tab detected.');
-    }
+// Utility function to capitalize strings
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+// Initialize filters and ticket list on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', fetchAndRenderTickets);

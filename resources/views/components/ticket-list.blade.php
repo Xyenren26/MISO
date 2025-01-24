@@ -28,6 +28,8 @@
     }
 @endphp
 <link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 
 <table class="tickets-table">
     <thead>
@@ -51,8 +53,18 @@
                 <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
                 <td class="{{ getStatusClass($ticket->status) }}">{{ ucfirst($ticket->status) }}</td>
                 <td>
-                    <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">View</button>
-                    <button class="action-button">Remarks</button>
+                    <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
+                        <i class="fas fa-eye"></i>
+                    </button>         
+                    <button class="action-button" onclick="showRemarksModal('{{ $ticket->control_no }}')">
+                        <i class="fas fa-sticky-note"></i> <!-- For Remarks -->
+                    </button>
+                    <button class="action-button">
+                        <i class="fas fa-comments"></i> <!-- For Chat -->
+                    </button>
+                    <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')">
+                        <i class="fas fa-handshake"></i> <!-- For Assist -->
+                    </button>
                 </td>
             </tr>
         @empty
@@ -130,7 +142,6 @@
                 </div>
             </fieldset>
 
-
             <!-- Support Details -->
             <fieldset>
                 <legend>Support Details</legend>
@@ -144,8 +155,69 @@
                         <span id="ticketTimeIn" class="boxed-span support-value"></span>
                     </div>
                 </div>
+
+                <!-- Support History Section -->
+                <div class="support-history-container">
+                    <label class="support-label">Support History:</label>
+                    <ul id="supportHistoryList" class="support-history-list">
+                </div>
             </fieldset>
         </form>
     </div>
 </div>
+
+<div id="assistModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeAssistModal()">&times;</span>
+        <h2>Select Technical Support</h2>
+        <form id="assistForm" action="/api/pass-ticket" method="POST">
+            @csrf <!-- CSRF token for form submission -->
+            <input type="hidden" id="ticketControlNo" name="ticket_control_no">
+
+            <div class="form-group">
+                <label for="technicalSupport">Choose Technical Support:</label>
+                <select id="technicalSupport" name="new_technical_support" required>
+                    <option value="" disabled selected>Select Assist Technical Support</option>
+                    @foreach($technicalSupports as $tech)
+                        <option value="{{ $tech->employee_id }}">
+                            {{ $tech->first_name }} {{ $tech->last_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="submit-btn">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Remarks -->
+<div id="remarksModal" class="modal" style="display: none;">
+    <div id="remarksModalContent" class="modal-content">
+        <span class="close" onclick="closeRemarksModal()">&times;</span>
+        <h3>Update Remarks and Status</h3>
+
+        <!-- Remarks Input -->
+        <div>
+            <label for="remarksInput">Remarks:</label>
+            <textarea id="remarksInput" placeholder="Enter your remarks"></textarea>
+        </div>
+
+        <!-- Status Dropdown -->
+        <div>
+            <label for="statusDropdown">Status:</label>
+            <select id="statusDropdown">
+                <option value="complete">Mark Ticket as Complete</option>
+                <option value="endorsed">Endorsed Ticket</option>
+                <option value="technical_report">Write Technical Report</option>
+            </select>
+        </div>
+
+        <!-- Save Button -->
+        <button class="action-button" onclick="saveRemarksAndStatus('{{ $ticket->control_no }}')">Save</button>
+    </div>
+</div>
+
 <script src="{{ asset('js/Ticket_Components_Script.js') }}"></script>

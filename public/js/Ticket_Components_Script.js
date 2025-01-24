@@ -1,47 +1,68 @@
 // Function to show ticket details in the modal
 function showTicketDetails(controlNo) {
-    console.log('Control Number:', controlNo); // Debugging: Check if the control_no is being passed correctly
-    
-    fetch('/ticket-details/' + controlNo) // Assuming this endpoint fetches ticket details by control_no
-        .then(response => response.json())
-        .then(data => {
-            console.log('Ticket Details:', data); // Ensure the correct ticket data is received
-    
-            // Populate modal with ticket data
-            document.getElementById('ticketControlNumber').innerText = data.control_no;
-            document.getElementById('ticketFirstName').innerText = data.name;
-            document.getElementById('ticketDepartment').innerText = data.department;
-            document.getElementById('ticketConcern').innerText = data.concern;
-            document.getElementById('ticketPriority').innerText = data.priority;
-            document.getElementById('ticketEmployeeId').innerText = data.employee_id;
-            document.getElementById('ticketTechnicalSupport').innerText = data.technical_support_name;
-            document.getElementById('ticketTimeIn').innerText = data.time_in;
-    
-            // Show modal
-            document.getElementById('ticketModal').style.display = "block";
-        })
-        .catch(error => {
-            console.error('Error fetching ticket details:', error);
-        });
+  console.log('Control Number:', controlNo); // Debugging: Check if the control_no is being passed correctly
+  
+  fetch('/ticket-details/' + controlNo) // Assuming this endpoint fetches ticket details by control_no
+      .then(response => response.json())
+      .then(data => {
+          console.log('Ticket Details:', data); // Ensure the correct ticket data is received
+  
+          // Populate modal with ticket data
+          document.getElementById('ticketControlNumber').innerText = data.ticket.control_no;
+          document.getElementById('ticketFirstName').innerText = data.ticket.name;
+          document.getElementById('ticketDepartment').innerText = data.ticket.department;
+          document.getElementById('ticketConcern').innerText = data.ticket.concern;
+          document.getElementById('ticketPriority').innerText = data.ticket.priority;
+          document.getElementById('ticketEmployeeId').innerText = data.ticket.employee_id;
+          document.getElementById('ticketTechnicalSupport').innerText = data.ticket.technical_support_name;
+          document.getElementById('ticketTimeIn').innerText = data.ticket.time_in;
+  
+          // Populate the Support History Section
+          const historyList = document.getElementById('supportHistoryList');
+          historyList.innerHTML = ''; // Clear the list before appending new items
+          
+          // Check if we have ticket history data
+          if (data.ticketHistory) {
+              const historyItem = document.createElement('li');
+              historyItem.innerHTML = `
+                  <strong>Previous Support:</strong> ${data.ticketHistory.previous_technical_support_name} 
+                  <strong>New Support:</strong> ${data.ticketHistory.new_technical_support_name} 
+                  <strong>Changed At:</strong> ${data.ticketHistory.changed_at}
+              `;
+              historyList.appendChild(historyItem);
+          } else {
+              const noHistoryItem = document.createElement('li');
+              noHistoryItem.innerText = 'No support history available.';
+              historyList.appendChild(noHistoryItem);
+          }
+  
+          // Show modal
+          document.getElementById('ticketModal').style.display = "block";
+      })
+      .catch(error => {
+          console.error('Error fetching ticket details:', error);
+      });
+}
+
+
+// Function to close the modal
+function closeModal() {
+    // Get the modal element
+    var modal = document.getElementById('ticketModal');
+
+    // Set the display style of the modal to 'none' to hide it
+    modal.style.display = "none";
+}
+
+// You can also close the modal by clicking anywhere outside the modal content
+window.onclick = function(event) {
+    var modal = document.getElementById('ticketModal');
+    if (event.target === modal) {
+        closeModal();
     }
-    // Function to close the modal
-    function closeModal() {
-        // Get the modal element
-        var modal = document.getElementById('ticketModal');
-    
-        // Set the display style of the modal to 'none' to hide it
-        modal.style.display = "none";
-    }
-    
-    // You can also close the modal by clicking anywhere outside the modal content
-    window.onclick = function(event) {
-        var modal = document.getElementById('ticketModal');
-        if (event.target === modal) {
-            closeModal();
-        }
-    };
-    
-    
+};
+
+
 const employeeIdInput = document.getElementById('employeeId');
 const errorMessage = document.getElementById('error-message');
 
@@ -196,6 +217,96 @@ function toggleOtherInput() {
 }
 
   
-  
 
 
+// Show Modal
+function showAssistModal(ticketControlNo) {
+  document.getElementById('assistModal').style.display = 'block';
+  document.getElementById('ticketControlNo').value = ticketControlNo;
+}
+
+// Close Modal
+function closeAssistModal() {
+  document.getElementById('assistModal').style.display = 'none';
+}
+
+async function submitAssist() {
+  const ticketControlNo = document.getElementById('ticketControlNo').value;
+  const technicalSupport = document.getElementById('technicalSupport').value;
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');  // Get the CSRF token
+
+  if (!ticketControlNo || !technicalSupport) {
+    alert("Please select a technical support and ensure the ticket control number is correct.");
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/pass-ticket', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,  // Include CSRF token in the header
+      },
+      body: JSON.stringify({
+        ticket_control_no: ticketControlNo,
+        new_technical_support: technicalSupport,
+      }),
+    });
+
+    if (response.ok) {
+      alert('Ticket successfully passed!');
+      closeAssistModal();
+    } else {
+      const errorData = await response.json();
+      console.error("Error response:", errorData);
+      alert('Error passing ticket: ' + errorData.error || 'Unknown error');
+    }
+  } catch (error) {
+    console.error("Request failed:", error);
+    alert('Request failed: ' + error.message);
+  }
+}
+
+// Function to show the remarks modal
+function showRemarksModal(controlNo) {
+  const modal = document.getElementById('remarksModal');
+  modal.style.display = 'block';
+}
+
+// Function to close the remarks modal
+function closeRemarksModal() {
+  const modal = document.getElementById('remarksModal');
+  modal.style.display = 'none';
+}
+
+// Function to save remarks and status
+function saveRemarksAndStatus(controlNo) {
+  const remarks = document.getElementById('remarksInput').value;
+  const status = document.getElementById('statusDropdown').value;
+
+  // Send data to the server via AJAX or Fetch API
+  fetch('/update-ticket', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}', // Laravel CSRF token
+      },
+      body: JSON.stringify({
+          control_no: controlNo,
+          remarks: remarks,
+          status: status,
+      }),
+  })
+      .then((response) => response.json())
+      .then((data) => {
+          if (data.success) {
+              alert('Remarks and status updated successfully.');
+              closeRemarksModal();
+          } else {
+              alert('Failed to update the ticket.');
+          }
+      })
+      .catch((error) => {
+          console.error('Error updating ticket:', error);
+      });
+}

@@ -81,7 +81,7 @@
     <div class="table-container">
         @if ($tickets->count() > 0)
             <div id="ticket-list" class="table-container">
-                @include('components.ticket-list', ['tickets' => $tickets])
+                @include('components.ticket-list', ['tickets' => $tickets, 'technicalSupports' => $technicalSupports])
             </div>
         @else
             <div class="no-records">NO RECORDS FOUND</div>

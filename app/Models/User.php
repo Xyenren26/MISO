@@ -76,7 +76,19 @@ class User extends Authenticatable implements MustVerifyEmail
         
     }
     public function sendEmailVerificationNotification()
-        {
-            $this->notify(new \Illuminate\Auth\Notifications\VerifyEmail);
-        }
+    {
+        $this->notify(new \Illuminate\Auth\Notifications\VerifyEmail);
+    }
+
+    public function ticketsAsPreviousSupport()
+    {
+        return $this->hasMany(TicketHistory::class, 'previous_technical_support', 'employee_id');
+    }
+
+    public function ticketsAsNewSupport()
+    {
+        return $this->hasMany(TicketHistory::class, 'new_technical_support', 'employee_id');
+    }
+    
+
 }
