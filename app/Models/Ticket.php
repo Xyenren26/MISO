@@ -58,7 +58,7 @@ class Ticket extends Model
     }
     public function history()
     {
-        return $this->hasMany(TicketHistory::class, 'ticket_id');
+        return $this->hasMany(TicketHistory::class, 'ticket_id', 'control_no');
     }    
 
 }
