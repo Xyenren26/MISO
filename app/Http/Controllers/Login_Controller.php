@@ -14,20 +14,6 @@ class Login_Controller extends Controller
 {
     public function showLogin()
     {
-        // Check if the user is already authenticated via custom authentication
-        if (session()->has('user_id')) {
-            $user = User::find(session('user_id'));
-            if ($user) {
-                // Redirect based on account type
-                $accountType = $user->account_type;
-                if ($accountType === 'end_user') {
-                    return redirect('/employee/home'); // Redirect employee to the client folder
-                } elseif (in_array($accountType, ['technical_support', 'administrator'])) {
-                    return redirect()->route('home'); // Redirect technical roles to main home
-                }
-            }
-        }
-
         return view('Login'); // Refers to resources/views/login.blade.php
     }
 
@@ -38,6 +24,7 @@ class Login_Controller extends Controller
 
     public function authenticate(Request $request)
 {
+    // Validate the inputs for username and password
     $request->validate([
         'username' => 'required|string',
         'password' => 'required|string',
@@ -46,9 +33,11 @@ class Login_Controller extends Controller
         'password.required' => 'Please enter your password.',
     ]);
 
+    // Find user by username
     $user = User::where('username', $request->username)->first();
 
     if ($user) {
+        // Check if the user is already logged in from another session
         if ($user->session_id) {
             return redirect()->back()->withErrors([
                 'login' => 'You are already logged in from another session. Please log out first.',
@@ -66,28 +55,41 @@ class Login_Controller extends Controller
             Config::set('session.expire_on_close', true); // Session expires when the browser is closed
         }
 
+        // Attempt to log the user in
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password], $remember)) {
-            session(['user_id' => $user->employee_id]);
-            session(['last_activity' => now()]);
+            // Check if this is the user's first login
+            if ($user->is_first_login) {
+                // Redirect to the profile completion form if it's the first login
+                \Log::info("User is first time logging in.");
+                return redirect()->route('profile.complete.form'); // Replace with actual route name for profile completion
+            }else {
+                \Log::info("User is not first time logging in.");}
 
+            // Save the user's session info
+            session(['user_id' => $user->id]); // Save user ID in session, not employee_id
+            session(['last_activity' => now()]); // Track last activity time
 
+            // Update user session ID
             $user->last_activity = now();
             $user->session_id = session()->getId();
             $user->save();
+        
 
             // Redirect based on account type
             if ($user->account_type === 'end_user') {
-                return redirect('/employee/home'); // Redirect employee to the client folder
+                return redirect('/employee/home'); // Redirect to employee's home page
             } elseif (in_array($user->account_type, ['technical_support', 'administrator'])) {
-                return redirect()->route('home'); // Redirect technical roles to main home
+                return redirect()->route('home'); // Redirect to technical roles or admin home
             }
         }
     }
 
+    // If login fails, redirect back with an error
     return redirect()->back()->withErrors([
         'login' => 'Invalid username or password.',
     ])->withInput();
 }
+
 
 public function logout()
 {

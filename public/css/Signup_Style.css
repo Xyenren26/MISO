@@ -183,6 +183,21 @@ body {
   text-decoration: underline;
 }
 
+.input-wrapper {
+  position: relative;
+}
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+input[type="password"] {
+  padding-right: 30px; /* Add some padding on the right to make space for the icon */
+}
+
 /* Footer styles */
 .footer {
   background-color: #0e2f66; /* Deep blue background */

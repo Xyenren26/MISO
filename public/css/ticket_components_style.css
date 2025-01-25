@@ -264,40 +264,39 @@ background-color: #00214e;
     border: 1px solid #888;
     width: 80%;
     max-width: 600px;
-    position: relative; /* Make it a containing block for absolute positioning */
+    position: relative;
 }
 
 /* Style for the image */
 .system-logo {
-    position: absolute; /* Absolute positioning */
-    top: 10px; /* Adjust the top distance */
-    right: 140px; /* Adjust the left distance */
-    width: 160px; /* Adjust the size */
-    height: auto; /* Maintain aspect ratio */
-    z-index: 1; /* Ensure it's below the control number */
+    position: absolute;
+    top: 10px;
+    right: 140px;
+    width: 160px;
+    height: auto;
+    z-index: 1;
 }
-
 
 /* Position the Control Number at the top-right */
 #ticketControlNumber {
-    position: absolute; /* Absolute positioning */
-    top: 10px; /* Adjust the top distance */
-    right: 10px; /* Adjust the right distance */
+    position: absolute;
+    top: 10px;
+    right: 10px;
     font-size: 20px;
     font-weight: bold;
     color: red;
-    z-index: 2; /* Ensure it's above other modal content */
+    z-index: 2;
 }
 
 /* Position the Priority below the Control Number */
 #ticketPriority {
     position: absolute;
-    top: 40px; /* Adjust the distance below Control Number */
-    right: 10px; /* Align with Control Number */
+    top: 40px;
+    right: 10px;
     font-size: 16px;
     font-weight: bold;
-    text-transform: uppercase; /* Make text capitalized */
-    color:red;
+    text-transform: uppercase;
+    color: red;
 }
 
 .close-modal {
@@ -311,7 +310,7 @@ background-color: #00214e;
 }
 
 .close-modal:hover {
-    color: #ff0000; /* Change to red on hover */
+    color: #ff0000;
 }
 
 /* Print Button */
@@ -331,10 +330,11 @@ background-color: #00214e;
 }
 
 .print-modal:hover {
-    background-color: #00509e; /* Slightly lighter blue */
-    transform: scale(1.05); /* Add a subtle zoom effect */
+    background-color: #00509e;
+    transform: scale(1.05);
 }
-/* Modal Title */
+
+/* Styling for the title */
 .head {
     font-size: 2em;
     margin-bottom: 20px;
@@ -346,6 +346,24 @@ background-color: #00214e;
     border-radius: 8px;
     text-align: center;
     margin-top: 20px;
+}
+
+/* Container to hold both date/time and footer on the same line */
+.modal-footer-container {
+    display: flex;
+    justify-content: space-between;  /* Space out the items: one on the left, the other on the right */
+    margin-top: 20px;
+    padding: 0 10px;
+}
+
+/* Date and Time section styling */
+.modal-date-time {
+    text-align: right;
+}
+
+/* Footer-left section styling */
+.footer-left {
+    text-align: left;
 }
 
 /* Label Styling */
@@ -368,7 +386,6 @@ background-color: #00214e;
     flex: 1;
 }
 
-
 /* Fieldset Styling */
 #ticketModal fieldset {
     border: 1px solid #1165c6;
@@ -382,6 +399,33 @@ background-color: #00214e;
     color: #1165c6;
     padding: 0 10px;
 }
+
+/* Concern/Problem Box */
+.concern-box {
+    margin: 15px 0;
+    padding: 10px;
+    border: 1px solid #1165c6;
+    border-radius: 5px;
+}
+
+.concern-box label {
+    font-weight: bold;
+}
+
+/* Support Details Box */
+.support-details-box {
+    margin-top: 20px;
+}
+
+.support-details-box .support-detail {
+    margin-bottom: 10px;
+}
+
+.support-details-box label {
+    font-weight: bold;
+    color: #1165c6;
+}
+
 
 #assistModal {
     position: fixed;

@@ -7,6 +7,7 @@ use App\Http\Controllers\Signup_Controller;
 use App\Http\Controllers\Home_Controller;
 use App\Http\Controllers\Ticket_Controller;
 use App\Http\Controllers\Device_Management_Controller;
+use App\Http\Controllers\Profile_Controller;
 use App\Http\Controllers\User_Management_Controller;
 use App\Http\Controllers\Audit_logs_Controller;
 use App\Http\Controllers\Report_Controller;
@@ -29,6 +30,7 @@ Route::post('/signup', [Signup_Controller::class, 'storeSignup'])->name('signup.
 Route::post('/logout', [Login_Controller::class, 'logout'])->name('logout');
 });
 
+
 // Routes for technical-support and administrator (protected by 'auth' middleware)
 Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {
     // Routes that require authentication
@@ -40,6 +42,10 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/ticket-details/{control_no}', [Ticket_Controller::class, 'show']);
     Route::post('/api/pass-ticket', [Ticket_Controller::class, 'passTicket']);
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
+    // In web.php
+
+    Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
+    Route::post('/profile/complete', [Profile_Controller::class, 'completeProfile'])->name('profile.complete');
     Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
     Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');
