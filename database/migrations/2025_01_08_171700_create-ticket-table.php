@@ -14,8 +14,8 @@ return new class extends Migration
         if (!Schema::hasTable('tickets')) {
             Schema::create('tickets', function (Blueprint $table) {
             $table->string('control_no')->primary(); // control_no as the primary key (if not auto-incrementing)
-            $table->unsignedBigInteger('employee_id'); // Foreign key to users table (general employee)
-            $table->unsignedBigInteger('technical_support_id')->nullable(); // Foreign key to users table (specific to technical-support role)
+            $table->integer('employee_id'); // Foreign key to users table (general employee)
+            $table->integer('technical_support_id')->nullable(); // Foreign key to users table (specific to technical-support role)
             $table->string('name');
             $table->string('department');
             $table->enum('priority', ['urgent', 'semi-urgent', 'non-urgent']);

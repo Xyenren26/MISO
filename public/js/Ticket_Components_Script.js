@@ -267,46 +267,77 @@ async function submitAssist() {
   }
 }
 
-// Function to show the remarks modal
-function showRemarksModal(controlNo) {
-  const modal = document.getElementById('remarksModal');
-  modal.style.display = 'block';
+// Function to open the modal and set the control number
+function openRemarksModal(controlNo) {
+  const modal = document.getElementById("remarksModal");
+  modal.style.display = "block";
+
+  // Store the control number in the modal for submission
+  modal.setAttribute("data-control-no", controlNo);
 }
 
-// Function to close the remarks modal
+// Function to close the modal
 function closeRemarksModal() {
-  const modal = document.getElementById('remarksModal');
-  modal.style.display = 'none';
+  const modal = document.getElementById("remarksModal");
+  modal.style.display = "none";
+
+  // Clear input values
+  document.getElementById("remarksInput").value = "";
+  document.getElementById("statusDropdown").value = "completed";
+
+  // Remove control number attribute
+  modal.removeAttribute("data-control-no");
 }
 
 // Function to save remarks and status
-function saveRemarksAndStatus(controlNo) {
-  const remarks = document.getElementById('remarksInput').value;
-  const status = document.getElementById('statusDropdown').value;
+function saveRemarksAndStatus() {
+  const modal = document.getElementById("remarksModal");
+  const controlNo = modal.getAttribute("data-control-no");
+  const remarks = document.getElementById("remarksInput").value;
+  const status = document.getElementById("statusDropdown").value;
 
-  // Send data to the server via AJAX or Fetch API
-  fetch('/update-ticket', {
-      method: 'POST',
+  if (!remarks.trim()) {
+      alert("Please enter remarks before saving.");
+      return;
+  }
+
+  // Prepare the data for the AJAX request
+  const requestData = {
+      control_no: controlNo,
+      remarks: remarks,
+      status: status
+  };
+
+  // Send the request via Fetch API
+  fetch("/tickets/update-remarks", {
+      method: "POST",
       headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}', // Laravel CSRF token
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
       },
-      body: JSON.stringify({
-          control_no: controlNo,
-          remarks: remarks,
-          status: status,
-      }),
+      body: JSON.stringify(requestData)
   })
-      .then((response) => response.json())
-      .then((data) => {
-          if (data.success) {
-              alert('Remarks and status updated successfully.');
-              closeRemarksModal();
-          } else {
-              alert('Failed to update the ticket.');
-          }
-      })
-      .catch((error) => {
-          console.error('Error updating ticket:', error);
-      });
+  .then(response => {
+      if (!response.ok) {
+          throw new Error("Failed to update the ticket.");
+      }
+      return response.json();
+  })
+  .then(data => {
+      alert(data.message);
+      closeRemarksModal();
+
+      // Optionally, you can refresh the ticket list or update the UI here
+  })
+  .catch(error => {
+      alert(`Error: ${error.message}`);
+  });
+}
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+  const modal = document.getElementById("remarksModal");
+  if (event.target === modal) {
+      closeRemarksModal();
+  }
 }

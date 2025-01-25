@@ -59,11 +59,8 @@ class Login_Controller extends Controller
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password], $remember)) {
             // Check if this is the user's first login
             if ($user->is_first_login) {
-                // Redirect to the profile completion form if it's the first login
-                \Log::info("User is first time logging in.");
                 return redirect()->route('profile.complete.form'); // Replace with actual route name for profile completion
-            }else {
-                \Log::info("User is not first time logging in.");}
+            }
 
             // Save the user's session info
             session(['user_id' => $user->id]); // Save user ID in session, not employee_id

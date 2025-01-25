@@ -41,6 +41,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     // Route for fetching ticket details by control_no
     Route::get('/ticket-details/{control_no}', [Ticket_Controller::class, 'show']);
     Route::post('/api/pass-ticket', [Ticket_Controller::class, 'passTicket']);
+    Route::post('/tickets/update-remarks', [Ticket_Controller::class, 'updateRemarks'])->name('tickets.updateRemarks');
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
     // In web.php
 
