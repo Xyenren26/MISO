@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ticket_histories', function (Blueprint $table) {
+        if (!Schema::hasTable('ticket_histories')) {
+            Schema::create('ticket_histories', function (Blueprint $table) {
             $table->engine = 'InnoDB';  // Ensure InnoDB is used for foreign key support
-
-            $table->id();  // Auto-incrementing primary key
             $table->string('ticket_id');  // Ticket ID (foreign key to tickets table)
             $table->unsignedBigInteger('previous_technical_support')->nullable();  // Previous technical support ID (nullable)
             $table->unsignedBigInteger('new_technical_support')->nullable();  // New technical support ID (nullable)
@@ -23,7 +22,7 @@ return new class extends Migration
 
             // Foreign key constraints with cascading deletes and setting null on delete for technical supports
             $table->foreign('ticket_id')
-                ->references('id')->on('tickets')
+                ->references('control_no')->on('tickets')
                 ->onDelete('cascade');  // When a ticket is deleted, delete the history
 
             $table->foreign('previous_technical_support')
@@ -39,7 +38,7 @@ return new class extends Migration
             $table->index('previous_technical_support');
             $table->index('new_technical_support');
         });
-    }
+    }}
 
     /**
      * Reverse the migrations.

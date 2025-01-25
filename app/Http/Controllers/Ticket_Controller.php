@@ -149,48 +149,46 @@ class Ticket_Controller extends Controller
     }
 
     public function filterTickets(Request $request)
-{
-    $status = $request->get('status');
-    $priority = $request->get('priority');
-
-    // Get the currently logged-in user
-    $currentTechnicalSupportId = Auth::user()->employee_id;
-    $user = Auth::user();  // Define the user for filtering active technical supports
-
-    // Start building the query for tickets
-    $query = Ticket::query();
-
-    // Filter tickets assigned to the logged-in technical support user
-    $query->where('technical_support_id', $currentTechnicalSupportId);
-
-    // Handle the "recent" filter to show all latest records
-    if ($status === 'recent') {
-        $query->orderBy('created_at', 'desc'); // Sort by creation date (latest first)
-    } else {
-        // Filter by specific status if not "recent"
-        if ($status) {
+    {
+        $status = $request->get('status');
+        $priority = $request->get('priority');
+    
+        // Get the currently logged-in user
+        $currentTechnicalSupportId = Auth::user()->employee_id;
+        $user = Auth::user();
+    
+        // Start building the query for tickets
+        $query = Ticket::query();
+    
+        // Filter tickets assigned to the logged-in technical support user
+        $query->where('technical_support_id', $currentTechnicalSupportId);
+    
+        // Handle the "recent" filter
+        if ($status === 'recent') {
+            $query->orderBy('created_at', 'desc');
+        } else if ($status) {
             $query->where('status', $status);
         }
+    
+        // Filter by priority if provided
+        if ($priority) {
+            $query->where('priority', $priority);
+        }
+    
+        // Paginate the results
+        $tickets = $query->paginate(10);
+    
+        // Fetch active technical supports
+        $threshold = now()->subMinutes(30);
+        $technicalSupports = User::where('last_activity', '>=', $threshold)
+            ->whereNotNull('session_id')
+            ->where('employee_id', '!=', $user->employee_id)
+            ->get();
+    
+        // Render the ticket list view
+        return view('components.ticket-list', compact('tickets', 'technicalSupports'))->render();
     }
-
-    // Filter by priority if provided
-    if ($priority) {
-        $query->where('priority', $priority);
-    }
-
-    // Paginate the results
-    $tickets = $query->paginate(10);
-
-    // Fetch active technical supports (those who have a recent activity and a session)
-    $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
-    $technicalSupports = User::where('last_activity', '>=', $threshold)
-        ->whereNotNull('session_id') // Ensure they have a session ID
-        ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
-        ->get();
-
-    // Render the ticket list view
-    return view('components.ticket-list', compact('tickets', 'technicalSupports'))->render();
-}
+    
 
 public function show($id)
 {

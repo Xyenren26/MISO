@@ -1,9 +1,5 @@
 // Sign-Up Form Validation
 const form = document.querySelector('form');
-const firstName = document.getElementById('first-name');
-const lastName = document.getElementById('last-name');
-const department = document.getElementById('department');
-const employeeId = document.getElementById('employee-id');
 const email = document.getElementById('email');
 const password = document.getElementById('password');
 const privacyPolicy = document.getElementById('privacy-policy');
@@ -83,39 +79,6 @@ function checkPassword(input) {
   return true;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  const employeeIDInput = document.getElementById('employee-id');
-  const errorMessage = document.getElementById('error-message');
-
-  employeeIDInput.addEventListener('input', function() {
-      // Remove any non-numeric characters as the user types
-      employeeIDInput.value = employeeIDInput.value.replace(/[^0-9]/g, '');
-
-      const employeeIDValue = employeeIDInput.value;
-
-      // Check if the value is exactly a 7-digit number
-      const isValid = /^\d{7}$/.test(employeeIDValue);
-
-      if (!isValid) {
-          errorMessage.style.display = 'inline';  // Show error message
-          employeeIDInput.style.borderColor = 'red';  // Optional: change border color to red
-      } else {
-          errorMessage.style.display = 'none';  // Hide error message
-          employeeIDInput.style.borderColor = 'green';  // Optional: change border color to green
-      }
-  });
-
-  // Optional: Add a submit handler for the form to ensure validation before submitting
-  document.querySelector('form').addEventListener('submit', function(e) {
-      const employeeIDValue = employeeIDInput.value;
-      if (!/^\d{7}$/.test(employeeIDValue)) {
-          e.preventDefault();  // Prevent form submission
-          errorMessage.style.display = 'inline';  // Show error message if not valid
-      }
-  });
-});
-
-
 // Suggest password strength dynamically
 password.addEventListener('input', () => {
   const passwordStrength = document.getElementById('password-strength');
@@ -125,10 +88,25 @@ password.addEventListener('input', () => {
     password.parentElement.appendChild(strengthMeter);
   }
   const strengthMeter = document.getElementById('password-strength');
-  if (password.value.length < 6) {
+
+  const passwordValue = password.value;
+  const lengthCriteria = passwordValue.length >= 8;
+  const hasUpperCase = /[A-Z]/.test(passwordValue);
+  const hasLowerCase = /[a-z]/.test(passwordValue);
+  const hasDigits = /\d/.test(passwordValue);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue);
+
+  // Check password strength based on complexity
+  if (passwordValue.length < 6) {
     strengthMeter.textContent = 'Weak';
     strengthMeter.style.color = 'red';
-  } else if (password.value.length < 8) {
+  } else if (
+    !lengthCriteria ||
+    !hasUpperCase ||
+    !hasLowerCase ||
+    !hasDigits ||
+    !hasSpecialChar
+  ) {
     strengthMeter.textContent = 'Medium';
     strengthMeter.style.color = 'orange';
   } else {
@@ -136,7 +114,6 @@ password.addEventListener('input', () => {
     strengthMeter.style.color = 'green';
   }
 });
-
 
 // Get modal elements
 const modal = document.getElementById("privacy-policy-modal");
@@ -160,3 +137,17 @@ window.addEventListener("click", function (event) {
     modal.style.display = "none";
   }
 });
+
+function togglePasswordVisibility(inputId) {
+  const passwordInput = document.getElementById(inputId);
+  const eyeIcon = document.querySelector(`#toggle-${inputId} i`);
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    eyeIcon.classList.remove("fa-eye");
+    eyeIcon.classList.add("fa-eye-slash"); // Change to "eye-slash" to indicate visibility
+  } else {
+    passwordInput.type = "password";
+    eyeIcon.classList.remove("fa-eye-slash");
+    eyeIcon.classList.add("fa-eye"); // Revert back to "eye" icon to indicate hidden
+  }
+}

@@ -99,8 +99,19 @@
         <button class="print-modal" onclick="printModal()">🖨️ Print</button>
 
         <!-- Ticket Form (Inside Modal) -->
-        <h2 class="head">Technical Service Slip</h2> <!-- Title for the Modal -->
-
+        <h2 class="head">
+            Technical Service Slip
+        </h2> <!-- Title for the Modal -->
+        <!-- Container for Date/Time and Footer -->
+        <div class="modal-footer-container">
+            <!-- Footer Section -->
+            <span class="footer-left">Management Information Systems Office</span>
+            <!-- Date and Time Section -->
+            <span class="modal-date-time">
+              Date:
+                <span id="ticketTimeIn"></span>
+            </span>
+        </div>
         <!-- Display Ticket Data (Read-Only) -->
         <form id="ticketFormModal">
             <!-- Control Number with Image -->
@@ -110,15 +121,17 @@
                 <span id="ticketPriority" class="boxed-span priority"></span>
             </div>
 
-
-
             <!-- Personal Information -->
             <fieldset>
                 <legend>Personal Information</legend>
                 <div class="personal-info-container">
                     <div class="personal-info-field">
-                        <label>First Name:</label>
+                        <label>Employee Name:</label>
                         <span id="ticketFirstName" class="boxed-span"></span>
+                    </div>
+                    <div class="personal-info-field">
+                        <label>Employee ID:</label>
+                        <span id="ticketEmployeeId" class="boxed-span"></span>
                     </div>
                     <div class="personal-info-field">
                         <label>Department:</label>
@@ -127,41 +140,24 @@
                 </div>
             </fieldset>
 
-            <!-- Ticket Details -->
-            <fieldset>
-                <legend>Ticket Details</legend>
-                <div class="personal-info-container"> 
-                    <div class="personal-info-field"> 
-                        <label>Concern/Problem:</label>
-                        <span id="ticketConcern" class="boxed-span"></span>
-                    </div>
-                    <div class="personal-info-field"> 
-                        <label>Employee ID:</label>
-                        <span id="ticketEmployeeId" class="boxed-span"></span>
-                    </div>
-                </div>
-            </fieldset>
+            <!-- Concern/Problem Box -->
+            <div class="concern-box">
+                <label>Concern/Problem:</label>
+                <span id="ticketConcern" class="boxed-span"></span>
+            </div>
 
-            <!-- Support Details -->
-            <fieldset>
-                <legend>Support Details</legend>
-                <div class="personal-info-container"> 
-                    <div class="personal-info-field"> 
-                        <label class="support-label">Technical Support By:</label>
-                        <span id="ticketTechnicalSupport" class="boxed-span support-value"></span>
-                    </div>
-                    <div class="personal-info-field"> 
-                        <label class="support-label">Created At:</label>
-                        <span id="ticketTimeIn" class="boxed-span support-value"></span>
-                    </div>
+            <!-- Support Details Box -->
+            <div class="support-details-box">
+                <div class="support-detail">
+                    <label class="support-label">Technical Support By:</label>
+                    <span id="ticketTechnicalSupport" class="boxed-span support-value"></span>
                 </div>
-
-                <!-- Support History Section -->
-                <div class="support-history-container">
+                  <!-- Support History Section -->
+                  <div class="support-history-container">
                     <label class="support-label">Support History:</label>
                     <ul id="supportHistoryList" class="support-history-list">
                 </div>
-            </fieldset>
+            </div>
         </form>
     </div>
 </div>
@@ -209,7 +205,7 @@
         <div>
             <label for="statusDropdown">Status:</label>
             <select id="statusDropdown">
-                <option value="complete">Mark Ticket as Complete</option>
+                <option value="completed">Mark Ticket as Complete</option>
                 <option value="endorsed">Endorsed Ticket</option>
                 <option value="technical_report">Write Technical Report</option>
             </select>

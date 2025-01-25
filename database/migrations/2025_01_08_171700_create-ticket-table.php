@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets', function (Blueprint $table) {
+        if (!Schema::hasTable('tickets')) {
+            Schema::create('tickets', function (Blueprint $table) {
             $table->string('control_no')->primary(); // control_no as the primary key (if not auto-incrementing)
             $table->unsignedBigInteger('employee_id'); // Foreign key to users table (general employee)
             $table->unsignedBigInteger('technical_support_id')->nullable(); // Foreign key to users table (specific to technical-support role)
@@ -31,7 +32,7 @@ return new class extends Migration
             $table->foreign('technical_support_id')->references('employee_id')->on('users')->onDelete('set null');
         });
     }
-
+    }
     /**
      * Reverse the migrations.
      */
