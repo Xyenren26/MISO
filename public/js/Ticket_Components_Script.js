@@ -267,7 +267,7 @@ async function submitAssist() {
   }
 }
 
-// Function to open the modal and set the control number
+// Function to open the Remarks modal and set the control number
 function openRemarksModal(controlNo) {
   const modal = document.getElementById("remarksModal");
   modal.style.display = "block";
@@ -276,7 +276,7 @@ function openRemarksModal(controlNo) {
   modal.setAttribute("data-control-no", controlNo);
 }
 
-// Function to close the modal
+// Function to close the Remarks modal
 function closeRemarksModal() {
   const modal = document.getElementById("remarksModal");
   modal.style.display = "none";
@@ -327,17 +327,54 @@ function saveRemarksAndStatus() {
       alert(data.message);
       closeRemarksModal();
 
-      // Optionally, you can refresh the ticket list or update the UI here
+      // If the status is "endorsed", open the endorsement modal
+      if (status === "endorsed") {
+          openEndorsementModal(controlNo);
+      }
+
+      // Update the UI dynamically to reflect the new status
+      const remarksButton = document.getElementById(`remarks-btn-${controlNo}`);
+      if (remarksButton) {
+          remarksButton.outerHTML = `
+              <button class="action-button" onclick="openEndorsementModal('${controlNo}')">
+                  <i class="fas fa-thumbs-up"></i>
+                  Endorsed
+              </button>
+          `;
+      }
   })
   .catch(error => {
       alert(`Error: ${error.message}`);
   });
 }
 
-// Close the modal when clicking outside of it
+// Function to open the Endorsement modal and set the control number
+function openEndorsementModal(controlNo) {
+  const endorsementModal = document.getElementById("endorsementModal");
+  endorsementModal.style.display = "block";
+
+  // Store the control number in the modal for reference
+  endorsementModal.setAttribute("data-control-no", controlNo);
+}
+
+// Function to close the Endorsement modal
+function closeEndorsementModal() {
+  const endorsementModal = document.getElementById("endorsementModal");
+  endorsementModal.style.display = "none";
+
+  // Remove control number attribute
+  endorsementModal.removeAttribute("data-control-no");
+}
+
+// Close modals when clicking outside of them
 window.onclick = function(event) {
-  const modal = document.getElementById("remarksModal");
-  if (event.target === modal) {
+  const remarksModal = document.getElementById("remarksModal");
+  if (event.target === remarksModal) {
       closeRemarksModal();
   }
-}
+
+  const endorsementModal = document.getElementById("endorsementModal");
+  if (event.target === endorsementModal) {
+      closeEndorsementModal();
+  }
+};

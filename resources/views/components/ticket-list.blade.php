@@ -57,11 +57,18 @@
                         <i class="fas fa-eye"></i>
                     </button>
 
-                    <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
-                            id="remarks-btn-{{ $ticket->control_no }}" 
-                            @if ($ticket->isRemarksDone) disabled @endif>
-                        <i class="fas fa-sticky-note"></i> <!-- For Remarks -->
-                    </button>
+                    @if ($ticket->isRemarksDone)
+                        <!-- Replace Remarks Button with Endorsed Button -->
+                        <button class="action-button" onclick="openEndorsementModal('{{ $ticket->control_no }}')">
+                            <i class="fas fa-thumbs-up"></i>
+                        </button>
+                    @else
+                        <!-- Remarks Button -->
+                        <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
+                                id="remarks-btn-{{ $ticket->control_no }}">
+                            <i class="fas fa-sticky-note"></i>
+                        </button>
+                    @endif
 
                     <button class="action-button" 
                             id="chat-btn-{{ $ticket->control_no }}" 
