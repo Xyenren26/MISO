@@ -9,20 +9,22 @@ class CreateEndorsementsTable extends Migration
     {
         Schema::create('endorsements', function (Blueprint $table) {
             $table->string('control_no')->primary();  // control_no as primary key
-            $table->string('department');
-            $table->string('network');
-            $table->string('network_details');
-            $table->string('user_account');
-            $table->string('user_account_details');
-            $table->string('endorsed_to');
-            $table->date('endorsed_to_date');  // Date type for endorsed_to_date
-            $table->time('endorsed_to_time');  // Time type for endorsed_to_time
-            $table->string('endorsed_to_remarks');
-            $table->string('endorsed_by');
-            $table->date('endorsed_by_date');  // Date type for endorsed_by_date
-            $table->time('endorsed_by_time');  // Time type for endorsed_by_time
-            $table->string('endorsed_by_remarks');  // Time type for endorsed_by_time
+            $table->string('ticket_id')->nullable();
+            $table->string('department')->nullable();
+            $table->string('network')->nullable();
+            $table->string('network_details')->nullable();
+            $table->string('user_account')->nullable();
+            $table->string('user_account_details')->nullable();
+            $table->string('endorsed_to')->nullable();
+            $table->date('endorsed_to_date')->nullable();  // Date type for endorsed_to_date
+            $table->time('endorsed_to_time')->nullable();  // Time type for endorsed_to_time
+            $table->string('endorsed_to_remarks')->nullable();
+            $table->string('endorsed_by')->nullable();
+            $table->date('endorsed_by_date')->nullable();  // Date type for endorsed_by_date
+            $table->time('endorsed_by_time')->nullable();  // Time type for endorsed_by_time
+            $table->string('endorsed_by_remarks')->nullable();  // Time type for endorsed_by_time
             $table->timestamps();  // created_at and updated_at timestamps
+            $table->foreign('ticket_id')->references('control_no')->on('tickets')->onDelete('cascade');
         });
     }
 

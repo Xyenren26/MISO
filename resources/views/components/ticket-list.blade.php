@@ -113,3 +113,4 @@
 @include('modals.endorsement')
 
 <script src="{{ asset('js/Ticket_Components_Script.js') }}"></script>
+

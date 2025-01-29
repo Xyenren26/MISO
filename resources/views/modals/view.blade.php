@@ -70,3 +70,50 @@
         </form>
     </div>
 </div>
+<script>
+    // Function to show ticket details in the modal
+function showTicketDetails(controlNo) {
+  console.log('Control Number:', controlNo); // Debugging: Check if the control_no is being passed correctly
+  
+  fetch('/ticket-details/' + controlNo) // Assuming this endpoint fetches ticket details by control_no
+      .then(response => response.json())
+      .then(data => {
+          console.log('Ticket Details:', data); // Ensure the correct ticket data is received
+  
+          // Populate modal with ticket data
+          document.getElementById('ticketControlNumber').innerText = data.ticket.control_no;
+          document.getElementById('ticketFirstName').innerText = data.ticket.name;
+          document.getElementById('ticketDepartment').innerText = data.ticket.department;
+          document.getElementById('ticketConcern').innerText = data.ticket.concern;
+          document.getElementById('ticketPriority').innerText = data.ticket.priority;
+          document.getElementById('ticketEmployeeId').innerText = data.ticket.employee_id;
+          document.getElementById('ticketTechnicalSupport').innerText = data.ticket.technical_support_name;
+          document.getElementById('ticketTimeIn').innerText = data.ticket.time_in;
+  
+          // Populate the Support History Section
+          const historyList = document.getElementById('supportHistoryList');
+          historyList.innerHTML = ''; // Clear the list before appending new items
+          
+          // Check if we have ticket history data
+          if (data.ticketHistory) {
+              const historyItem = document.createElement('li');
+              historyItem.innerHTML = `
+                  <strong>Previous Support:</strong> ${data.ticketHistory.previous_technical_support_name} 
+                  <strong>New Support:</strong> ${data.ticketHistory.new_technical_support_name} 
+                  <strong>Changed At:</strong> ${data.ticketHistory.changed_at}
+              `;
+              historyList.appendChild(historyItem);
+          } else {
+              const noHistoryItem = document.createElement('li');
+              noHistoryItem.innerText = 'No support history available.';
+              historyList.appendChild(noHistoryItem);
+          }
+  
+          // Show modal
+          document.getElementById('ticketModal').style.display = "block";
+      })
+      .catch(error => {
+          console.error('Error fetching ticket details:', error);
+      });
+}
+</script>

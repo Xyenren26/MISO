@@ -20,15 +20,20 @@ Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationC
 Auth::routes(); 
 
 Route::middleware(['web'])->group(function() {
-Route::get('/', [Login_Controller::class, 'showLogin'])->name('login');
-Route::get('/login', [Login_Controller::class, 'showLogin']);
-Route::middleware('ClearExpiredSession')->post('/login', [Login_Controller::class, 'authenticate'])->name('login.authenticate');
-
-Route::get('/signup', [Login_Controller::class, 'showSignup'])->name('signup');
-Route::post('/signup', [Signup_Controller::class, 'storeSignup'])->name('signup.store');
-
-Route::post('/logout', [Login_Controller::class, 'logout'])->name('logout');
+    // Routes accessible only to unauthenticated users
+    Route::middleware(['guest'])->group(function () {
+        Route::get('/', [Login_Controller::class, 'showLogin'])->name('login');
+        Route::get('/login', [Login_Controller::class, 'showLogin']);
+        Route::get('/signup', [Login_Controller::class, 'showSignup'])->name('signup');
+        Route::post('/signup', [Signup_Controller::class, 'storeSignup'])->name('signup.store');
+    });
+    
+    Route::middleware('ClearExpiredSession')->post('/login', [Login_Controller::class, 'authenticate'])->name('login.authenticate');
+    
+    // Logout route
+    Route::post('/logout', [Login_Controller::class, 'logout'])->name('logout');
 });
+
 
 
 // Routes for technical-support and administrator (protected by 'auth' middleware)
@@ -42,6 +47,9 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/ticket-details/{control_no}', [Ticket_Controller::class, 'show']);
     Route::post('/api/pass-ticket', [Ticket_Controller::class, 'passTicket']);
     Route::post('/tickets/update-remarks', [Ticket_Controller::class, 'updateRemarks'])->name('tickets.updateRemarks');
+    Route::get('/endorsment-details/{control_no}', [Ticket_Controller::class, 'createEndorsement']);
+    Route::post('/endorsements/store', [Ticket_Controller::class, 'endorseStore'])->name('endorsements.store');
+    Route::get('/endorsement-details/{ticketId}', [Ticket_Controller::class, 'getEndorsementDetails']);
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
     // In web.php
 
