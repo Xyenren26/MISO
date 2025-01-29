@@ -104,6 +104,6 @@
     </div>
   </footer>
 
-  <script src="{{ asset('js/Login_Script.js') }}"></script>
+  <script src="{{ asset('js/Login_Script.js') }}"> </script>
 </body>
 </html>

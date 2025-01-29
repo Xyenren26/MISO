@@ -21,6 +21,7 @@ class Endorsement extends Model
     // Define the fillable attributes for mass assignment
     protected $fillable = [
         'control_no',
+        'ticket_id',
         'department',
         'network',
         'network_details',
@@ -39,13 +40,11 @@ class Endorsement extends Model
     // Define the type cast for specific attributes, especially date and time
     protected $casts = [
         'endorsed_to_date' => 'date',
-        'endorsed_to_time' => 'time',
         'endorsed_by_date' => 'date',
-        'endorsed_by_time' => 'time',
     ];
 
-    // Optionally, you can define relationships if needed, for example:
-    // public function userAccount() {
-    //     return $this->belongsTo(User::class, 'user_account');
-    // }
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class);
+    }
 }

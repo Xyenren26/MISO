@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TicketHistory;
+use App\Models\Endorsement;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Ticket_Controller extends Controller
 {
@@ -16,10 +18,11 @@ class Ticket_Controller extends Controller
     // Get the current logged-in user
     $user = auth()->user();
 
-    // Ensure the user is a technical support user
-    if ($user->account_type !== 'technical_support') {
+   // Ensure the user is a technical support user or an administrator
+    if (!in_array($user->account_type, ['technical_support', 'administrator'])) {
         abort(403, 'Unauthorized access');
     }
+
 
     // Fetch tickets assigned to the logged-in technical support user
     $status = request('filter');
@@ -33,7 +36,8 @@ class Ticket_Controller extends Controller
 
     // Fetch all technical support users excluding the current one
     $technicalSupports = User::where('account_type', 'technical_support')
-        ->get();
+    ->whereNotNull('session_id')  // Check if 'time_in' is not null
+    ->get();
 
     // Get the current year for control number formatting
     $currentYear = now()->year;
@@ -54,27 +58,6 @@ class Ticket_Controller extends Controller
     {
         // For debugging purposes, we can uncomment this to inspect the incoming data
         // dd($request->all()); // You can remove this after debugging
-
-        if ($request->isMethod('get')) {
-            // Fetch technical support users excluding the current logged-in user
-            $user = auth()->user();
-            $technicalSupports = User::where('account_type', 'technical_support')
-                ->where('employee_id', '!=', $user->employee_id)  // Exclude current technical support
-                ->get();
-
-            $currentYear = now()->year;
-
-            $lastTicket = Ticket::whereYear('created_at', $currentYear)
-                ->orderBy('control_no', 'desc')
-                ->first();
-
-            $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
-
-            $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
-
-            return view('components.ticket-form', compact('technicalSupports', 'formattedControlNo'));
-        }
-
         if ($request->isMethod('post')) {
             // Validate the request data
             $request->validate([
@@ -130,23 +113,23 @@ class Ticket_Controller extends Controller
 
     public function passTicket(Request $request)
     {
-    $ticketControlNo = $request->input('ticket_control_no');
-    $newTechnicalSupport = $request->input('new_technical_support'); // Ensure this value is correctly retrieved
+        $ticketControlNo = $request->input('ticket_control_no');
+        $newTechnicalSupport = $request->input('new_technical_support'); // Ensure this value is correctly retrieved
 
-    $ticket = Ticket::where('control_no', $ticketControlNo)->first();
+        $ticket = Ticket::where('control_no', $ticketControlNo)->first();
 
-    if ($ticket) {
-        $ticket->history()->create([
-            'previous_technical_support' => $ticket->technical_support_id,
-            'new_technical_support' => $newTechnicalSupport, // Check if this value is being passed correctly
-            'ticket_id' => $ticket->id, // Ensure you’re passing the correct ticket ID
-        ]);
+        if ($ticket) {
+            $ticket->history()->create([
+                'previous_technical_support' => $ticket->technical_support_id,
+                'new_technical_support' => $newTechnicalSupport, // Check if this value is being passed correctly
+                'ticket_id' => $ticket->id, // Ensure you’re passing the correct ticket ID
+            ]);
 
-        $ticket->technical_support_id = $newTechnicalSupport;
-        $ticket->save();
-    }
+            $ticket->technical_support_id = $newTechnicalSupport;
+            $ticket->save();
+        }
 
-    return redirect()->route('ticket')->with('success', 'Pass Ticket created successfully!');
+        return redirect()->route('ticket')->with('success', 'Pass Ticket created successfully!');
     }
 
     public function filterTickets(Request $request)
@@ -202,59 +185,215 @@ class Ticket_Controller extends Controller
         return view('components.ticket-list', compact('tickets', 'technicalSupports'))->render();
     }
     
+    public function show($id)
+    {
+        $ticket = Ticket::findOrFail($id);
 
-public function show($id)
-{
-    $ticket = Ticket::findOrFail($id);
-
-    // Fetch technical support name based on technical_support_id
-    $technicalSupport = User::where('employee_id', $ticket->technical_support_id)
-        ->selectRaw("CONCAT(first_name, ' ', last_name) AS technical_support_name")
-        ->first();
-
-    $ticket->technical_support_name = $technicalSupport->technical_support_name ?? 'N/A';
-
-    // Fetch the first history record for this ticket (if it exists)
-    $ticketHistory = $ticket->history()->orderBy('changed_at', 'asc')->first();
-
-    // Fetch full names for previous and new technical support
-    if ($ticketHistory) {
-        $previousTechnicalSupport = User::where('employee_id', $ticketHistory->previous_technical_support)
-            ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
+        // Fetch technical support name based on technical_support_id
+        $technicalSupport = User::where('employee_id', $ticket->technical_support_id)
+            ->selectRaw("CONCAT(first_name, ' ', last_name) AS technical_support_name")
             ->first();
 
-        $newTechnicalSupport = User::where('employee_id', $ticketHistory->new_technical_support)
-            ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
-            ->first();
+        $ticket->technical_support_name = $technicalSupport->technical_support_name ?? 'N/A';
 
-        // Add the names to the ticket history
-        $ticketHistory->previous_technical_support_name = $previousTechnicalSupport ? $previousTechnicalSupport->name : 'N/A';
-        $ticketHistory->new_technical_support_name = $newTechnicalSupport ? $newTechnicalSupport->name : 'N/A';
-    }
+        // Fetch the first history record for this ticket (if it exists)
+        $ticketHistory = $ticket->history()->orderBy('changed_at', 'asc')->first();
 
-    // Pass ticket data along with the first technical support history record (if available)
-    return response()->json([
-        'ticket' => $ticket,
-        'ticketHistory' => $ticketHistory
-    ]);
-}    
+        // Fetch full names for previous and new technical support
+        if ($ticketHistory) {
+            $previousTechnicalSupport = User::where('employee_id', $ticketHistory->previous_technical_support)
+                ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
+                ->first();
+
+            $newTechnicalSupport = User::where('employee_id', $ticketHistory->new_technical_support)
+                ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
+                ->first();
+
+            // Add the names to the ticket history
+            $ticketHistory->previous_technical_support_name = $previousTechnicalSupport ? $previousTechnicalSupport->name : 'N/A';
+            $ticketHistory->new_technical_support_name = $newTechnicalSupport ? $newTechnicalSupport->name : 'N/A';
+        }
+
+        // Pass ticket data along with the first technical support history record (if available)
+        return response()->json([
+            'ticket' => $ticket,
+            'ticketHistory' => $ticketHistory
+        ]);
+    }    
+
     public function updateRemarks(Request $request)
     {
+        // Validate the request inputs
         $request->validate([
             'control_no' => 'required|string|exists:tickets,control_no',
             'remarks' => 'required|string|max:255',
             'status' => 'required|in:completed,endorsed,technical_report',
         ]);
-
+    
         try {
+    
+            // Update the ticket details
             $ticket = Ticket::where('control_no', $request->control_no)->firstOrFail();
             $ticket->remarks = $request->remarks;
             $ticket->status = $request->status;
             $ticket->save();
-
+    
+            // Check if the status is 'endorsed'
+            if ($ticket->status === 'endorsed') {
+                // Call a separate method to handle the endorsement logic
+                $this->createEndorsement($ticket);
+            }
+    
+            // Return a success response
             return response()->json(['message' => 'Ticket updated successfully.'], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to update ticket.', 'error' => $e->getMessage()], 500);
+             // Log the error and return the error message
+        \Log::error('Failed to update ticket and endorsement:', ['error' => $e->getMessage()]);
+    
+            return response()->json(['message' => 'Failed to update ticket and endorsement.', 'error' => $e->getMessage()], 500);
         }
     }
+    
+    public function createEndorsement($ticket)
+    {
+        // Get the current year
+        $currentYear = now()->year;
+
+        // Find the last endorsement for the current year and get the last incremented number
+        $lastEndorsement = Endorsement::whereYear('endorsed_by_date', $currentYear)  // Make sure you use the correct column name for date
+            ->orderByDesc('control_no')  // Order by control_no to get the most recent entry
+            ->first();
+
+        // Extract the last number from the control_no (e.g., from ITS-2025-000010, extract 000010)
+        $lastControlNo = $lastEndorsement ? $lastEndorsement->control_no : null;
+        $lastNumber = $lastControlNo ? (int)substr($lastControlNo, -6) : 0;
+
+        // Increment the number by 1
+        $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+
+        // Generate a new control_no
+        $newControlNo = 'ITS-' . $currentYear . '-' . $newNumber;
+
+        // Save the endorsement
+        $endorsement = new Endorsement();
+        $endorsement->ticket_id = $ticket->control_no;  // Referencing ticket's control_no
+        $endorsement->department = $ticket->department;  // Assuming department is a field in the ticket
+        $endorsement->endorsed_by = $ticket->technical_support_name;  // Assuming this field is present in the ticket
+        $endorsement->endorsed_by_remarks = $ticket->remarks;  // Reusing the remarks from the ticket
+        $endorsement->control_no = $newControlNo;  // Newly generated control_no for the endorsement
+        $endorsement->save(); // Save the endorsement
+
+        // Return response with the new control_no to display in a modal
+        return response()->json([
+            'message' => 'Endorsement created successfully!',
+            'control_no' => $endorsement
+        ]);
+    } 
+
+    public function getEndorsementDetails($ticketId)
+    {
+        try {
+            \Log::info('Fetching endorsement for Ticket ID:', ['ticket_id' => $ticketId]);
+
+            // Check if the endorsement exists
+            $endorsement = Endorsement::where('ticket_id', $ticketId)->first();
+
+            if (!$endorsement) {
+                \Log::error('No endorsement found for Ticket ID:', ['ticket_id' => $ticketId]);
+                return response()->json(['message' => 'Endorsement not found.'], 404);
+            }
+
+            return response()->json(['endorsement' => $endorsement], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching endorsement details:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Failed to fetch endorsement details.'], 500);
+        }
+    }
+
+
+    public function endorseStore(Request $request)
+    {
+        // Log the incoming request data
+        Log::info('Endorsement store request received:', $request->all());
+        $validated = $request->validate([
+            'department' => 'required|string|max:255',
+            'network' => 'nullable|array',
+            'network_details' => 'nullable|array',
+            'user_account' => 'nullable|array',
+            'user_account_details' => 'nullable|array',
+            'endorsed_to' => 'nullable|string|max:255',
+            'endorsed_to_date' => 'nullable|date',
+            'endorsed_to_time' => 'nullable|date_format:H:i',
+            'endorsed_to_remarks' => 'nullable|string',
+            'endorsed_by' => 'nullable|string|max:255',
+            'endorsed_by_date' => 'nullable|date',
+            'endorsed_by_time' => 'nullable|date_format:H:i',
+            'endorsed_by_remarks' => 'nullable|string',
+        ]);
+
+        // Generate dynamic control_no
+        $year = date('Y'); // Current year
+        $lastRecord = Endorsement::whereYear('created_at', $year)
+            ->orderBy('control_no', 'desc')
+            ->first();
+
+        $lastNumber = $lastRecord ? (int)substr($lastRecord->control_no, -6) : 0;
+        $nextNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+
+        $control_no = "ITS-$year-$nextNumber";
+
+        // Add control_no to validated data
+        $validated['control_no'] = $control_no;
+
+        // Save arrays as JSON
+        $validated['network'] = json_encode($request->input('network', []));
+        $validated['network_details'] = json_encode($request->input('network_details', []));
+        $validated['user_account'] = json_encode($request->input('user_account', []));
+        $validated['user_account_details'] = json_encode($request->input('user_account_details', []));
+
+        // Save to database
+        $endorsement = Endorsement::create($validated);
+
+        // Generate Word Document
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $section = $phpWord->addSection();
+
+        $section->addTitle('Technical Endorsement', 1);
+        $section->addText("Control No: {$endorsement->control_no}");
+        $section->addText("Department: {$endorsement->department}");
+        $section->addText("Endorsed To: {$endorsement->endorsed_to}");
+        $section->addText("Endorsed To Date: {$endorsement->endorsed_to_date}");
+        $section->addText("Endorsed To Time: {$endorsement->endorsed_to_time}");
+        $section->addText("Endorsed To Remarks: {$endorsement->endorsed_to_remarks}");
+        $section->addText("Endorsed By: {$endorsement->endorsed_by}");
+        $section->addText("Endorsed By Date: {$endorsement->endorsed_by_date}");
+        $section->addText("Endorsed By Time: {$endorsement->endorsed_by_time}");
+        $section->addText("Endorsed By Remarks: {$endorsement->endorsed_by_remarks}");
+
+        // Add Network Details
+        $section->addText("Network Details:");
+        $networkDetails = json_decode($endorsement->network_details, true);
+        if ($networkDetails) {
+            foreach ($networkDetails as $detail) {
+                $section->addText("- {$detail}");
+            }
+        }
+
+        // Save the Word document to storage
+        $fileName = "endorsement_{$endorsement->id}.docx";
+        $filePath = storage_path("app/public/endorsements/{$fileName}");
+        $phpWord->save($filePath, 'Word2007');
+
+        // Save the file path in the database
+        $endorsement->file_path = "endorsements/{$fileName}";
+        $endorsement->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Endorsement saved successfully!',
+            'data' => $endorsement,
+            'file_path' => url("storage/endorsements/{$fileName}"),
+        ]);
+    }
+
 }

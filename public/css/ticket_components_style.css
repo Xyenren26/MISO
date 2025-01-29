@@ -263,6 +263,7 @@ background-color: #00214e;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
+    border-radius: 10px;
     max-width: 600px;
     position: relative;
 }

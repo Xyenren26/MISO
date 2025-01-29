@@ -15,13 +15,13 @@ class CustomAuthenticate
      * @param  \Closure  $next
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle($request, Closure $next)
     {
-        // Custom authentication logic (example)
-        if (!$request->session()->has('user_id')) {
-            return redirect('/login'); // Redirect if not authenticated
+        if (Auth::check()) {
+            // Redirect authenticated users to the home page
+            return redirect()->route('home');
         }
 
-        return $next($request); // Continue if authenticated
+        return $next($request);
     }
 }

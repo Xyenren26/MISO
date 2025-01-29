@@ -14,9 +14,12 @@ class Login_Controller extends Controller
 {
     public function showLogin()
     {
-        return view('Login'); // Refers to resources/views/login.blade.php
+        // Disable caching for the login page
+        return response()->view('Login') // Refers to resources/views/login.blade.php
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
-
     public function showSignup()
     {
         return view('Signup');
