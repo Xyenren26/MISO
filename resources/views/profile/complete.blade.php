@@ -5,8 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Your Profile</title>
 </head>
+<style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #003067;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .top-header {
+          position: absolute;
+          top: 0;
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            color: #003067;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #003067;
+            border-radius: 5px;
+        }
+        button {
+            background-color:rgb(255, 255, 255);
+            color: 003067;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+        button:hover {
+            background-color: #0055a4;
+            color:white;
+            stroke: white;
+            transform: scale(1.05);
+        }
+    </style>
 <body>
-    <h1>Complete Your Profile</h1>
+<h1 class="top-header">Complete Your Profile</h1>
     <form action="{{ route('profile.complete') }}" method="POST">
         @csrf
                     <!-- Name Fields in a Row -->
@@ -247,7 +297,27 @@
           <span id="error-message" style="color: red; display: none;">Please enter a valid 7-digit Employee ID. Only numbers are allowed.</span>
         </div>
 
-        <button type="submit">Complete Profile</button>
+        <button type="submit" id="submit-btn" disabled>Complete Profile</button>
     </form>
+
+    <script>
+      document.getElementById("employee-id").addEventListener("input", function () {
+        let input = this.value;
+        let errorMessage = document.getElementById("error-message");
+        let submitBtn = document.getElementById("submit-btn");
+
+        // Remove any non-numeric characters
+        this.value = input.replace(/\D/g, '');
+
+        // Show error if the length is not exactly 7 digits
+        if (this.value.length !== 7) {
+          errorMessage.style.display = "block";
+          submitBtn.disabled = true; // Disable button
+        } else {
+          errorMessage.style.display = "none";
+          submitBtn.disabled = false; // Enable button
+        }
+      });
+    </script>
 </body>
 </html>

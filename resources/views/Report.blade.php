@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Include Vite bundle -->
-    @vite('resources/js/app.jsx') <!-- This includes your compiled React assets -->
+    <!-- @vite('resources/js/app.jsx')  This includes your compiled React assets -->
 </head>
 <body>
 <div class="container">

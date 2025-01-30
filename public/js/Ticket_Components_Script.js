@@ -49,6 +49,14 @@ function closeRemarksModal() {
   modal.removeAttribute("data-control-no");
 }
 
+// Close modals when clicking outside of them
+window.onclick = function(event) {
+  const remarksModal = document.getElementById("remarksModal");
+  if (event.target === remarksModal) {
+      closeRemarksModal();
+  }
+};
+
 function openEndorsementModal(ticket_id) {
   console.log('Ticket ID:', ticket_id);
 
@@ -81,14 +89,29 @@ function closeEndorsementModal() {
   document.getElementById('endorsementModal').style.display = 'none';
 }
 
+function openTechnicalReportModal(ticketControlNo) {
+  // Get the modal element
+  var modal = document.getElementById("myModal");
+  
+  // Display the modal
+  modal.style.display = "block";
+  
+  // Implement additional logic based on the ticketControlNo if needed
+}
 
+// Function to close the modal
+function closeTechnicalReportModal() {
+  document.getElementById('myModal').style.display = 'none';
+}
 
-// Close modals when clicking outside of them
-window.onclick = function(event) {
-  const remarksModal = document.getElementById("remarksModal");
-  if (event.target === remarksModal) {
-      closeRemarksModal();
-  }
-};
+function openPopup(ticketControlNo) {
+   // Get the modal element
+   var modal = document.getElementById("formPopup");
+  
+   // Display the modal
+   modal.style.display = "block";
+}
 
-
+function closePopup(popupId) {
+  document.getElementById(popupId).style.display = 'none';
+}

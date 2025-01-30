@@ -136,54 +136,56 @@ class Ticket_Controller extends Controller
     {
         $status = $request->get('status');
         $priority = $request->get('priority');
-    
+        
         // Get the currently logged-in user
         $currentTechnicalSupportId = Auth::user()->employee_id;
         $user = Auth::user();  // Define the user for filtering active technical supports
-    
+        
         // Start building the query for tickets
         $query = Ticket::query();
-    
+        
         // Filter tickets assigned to the logged-in technical support user
         $query->where('technical_support_id', $currentTechnicalSupportId);
-    
+        
         // Handle the "recent" filter to show all latest records
         if ($status === 'recent') {
             $query->orderBy('created_at', 'desc'); // Sort by creation date (latest first)
         } else {
-            // Filter by specific status if not "recent"
+            // If the status is not "recent", check if there are multiple statuses (comma-separated)
             if ($status) {
-                $query->where('status', $status);
+                $statusArray = explode(',', $status); // Split the status string by commas
+                $query->whereIn('status', $statusArray); // Use whereIn to filter by multiple statuses
             }
         }
-    
+        
         // Filter by priority if provided
         if ($priority) {
             $query->where('priority', $priority);
         }
-    
+        
         // Paginate the results
         $tickets = $query->paginate(10);
-    
+        
         // For each ticket, determine if assist is done and if remarks are done
         foreach ($tickets as $ticket) {
             // Check if assist has been done (if the ticket exists in ticket_histories)
             $ticket->isAssistDone = $ticket->history->where('ticket_id', $ticket->control_no)->count() > 0;
 
             // Check if the status is one of the completed, endorsed, or technical_report
-            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical_report']);
+            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out']);
         }
-    
+        
         // Fetch active technical supports (those who have a recent activity and a session)
         $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
         $technicalSupports = User::where('last_activity', '>=', $threshold)
             ->whereNotNull('session_id') // Ensure they have a session ID
             ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
             ->get();
-    
+        
         // Render the ticket list view
         return view('components.ticket-list', compact('tickets', 'technicalSupports'))->render();
     }
+
     
     public function show($id)
     {
@@ -227,7 +229,7 @@ class Ticket_Controller extends Controller
         $request->validate([
             'control_no' => 'required|string|exists:tickets,control_no',
             'remarks' => 'required|string|max:255',
-            'status' => 'required|in:completed,endorsed,technical_report',
+            'status' => 'required|in:completed,endorsed,technical_report,pull-out',
         ]);
     
         try {

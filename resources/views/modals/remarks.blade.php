@@ -16,7 +16,8 @@
             <select id="statusDropdown">
                 <option value="completed">Mark Ticket as Complete</option>
                 <option value="endorsed">Endorsed Ticket</option>
-                <option value="technical_report">Write Technical Report</option>
+                <option value="technical-report">Write Ticket as Technical Report</option>
+                <option value="pull-out">Pull Out Device</option>
             </select>
         </div>
 
