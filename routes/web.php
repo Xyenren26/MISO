@@ -11,6 +11,7 @@ use App\Http\Controllers\Profile_Controller;
 use App\Http\Controllers\User_Management_Controller;
 use App\Http\Controllers\Audit_logs_Controller;
 use App\Http\Controllers\Report_Controller;
+use App\Http\Controllers\ServiceRequestController;
 
 
 Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])
@@ -51,7 +52,11 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/endorsements/store', [Ticket_Controller::class, 'endorseStore'])->name('endorsements.store');
     Route::get('/endorsement-details/{ticketId}', [Ticket_Controller::class, 'getEndorsementDetails']);
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
+    Route::get('/service-request/{form_no}', [Device_Management_Controller::class, 'getServiceRequest']);
+
     // In web.php
+    Route::get('/service-request', [ServiceRequestController::class, 'create']);
+    Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service.request.store');
 
     Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
     Route::post('/profile/complete', [Profile_Controller::class, 'completeProfile'])->name('profile.complete');

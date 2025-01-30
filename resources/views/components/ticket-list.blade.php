@@ -18,6 +18,9 @@
                 return 'status-endorsed';
             case 'completed':
                 return 'status-completed';
+            case 'pull-out':
+                return 'status-pull-out';     
+
             case 'in-progress':
                 return 'status-in-progress';
             case 'technical-report':
@@ -57,10 +60,20 @@
                         <i class="fas fa-eye"></i>
                     </button>
 
-                    @if ($ticket->isRemarksDone)
-                        <!-- Replace Remarks Button with Endorsed Button -->
+                    @if ($ticket->status == 'technical-report')
+                        <!-- Technical Report Button -->
+                        <button class="action-button" onclick="openTechnicalReportModal('{{ $ticket->control_no }}')">
+                            <i class="fas fa-file-alt"></i>
+                        </button>
+                    @elseif ($ticket->status == 'endorsed')
+                        <!-- Endorsed Button -->
                         <button class="action-button" onclick="openEndorsementModal('{{ $ticket->control_no }}')">
                             <i class="fas fa-thumbs-up"></i>
+                        </button>
+                    @elseif ($ticket->status == 'pull-out')
+                        <!-- Endorsed Button -->
+                        <button class="action-button" onclick="openPopup('{{ $ticket->control_no }}')">
+                            <i class="fas fa-laptop"></i>
                         </button>
                     @else
                         <!-- Remarks Button -->
@@ -70,6 +83,7 @@
                         </button>
                     @endif
 
+                    <!-- Buttons for Chat and Assist -->
                     <button class="action-button" 
                             id="chat-btn-{{ $ticket->control_no }}" 
                             @if ($ticket->isRemarksDone) disabled @endif>
@@ -82,7 +96,6 @@
                             @if ($ticket->isAssistDone || $ticket->isRemarksDone) disabled @endif>
                         <i class="fas fa-handshake"></i> <!-- For Assist -->
                     </button>
-
                 </td>
             </tr>
         @empty
@@ -111,6 +124,7 @@
 @include('modals.assist')
 @include('modals.remarks')
 @include('modals.endorsement')
-
+@include('modals.technical_report')
+@include('modals.new_device_form')
 <script src="{{ asset('js/Ticket_Components_Script.js') }}"></script>
 

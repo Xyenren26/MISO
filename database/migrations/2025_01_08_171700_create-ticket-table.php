@@ -15,7 +15,7 @@ return new class extends Migration
             Schema::create('tickets', function (Blueprint $table) {
             $table->string('control_no')->primary(); // control_no as the primary key (if not auto-incrementing)
             $table->integer('employee_id')->nullable(); // Foreign key to users table (general employee)
-            $table->integer('technical_support_id')->nullable(); // Foreign key to users table (specific to technical-support role)
+            $table->integer('technical_support_id'); // Foreign key to users table (specific to technical-support role)
             $table->string('name');
             $table->string('department');
             $table->enum('priority', ['urgent', 'semi-urgent', 'non-urgent']);
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps(); // Adds created_at and updated_at columns
 
             // Foreign Key Constraints (both referencing users table)
-            $table->foreign('employee_id')->references('employee_id')->on('users')->onDelete('cascade');
+            $table->foreign('employee_id')->references('employee_id')->on('users');
             $table->foreign('technical_support_id')->references('employee_id')->on('users')->onDelete('set null');
         });
     }

@@ -9,57 +9,56 @@
 </head>
 <body>
 <div class="container">
-    <!-- Sidebar -->
     @include('components.sidebar')
 
-    <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Navbar -->
         @include('components.navbar')
 
-        <!-- Header Section -->
+        <!-- Tabs -->
         <div class="header">
-            <!-- Tabs Section -->
             <div class="tabs">
-                <button class="tab-button active" onclick="showTab('all')">
+                <button class="tab-button {{ request('filter', 'all') == 'all' ? 'active' : '' }}" onclick="filterDevices('all')">
                     <i class="fas fa-laptop"></i> All Devices
                 </button>
-                <button class="tab-button" onclick="showTab('in-repairs')">
+                <button class="tab-button {{ request('filter') == 'in-repairs' ? 'active' : '' }}" onclick="filterDevices('in-repairs')">
                     <i class="fas fa-tools"></i> In Repairs
                 </button>
-                <button class="tab-button" onclick="showTab('repaired')">
+                <button class="tab-button {{ request('filter') == 'repaired' ? 'active' : '' }}" onclick="filterDevices('repaired')">
                     <i class="fas fa-check-circle"></i> Repaired
                 </button>
-                <button class="tab-button" onclick="showTab('new-deployment')">
+                <button class="tab-button {{ request('filter') == 'new-deployment' ? 'active' : '' }}" onclick="filterDevices('new-deployment')">
                     <i class="fas fa-plus-circle"></i> Device Deployment Record
                 </button>
             </div>
         </div>
 
-        <!-- Filter and Add New Device Section (Below Tabs) -->
+        <!-- Filter & Add Device -->
         <div class="actions">
-            <!-- Search Container -->
             <div class="search-container">
-                <input type="text" placeholder="Search..." class="search-input">
+                <input type="text" id="searchInput" placeholder="Search..." class="search-input">
                 <button class="search-button"><i class="fas fa-search"></i></button>
             </div>
 
-            <!-- Space Between Search and Filter/Add New Buttons -->
             <div class="spacer"></div>
 
-            <!-- Filter and Add New Device Section (Right side) -->
             <div class="filter-section">
-                <div class="dropdown">
-                    <button class="dropdown-button">
-                        <i class="fas fa-filter"></i> Filter Device <span class="arrow">&#x25BC;</span>
-                    </button>
-                    <div class="dropdown-content">
-                        <a href="?filter=option1">Option 1</a>
-                        <a href="?filter=option2">Option 2</a>
-                        <a href="?filter=option3">Option 3</a>
+                <form action="{{ route('device_management') }}" method="GET">
+                    <div class="dropdown">
+                        <button class="dropdown-button">
+                            <i class="fas fa-filter"></i> Filter by Condition <span class="arrow">&#x25BC;</span>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="{{ route('device_management', ['condition' => 'working']) }}">Working</a>
+                            <a href="{{ route('device_management', ['condition' => 'not-working']) }}">Not Working</a>
+                            <a href="{{ route('device_management', ['condition' => 'needs-repair']) }}">Needs Repair</a>
+                            <a href="{{ route('device_management', ['condition' => '']) }}">All Conditions</a>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
+
+
+
             <div class="add-device-section">
                 <button class="add-device" onclick="openPopup('formPopup')">
                     <span class="icon">➕</span> Add Device
@@ -67,57 +66,63 @@
             </div>
         </div>
 
-        <!-- Content Section -->
+        <!-- Devices List -->
         <div class="content">
-            <!-- Data Tables for Each Tab -->
-            <div id="all" class="tab-content active">
-                @if ($devices->count() > 0)
+            <div class="tab-content active">
+                @if ($serviceRequests->count() > 0)
                     <table class="device-table">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th>Control No.</th>
-                                <th>Device</th>
-                                <th>Name</th>
+                                <th>Form No.</th>
+                                <th>Service Type</th>
                                 <th>Department</th>
-                                <th>Device Status</th>
-                                <th>Created</th>
-                                <th>Last Update</th>
-                                <th></th>
+                                <th>Condition</th> <!-- New column for Condition -->
+                                <th>Status</th> <!-- Status column -->
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($devices as $device)
+                            @foreach ($serviceRequests as $request)
+                                @php
+                                    $remarks = $request->equipmentDescriptions->pluck('remarks')->filter()->implode(', ');
+                                    $condition = json_decode($request->condition, true); // Decoding the condition JSON
+                                @endphp
                                 <tr>
-                                    <td><input type="checkbox" /></td>
-                                    <td>{{ $device->control_no }}</td>
-                                    <td>{{ $device->device }}</td>
-                                    <td>{{ $device->name }}</td>
-                                    <td>{{ $device->department }}</td>
-                                    <td>{{ ucfirst($device->status) }}</td>
-                                    <td>{{ $device->created_at }}</td>
-                                    <td>{{ $device->updated_at }}</td>
-                                    <td><button class="menu-button">⋮</button></td>
+                                    <td>{{ $request->form_no }}</td>
+                                    <td>{{ ucfirst($request->service_type) }}</td>
+                                    <td>{{ $request->department }}</td>
+                                    <td>
+                                        @if($request->condition)
+                                            {{ $request->condition }}  <!-- Display the condition if it's available -->
+                                        @else
+                                            No Condition Available  <!-- Display this message if no condition is set -->
+                                        @endif
+                                    </td>
+                                    <td>{{ ucfirst($request->status) }}</td>
+                                    <td>
+                                        <button class="view-btn" onclick="openViewModal('{{ $request->form_no }}')">View</button>
+                                        <button class="remarks-button" onclick="addRemarks('{{ $request->form_no }}')">
+                                            <i class="fas fa-comment"></i> Remarks
+                                        </button>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 @else
-                    <!-- No Records Message -->
                     <div class="no-records">NO RECORDS FOUND</div>
                 @endif
 
-                <!-- Results Count and Pagination Controls -->
                 <div class="pagination-container">
                     <div class="results-count">
-                        @if ($devices->count() > 0)
-                            Showing {{ $devices->firstItem() }} to {{ $devices->lastItem() }} of {{ $devices->total() }} results
+                        @if ($serviceRequests->count() > 0)
+                            Showing {{ $serviceRequests->firstItem() }} to {{ $serviceRequests->lastItem() }} of {{ $serviceRequests->total() }} results
                         @else
                             Showing 1 to 0 of 0 results
                         @endif
                     </div>
                     <div class="pagination-buttons">
-                        {{ $devices->links('pagination::bootstrap-4') }}
+                        {{ $serviceRequests->appends(['filter' => request('filter')])->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
@@ -125,120 +130,40 @@
     </div>
 </div>
 
-<!-- Add Device Form Popup -->
-<div id="formPopup" class="form-popup-container" style="display: none;">
-    <div class="form-popup-content">
-        <span class="form-popup-close-btn" onclick="closePopup('formPopup')">×</span>
-        <div class="form-popup-form-container">
-            <header class="form-popup-header">
-                <div class="form-popup-logo">
-                    <img src="images/pasiglogo.png" alt="Logo">
-                </div>
-                <h1>ICT Equipment Service Request Form</h1>
-                <div class="form-popup-form-info">
-                    <span>Form No.: SP4-2024-004A</span>
-                </div>
-            </header>
+@include('modals.new_device_form')
+@include('modals.view_device')
 
-            <section class="form-popup-section">
-                <label><input type="radio" name="service_type" value="walk_in"> Walk-In</label>
-                <label><input type="radio" name="service_type" value="pull_out"> Pull-Out</label>
-            </section>
-
-            <form>
-                <!-- General Information Section -->
-                <section class="form-popup-section">
-                    <h3 class="form-popup-title">General Information</h3>
-                    <div class="form-popup-input-group">
-                        <label class="form-popup-label">Department / Office / Unit:</label>
-                        <input class="form-popup-input" type="text" name="department" required>
-                    </div>
-                    <div class="form-popup-input-group">
-                        <label class="form-popup-label">Brand:</label>
-                        <input class="form-popup-input" type="text" name="brand" required>
-                    </div>
-                    <div class="form-popup-checkbox-group">
-                        <label class="form-popup-label">Condition of Equipment:</label>
-                        <label><input type="checkbox" name="condition" value="working"> Working</label>
-                        <label><input type="checkbox" name="condition" value="not-working"> Not Working</label>
-                        <label><input type="checkbox" name="condition" value="needs-repair"> Needs Repair</label>
-                    </div>
-                </section>
-
-                <!-- Equipment Description Section -->
-                <section class="form-popup-section">
-                    <h3 class="form-popup-title">Equipment Description</h3>
-                    <table class="form-popup-table">
-                        <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th>Motherboard</th>
-                                <th>RAM</th>
-                                <th>HDD</th>
-                                <th>Accessories</th>
-                                <th>Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>System Unit</td>
-                                <td><input type="checkbox" name="system_motherboard"></td>
-                                <td><input type="checkbox" name="system_ram"></td>
-                                <td><input type="checkbox" name="system_hdd"></td>
-                                <td><input type="checkbox" name="system_accessories"></td>
-                                <td><input class="form-popup-input" type="text" name="system_remarks"></td>
-                            </tr>
-                            <tr>
-                                <td>Laptop</td>
-                                <td><input type="checkbox" name="laptop_motherboard"></td>
-                                <td><input type="checkbox" name="laptop_ram"></td>
-                                <td><input type="checkbox" name="laptop_hdd"></td>
-                                <td><input type="checkbox" name="laptop_accessories"></td>
-                                <td><input class="form-popup-input" type="text" name="laptop_remarks"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" class="form-popup-subheader">Printer and UPS</td>
-                            </tr>
-                            <tr>
-                                <td>Printer</td>
-                                <td colspan="5"><input class="form-popup-input" type="text" name="printer_remarks" placeholder="Remarks"></td>
-                            </tr>
-                            <tr>
-                                <td>UPS</td>
-                                <td colspan="5"><input class="form-popup-input" type="text" name="ups_remarks" placeholder="Remarks"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-
-                <button class="form-popup-button" type="submit">Submit</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Include custom scripts -->
 <script src="{{ asset('js/Dev_Manage_Script.js') }}"></script>
 <script>
-    // JavaScript to handle tab switching
-    function showTab(tabId) {
-        const tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(tab => tab.classList.remove('active'));
-
-        const buttons = document.querySelectorAll('.tab-button');
-        buttons.forEach(button => button.classList.remove('active'));
-
-        document.getElementById(tabId).classList.add('active');
-        event.target.classList.add('active');
+    function filterDevices(filter, condition = '') {
+        const url = new URL(window.location.href);
+        url.searchParams.set('filter', filter);
+        if (condition) {
+            url.searchParams.set('condition', condition);
+        }
+        window.location.href = url.toString();
     }
 
-    // JavaScript for Popup
-    function openPopup(popupId) {
-        document.getElementById(popupId).style.display = 'block';
-    }
-
-    function closePopup(popupId) {
-        document.getElementById(popupId).style.display = 'none';
+    function addRemarks(formNo) {
+        let remark = prompt("Enter remarks for " + formNo + ":");
+        if (remark) {
+            fetch(`/add-remarks/${formNo}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ remark })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Remarks updated!');
+                      location.reload();
+                  } else {
+                      alert('Failed to update remarks.');
+                  }
+              });
+        }
     }
 </script>
 </body>

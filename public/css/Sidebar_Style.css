@@ -4,7 +4,7 @@
     top: 0;
     width: 250px;
     height: 90vh;
-    background-color: transparent; /* Make the background transparent to show the image */
+    background-color: transparent;
     color: black;
     margin-top: 60px;
     padding-top: 20px;
@@ -12,7 +12,7 @@
     box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
     border-radius: 15px;
-    overflow: hidden; /* Prevent content from overflowing */
+    overflow: hidden;
 }
 
 /* Sidebar Background Image */
@@ -36,15 +36,14 @@
 
 /* Main Content */
 .main-content {
-    flex-grow: 1; /* Take remaining space */
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     margin-left: 250px;
-    justify-content: flex-start; /* Align content to the top */
+    justify-content: flex-start;
     padding: 20px;
-    transition: margin-left 0.3s ease-in-out; /* Smooth transition */
+    transition: margin-left 0.3s ease-in-out;
 }
-
 
 /* Minimized Sidebar Styling */
 .sidebar.minimized {
@@ -207,4 +206,54 @@
 .sidebar .menu li:hover:not(.active) {
     background-color: #003067;
     color: white;
+}
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 1200px) {
+    /* On screens smaller than 1200px, reduce sidebar width */
+    .sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        margin-left: 200px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    /* On screens smaller than 1024px, make the sidebar smaller */
+    .sidebar {
+        width: 180px;
+    }
+
+    .main-content {
+        margin-left: 180px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* On screens smaller than 768px, hide the sidebar */
+    .sidebar {
+        width: 0;
+        display: none; /* Optionally hide sidebar completely */
+    }
+
+    .main-content {
+        margin-left: 0; /* Make content full-width */
+    }
+}
+
+/* Optional: for small screens, adjust content margin if sidebar is hidden */
+@media screen and (max-width: 480px) {
+    .main-content {
+        padding: 10px; /* Reduce padding on very small screens */
+    }
+}
+
+/* Adjust sidebar toggle button position for smaller screens */
+@media screen and (max-width: 768px) {
+    .sidebar .sidebar-toggle-btn {
+        top: 20px; /* Adjust toggle button position */
+        right: -10px;
+    }
 }

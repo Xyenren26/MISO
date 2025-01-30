@@ -245,7 +245,10 @@
 }
 
 .status-technical-report {
-    color: #6f42c1; /* Purple for technical-report */
+    color: #ff0000; /* Purple for technical-report */
+}
+.status-pull-out {
+    color: hsl(318, 55%, 46%); /* Purple for technical-report */
 }
 
 /* Results Count */
