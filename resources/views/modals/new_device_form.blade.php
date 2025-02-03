@@ -60,9 +60,17 @@
     margin-bottom: 20px;
 }
 
+.form-popup-row {
+    display: flex;
+    gap: 15px; /* Adjust spacing */
+}
+
 /* Input Group */
 .form-popup-input-group {
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .form-popup-label {
@@ -148,6 +156,16 @@
                 <!-- General Information Section -->
                 <section class="form-popup-section">
                     <h3 class="form-popup-title">General Information</h3>
+                    <div class="form-popup-row">
+                        <div class="form-popup-input-group">
+                            <label class="form-popup-label">Employee Name:</label>
+                            <input class="form-popup-input" type="text" name="name" required>
+                        </div>
+                        <div class="form-popup-input-group">
+                            <label class="form-popup-label">Employee ID:</label>
+                            <input class="form-popup-input" type="text" name="employee_id" required>
+                        </div>
+                    </div>
                     <div class="form-popup-input-group">
                         <label class="form-popup-label">Department / Office / Unit:</label>
                         <input class="form-popup-input" type="text" name="department" required>
@@ -215,6 +233,17 @@
                         </tbody>
                     </table>
                 </section>
+
+                <section class="form-popup-section">
+                    <h3 class="form-popup-title">Assign Technical Support</h3>
+                    <select class="form-popup-input" name="technical_support_id">
+                        <option value="">Select Technical Support</option>
+                        @foreach ($technicalSupports as $support)
+                            <option value="{{ $support->employee_id }}">{{ $support->first_name }} {{ $support->last_name }}</option>
+                        @endforeach
+                    </select>
+                </section>
+
 
                 <button class="form-popup-button" type="submit">Submit</button>
             </form>

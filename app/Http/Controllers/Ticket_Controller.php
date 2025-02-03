@@ -7,6 +7,7 @@ use App\Models\TicketHistory;
 use App\Models\Endorsement;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Models\ServiceRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -48,9 +49,14 @@ class Ticket_Controller extends Controller
     // Calculate the next control number
     $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
     $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
+    
+    // Generate next form number
+    $latestFormNo = ServiceRequest::latest('form_no')->first();
+    $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
+    $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
 
     // Pass data to the view
-    return view('ticket', compact('tickets', 'technicalSupports', 'formattedControlNo'));
+    return view('ticket', compact('tickets', 'technicalSupports', 'formattedControlNo', 'nextFormNo'));
 }
 
 
@@ -181,9 +187,14 @@ class Ticket_Controller extends Controller
             ->whereNotNull('session_id') // Ensure they have a session ID
             ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
             ->get();
-        
+
+        // Generate next form number
+        $latestFormNo = ServiceRequest::latest('form_no')->first();
+        $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
+        $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
+            
         // Render the ticket list view
-        return view('components.ticket-list', compact('tickets', 'technicalSupports'))->render();
+        return view('components.ticket-list', compact('tickets', 'technicalSupports','nextFormNo'))->render();
     }
 
     
@@ -229,33 +240,31 @@ class Ticket_Controller extends Controller
         $request->validate([
             'control_no' => 'required|string|exists:tickets,control_no',
             'remarks' => 'required|string|max:255',
-            'status' => 'required|in:completed,endorsed,technical_report,pull-out',
+            'status' => 'required|in:completed,endorsed,technical-report,pull-out', // Ensure 'technical-report' is included here
         ]);
-    
+
         try {
-    
-            // Update the ticket details
+            // Find the ticket by control number
             $ticket = Ticket::where('control_no', $request->control_no)->firstOrFail();
             $ticket->remarks = $request->remarks;
-            $ticket->status = $request->status;
+            $ticket->status = $request->status;  // Update the status
             $ticket->save();
-    
-            // Check if the status is 'endorsed'
+
+            // Handle specific logic if the ticket status is "endorsed"
             if ($ticket->status === 'endorsed') {
-                // Call a separate method to handle the endorsement logic
-                $this->createEndorsement($ticket);
+                $this->createEndorsement($ticket);  // Your custom logic for endorsements
             }
-    
+
             // Return a success response
             return response()->json(['message' => 'Ticket updated successfully.'], 200);
         } catch (\Exception $e) {
-             // Log the error and return the error message
-        \Log::error('Failed to update ticket and endorsement:', ['error' => $e->getMessage()]);
-    
-            return response()->json(['message' => 'Failed to update ticket and endorsement.', 'error' => $e->getMessage()], 500);
+            // Log the error for debugging
+            \Log::error('Failed to update ticket and endorsement:', ['error' => $e->getMessage()]);
+            
+            // Return an error message as JSON
+            return response()->json(['message' => 'Failed to update ticket.', 'error' => $e->getMessage()], 500);
         }
     }
-    
     public function createEndorsement($ticket)
     {
         // Get the current year

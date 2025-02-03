@@ -132,15 +132,15 @@
 }
 
 .endorsementsave {
-    display: flex;
-    justify-content: center;
-    align-items: center; /* Centers the text vertically */
-    background-color: #007BFF;
-    color: white;
-    border: 10px;
+    width: 100%;
+    padding: 8px;
+    background: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    padding: 10px;
-    transition: background-color 0.3s;
+    transition: 0.3s;
 }
 
 .endorsementsave:hover {

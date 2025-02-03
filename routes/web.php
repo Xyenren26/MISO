@@ -55,7 +55,6 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/service-request/{form_no}', [Device_Management_Controller::class, 'getServiceRequest']);
 
     // In web.php
-    Route::get('/service-request', [ServiceRequestController::class, 'create']);
     Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service.request.store');
 
     Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
