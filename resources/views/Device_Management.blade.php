@@ -100,10 +100,13 @@
                                     </td>
                                     <td>{{ ucfirst($request->status) }}</td>
                                     <td>
-                                        <button class="view-btn" onclick="openViewModal('{{ $request->form_no }}')">View</button>
-                                        <button class="remarks-button" onclick="addRemarks('{{ $request->form_no }}')">
-                                            <i class="fas fa-comment"></i> Remarks
+                                        <button class="view-btn" onclick="openViewModal('{{ $request->form_no }}')">
+                                            <i class="fas fa-eye"></i> <!-- Eye icon for view -->
                                         </button>
+                                        <button class="status-button" onclick="changeStatus('{{ $request->form_no }}')">
+                                            <i class="fas fa-sync-alt"></i> <!-- Sync icon for changing status -->
+                                        </button>
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -142,28 +145,6 @@
             url.searchParams.set('condition', condition);
         }
         window.location.href = url.toString();
-    }
-
-    function addRemarks(formNo) {
-        let remark = prompt("Enter remarks for " + formNo + ":");
-        if (remark) {
-            fetch(`/add-remarks/${formNo}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ remark })
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      alert('Remarks updated!');
-                      location.reload();
-                  } else {
-                      alert('Failed to update remarks.');
-                  }
-              });
-        }
     }
 </script>
 </body>

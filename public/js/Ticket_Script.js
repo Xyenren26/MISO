@@ -92,8 +92,10 @@ function fetchAndRenderTickets() {
 
     // Fetch tickets with active filters
     const { status, priority } = activeFilters;
-    // If filtering by "endorsed", include "pull-out" as well
-    let filterStatuses = status === 'endorsed' ? ['endorsed', 'pull-out'] : [status];
+    
+    // Only filter by the selected status
+    let filterStatuses = status ? [status] : [];
+
 
     const queryParams = new URLSearchParams({
         status: filterStatuses.join(','), // Pass multiple statuses

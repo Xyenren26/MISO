@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('concern');
             $table->text('remarks')->nullable();
             $table->string('technical_support_name')->nullable(); // Name of technical support (just a string)
-            $table->enum('status', ['endorsed', 'completed', 'in-progress', 'technical-report'])->default('in-progress');
+            $table->enum('status', ['endorsed', 'completed', 'in-progress', 'technical-report', 'pull-out'])->default('in-progress');
             $table->timestamp('time_in')->useCurrent(); // Default to current time
             $table->timestamp('time_out')->nullable(); // Nullable field
             $table->timestamps(); // Adds created_at and updated_at columns

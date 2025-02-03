@@ -9,6 +9,7 @@ use App\Models\Ticket;
 use App\Models\DeviceManagement;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Models\ServiceRequest;
 use Illuminate\Support\Facades\DB;
 
 class Home_Controller extends Controller
@@ -100,17 +101,18 @@ class Home_Controller extends Controller
         $endorsedData = $this->prepareChartData($priorities, $endorsedTickets);
         $technicalReportData = $this->prepareChartData($priorities, $technicalReports);
 
-        // Device management counts
-        $inRepairsCount = DeviceManagement::whereMonth('created_at', $selectedMonth)
-            ->whereYear('created_at', $selectedYear)
-            ->where('status', 'in-repairs')
-            ->where('technical_support_id', Auth::user()->employee_id)
-            ->count();
-        $repairedCount = DeviceManagement::whereMonth('created_at', $selectedMonth)
-            ->whereYear('created_at', $selectedYear)
-            ->where('status', 'repaired')
-            ->where('technical_support_id', Auth::user()->employee_id)
-            ->count();
+        // Service request counts
+        $inRepairsCount = ServiceRequest::whereMonth('created_at', $selectedMonth)
+        ->whereYear('created_at', $selectedYear)
+        ->where('status', 'in-repairs')
+        ->where('technical_support_id', Auth::user()->employee_id)
+        ->count();
+
+        $repairedCount = ServiceRequest::whereMonth('created_at', $selectedMonth)
+        ->whereYear('created_at', $selectedYear)
+        ->where('status', 'repaired')
+        ->where('technical_support_id', Auth::user()->employee_id)
+        ->count();
 
         // Daily ticket performance
         $dailySolvedTickets = Ticket::select(DB::raw('DAY(created_at) as day'), DB::raw('count(*) as total'))
