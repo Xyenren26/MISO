@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash; 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 
 class Login_Controller extends Controller
 {
@@ -26,70 +27,64 @@ class Login_Controller extends Controller
     }
 
     public function authenticate(Request $request)
-{
-    // Validate the inputs for username and password
-    $request->validate([
-        'username' => 'required|string',
-        'password' => 'required|string',
-    ], [
-        'username.required' => 'Please enter your username.',
-        'password.required' => 'Please enter your password.',
-    ]);
+    {
+        // Validate input fields
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-    // Find user by username
-    $user = User::where('username', $request->username)->first();
+        // Find user by username
+        $user = User::where('username', $request->username)->first();
 
-    if ($user) {
-        // Check if the user is already logged in from another session
-        if ($user->session_id) {
-            return redirect()->back()->withErrors([
-                'login' => 'You are already logged in from another session. Please log out first.',
-            ])->withInput();
-        }
+        if ($user) {
+            $currentSessionId = session()->getId();
 
-        $remember = $request->has('remember');
-
-        // Set session lifetime based on "Remember Me"
-        if ($remember) {
-            Config::set('session.lifetime', env('REMEMBER_ME_LIFETIME', 43200));
-            Config::set('session.expire_on_close', false); // Session persists even when the browser is closed
-        } else {
-            Config::set('session.lifetime', env('SESSION_LIFETIME', 5));
-            Config::set('session.expire_on_close', true); // Session expires when the browser is closed
-        }
-
-        // Attempt to log the user in
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password], $remember)) {
-            // Check if this is the user's first login
-            if ($user->is_first_login) {
-                return redirect()->route('profile.complete.form'); // Replace with actual route name for profile completion
+            // 🔹 Check if user is already logged in from another browser
+            if ($user->session_id && $user->session_id !== $currentSessionId) {
+                return redirect()->back()->withErrors([
+                    'login' => 'You are already logged in from another session. Please log out first.',
+                ])->withInput();
             }
 
-            // Save the user's session info
-            session(['user_id' => $user->id]); // Save user ID in session, not employee_id
-            session(['last_activity' => now()]); // Track last activity time
+            // 🔹 If user has a valid remember_token & session matches, log in automatically
+            if ($user->remember_token && $user->session_id === $currentSessionId) {
+                Auth::login($user);
+                session(['user_id' => $user->id, 'last_activity' => now()]);
+                return $this->redirectUser($user);
+            }
 
-            // Update user session ID
-            $user->last_activity = now();
-            $user->session_id = session()->getId();
-            $user->save();
-        
+            // 🔹 Proceed with normal authentication
+            if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
+                // 🔹 Check if this is the user's first login
+                if ($user->is_first_login) {
+                    return redirect()->route('profile.complete.form'); 
+                }
+                // Generate & save new session_id and remember_token
+                $user->remember_token = Str::random(60);
+                $user->session_id = $currentSessionId; // Store the new session ID
+                $user->last_activity = now();
+                $user->save();
 
-            // Redirect based on account type
-            if ($user->account_type === 'end_user') {
-                return redirect('/employee/home'); // Redirect to employee's home page
-            } elseif (in_array($user->account_type, ['technical_support', 'administrator'])) {
-                return redirect()->route('home'); // Redirect to technical roles or admin home
+                session(['user_id' => $user->id, 'last_activity' => now()]);
+
+                return $this->redirectUser($user);
             }
         }
+
+        // If authentication fails
+        return redirect()->back()->withErrors(['login' => 'Invalid username or password.'])->withInput();
     }
 
-    // If login fails, redirect back with an error
-    return redirect()->back()->withErrors([
-        'login' => 'Invalid username or password.',
-    ])->withInput();
-}
-
+    // 🔹 Helper function to redirect users based on account type
+    private function redirectUser($user)
+    {
+        if ($user->account_type === 'end_user') {
+            return redirect('/employee/home'); // Redirect to employee's home page
+        } elseif (in_array($user->account_type, ['technical_support', 'administrator'])) {
+            return redirect()->route('home'); // Redirect to technical roles or admin home
+        }
+    }
 
 public function logout()
 {

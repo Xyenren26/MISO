@@ -28,7 +28,7 @@
                             GUEST
                         @endif
                     </div>
-                    <a class="dropdown-item" href="/account">
+                    <a class="dropdown-item" href="{{ route('profile.index') }}">
                         <i class="fas fa-user-circle"></i> My Account
                     </a>
                     <a class="dropdown-item" href="/settings">

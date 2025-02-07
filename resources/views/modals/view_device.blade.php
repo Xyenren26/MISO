@@ -26,6 +26,19 @@
                 </div>
             </header>
 
+           <!-- Service Type (Radio Buttons) -->
+            <section class="form-popup-section">
+                <label>
+                    <input type="radio" name="service_type" value="walk_in" required 
+                        id="service_type_walk_in"> Walk-In
+                </label>
+                <label>
+                    <input type="radio" name="service_type" value="pull_out" required 
+                        id="service_type_pull_out"> Pull-Out
+                </label>
+            </section>
+
+
             <!-- General Information Section -->
             <section class="form-popup-section">
                 <h3 class="form-popup-title">General Information</h3>

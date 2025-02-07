@@ -1,15 +1,31 @@
 /* Main Form Container Styling */
+.content-wrapper-form {
+    position: fixed;  /* Keep it fixed in place */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Dark semi-transparent overlay */
+    z-index: 999; /* Make sure it stays behind the form */
+    overflow: auto;  /* Allows scrolling if needed */
+}
+
+/* Ticket Form Container */
 .ticket-form-container {
-    position: absolute;
-    width: 78%;
-    max-width: 1200px;
-    margin: 0 auto;
+    position: absolute;  /* Ensures it is centered properly */
+    top: 75%;  /* Center vertically */
+    left: 50%;  /* Center horizontally */
+    transform: translate(-50%, -50%);  /* Adjust for perfect centering */
+    width: 60%;  /* Make sure it doesn’t go too wide */
+    max-width: 1200px;  /* Restrict the form size */
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Ensure the form is in front of the overlay */
+    z-index: 1000; /* Ensure the form stays above the overlay */
+    overflow: hidden; /* Prevent form content from spilling out */
 }
+
 
 /* Close Button Styling */
 .close-modal {

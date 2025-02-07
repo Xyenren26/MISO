@@ -132,4 +132,17 @@ class ServiceRequestController extends Controller
             }
         }
     }
+
+    public function updateStatus(Request $request, $form_no)
+    {
+        $serviceRequest = ServiceRequest::where('form_no', $form_no)->first();
+
+        if (!$serviceRequest) {
+            return response()->json(['success' => false, 'message' => 'Service request not found'], 404);
+        }
+
+        $serviceRequest->update(['status' => 'repaired']);
+
+        return response()->json(['success' => true, 'message' => 'Status updated successfully']);
+    }
 }
