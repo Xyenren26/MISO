@@ -8,7 +8,7 @@
 </head>
 <body>
     <!-- Ticket Form Container -->
-    <div class="content-wrapper">
+    <div class="content-wrapper-form">
         <div class="ticket-form-container">
         <button class="close-modal" onclick="closeTicketFormModal()">✖</button>
             <h2>Technical Service Slip</h2> <!-- New heading added here -->

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Verified;
-use App\Models\User; // Make sure to import the User model
+use App\Models\User; 
 
 class VerificationController extends Controller
 {

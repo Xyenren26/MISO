@@ -7,8 +7,8 @@ function openViewModal(formNo) {
             // Populate general information
             document.getElementById('viewFormNo').textContent = data.form_no;
             document.getElementById('viewDepartment').value = data.department;
-            document.getElementById('viewName').value = data.department;
-            document.getElementById('viewEmployee_ID').value = data.department;
+            document.getElementById('viewName').value = data.name;
+            document.getElementById('viewEmployee_ID').value = data.employee_id;
 
             // Handle condition
             const condition = Array.isArray(data.condition) ? data.condition.join(', ') : data.condition || 'N/A';
@@ -16,6 +16,9 @@ function openViewModal(formNo) {
 
             // Populate technical support
             document.getElementById('viewTechnicalSupport').value = data.technical_support;
+
+            // Handle service_type and other fields as needed
+            document.getElementById(`service_type_${data.service_type}`).checked = true;
 
             // Clear previous table rows
             const equipmentTable = document.getElementById('viewEquipmentTable');
@@ -105,3 +108,151 @@ function openViewModal(formNo) {
 function closePopup(popupId) {
     document.getElementById(popupId).style.display = 'none';
 }
+
+
+let currentFormNo = '';
+
+function openConfirmationModal(formNo) {
+    currentFormNo = formNo;
+    document.getElementById('modalFormNo').textContent = formNo;
+    document.getElementById('confirmationModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('confirmationModal').style.display = 'none';
+}
+
+function openDeploymentModal() {
+    document.getElementById("deploymentModal").style.display = "block";
+}
+
+function openDeploymentView(deploymentId) {
+    // Show the modal
+    document.getElementById("deploymentview").style.display = "block";
+
+    // Fetch data from the server
+    fetch(`/deployment/view/${deploymentId}`)
+        .then(response => {
+            if (!response.ok) {
+                console.error("Fetch failed with status:", response.status);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Fetched data:", data);  // Log the entire fetched data
+
+            // Fill the form fields with fetched data
+            document.getElementById('purpose').value = data.purpose;
+            document.getElementById('control_number').value = data.control_number;
+            document.getElementById('status_new').checked = data.status === 'new';
+            document.getElementById('status_used').checked = data.status === 'used';
+            
+            // Components
+            data.components.forEach(component => {
+                document.getElementById(`component_${component.toLowerCase()}`).checked = true;
+            });
+
+            // Software
+            data.software.forEach(software => {
+                document.getElementById(`software_${software.toLowerCase().replace(/ /g, '_')}`).checked = true;
+            });
+
+            // Equipment Items Section
+            if (data.equipment_items && data.equipment_items.length > 0) {
+                const item = data.equipment_items[0]; // Assuming one item
+                document.getElementById('equipment_description').value = item.description;
+                document.getElementById('equipment_serial_number').value = item.serial_number;
+                document.getElementById('equipment_quantity').value = item.quantity;
+            } else {
+                alert("No equipment items found.");
+            }
+
+            // Additional fields
+            document.getElementById('brand_name').value = data.brand_name;
+            document.getElementById('specification').value = data.specification;
+            document.getElementById('received_by').value = data.received_by;
+            document.getElementById('issued_by').value = data.issued_by;
+            document.getElementById('noted_by').value = data.noted_by;
+            document.getElementById('received_date').value = data.received_date;
+            document.getElementById('issued_date').value = data.issued_date;
+            document.getElementById('noted_date').value = data.noted_date;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            alert('There was an error loading the data. Please try again later.');
+        });
+}
+
+
+
+function openDeploymentView(deploymentId) {
+    // Show the modal
+    document.getElementById("deploymentview").style.display = "block";
+
+    // Fetch data from the server
+    fetch(`/deployment/view/${deploymentId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                document.getElementById('purpose').value = data.purpose || '';
+                document.getElementById('control_number').value = data.control_number || '';
+                document.getElementById('status_new').checked = data.status === 'new';
+                document.getElementById('status_used').checked = data.status === 'used';
+
+                // Set components
+                document.querySelectorAll('[id^="component_"]').forEach(el => el.checked = false);
+                (data.components || []).forEach(component => {
+                    const componentCheckbox = document.getElementById(`component_${component.toLowerCase()}`);
+                    if (componentCheckbox) {
+                        componentCheckbox.checked = true;
+                    }
+                });
+
+                // Set software
+                const softwareSection = document.getElementById('software');
+                softwareSection.innerHTML = '';
+                (data.software || []).forEach(soft => {
+                    softwareSection.innerHTML += `<input type="checkbox" checked disabled> ${soft} <br>`;
+                });
+
+                if (data.equipment_items && data.equipment_items.length > 0) {
+                    let firstItem = data.equipment_items[0]; // Get the first equipment item
+                    document.getElementById("equipment_description").value = firstItem.description || "";
+                    document.getElementById("equipment_serial_number").value = firstItem.serial_number || "";
+                    document.getElementById("equipment_quantity").value = firstItem.quantity || "";
+                } else {
+                    document.getElementById("equipment_description").value = "";
+                    document.getElementById("equipment_serial_number").value = "";
+                    document.getElementById("equipment_quantity").value = "";
+                }
+                
+                // Fill other fields
+                document.getElementById('brand_name').value = data.brand_name || '';
+                document.getElementById('specification').value = data.specification || '';
+                document.getElementById('received_by').value = data.received_by || '';
+                document.getElementById('issued_by').value = data.issued_by || '';
+                document.getElementById('noted_by').value = data.noted_by || '';
+                document.getElementById('received_date').value = data.received_date || '';
+                document.getElementById('issued_date').value = data.issued_date || '';
+                document.getElementById('noted_date').value = data.noted_date || '';
+            } else {
+                throw new Error("Invalid data received from server.");
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            alert('There was an error loading the data. Please try again later.');
+        });
+}
+
+function closeDeploymentview() {
+    document.getElementById("deploymentview").style.display = "none";
+}
+
+

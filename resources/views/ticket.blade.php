@@ -31,7 +31,7 @@
                 <button class="tab-button" data-status="technical-report" onclick="filterTickets('technical-report', event)">
                     <i class="fas fa-times-circle"></i> Technical-Report
                 </button>
-                <button class="tab-button" data-status="technical-report" onclick="filterTickets('pull-out', event)">
+                <button class="tab-button" data-status="pull-out" onclick="filterTickets('pull-out', event)">
                     <i class="fas fa-times-circle"></i> Pull-Out
                 </button>
             </div>

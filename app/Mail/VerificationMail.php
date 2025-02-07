@@ -5,9 +5,8 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Auth\Notifications\VerifyEmail;
 
-class WelcomeEmail extends Mailable
+class VerificationMail extends Mailable
 {
     use SerializesModels;
 
@@ -17,9 +16,9 @@ class WelcomeEmail extends Mailable
     public function __construct($user)
     {
         $this->user = $user;
-
+        
         // Pass employee_id as the ID and use sha1() for email hashing
-        $this->verificationUrl = route('RegistrationEmailValidate', [
+        $this->verificationUrl = route('verification.custom.verify', [
             'id' => $this->user->employee_id,  // Use employee_id as the ID
             'hash' => sha1($this->user->email),  // Hash the email for verification
         ]);
@@ -27,8 +26,8 @@ class WelcomeEmail extends Mailable
 
     public function build()
     {
-        return $this->subject('Welcome to Our System!')
-                    ->view('emails.welcome')
+        return $this->subject('Verify Your Email')
+                    ->view('emails.verification-email')
                     ->with([
                         'name' => $this->user->name,
                         'verification_url' => $this->verificationUrl,

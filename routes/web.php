@@ -7,18 +7,29 @@ use App\Http\Controllers\Signup_Controller;
 use App\Http\Controllers\Home_Controller;
 use App\Http\Controllers\Ticket_Controller;
 use App\Http\Controllers\Device_Management_Controller;
+use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\Profile_Controller;
 use App\Http\Controllers\User_Management_Controller;
 use App\Http\Controllers\Audit_logs_Controller;
 use App\Http\Controllers\Report_Controller;
+use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\ServiceRequestController;
 
+use App\Http\Controllers\PDFController;
 
-Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\Auth\VerificationController::class, 'verify'])
-    ->middleware(['auth', 'signed'])
-    ->name('verification.verify');
+Route::get('/generate-pdf/{form_no}', [PDFController::class, 'generatePDF'])->name('generate.pdf');
+Route::get('/generate-deployment-pdf/{control_number}', [PDFController::class, 'generateDeploymentPDF'])->name('generate.deployment.pdf');
 
-Auth::routes(); 
+Route::post('verification/send', [VerificationController::class, 'sendVerificationEmail'])
+    ->middleware('auth')
+    ->name('verification.send');
+
+Route::get('verification/verify/{id}/{hash}', [VerificationController::class, 'verifyEmail'])
+    ->name('verification.custom.verify');
+
+Route::get('verification/email/{id}/{hash}', [VerificationController::class, 'RegistrationEmailValidate'])
+    ->name('RegistrationEmailValidate');
+
 
 Route::middleware(['web'])->group(function() {
     // Routes accessible only to unauthenticated users
@@ -56,9 +67,13 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
 
     // In web.php
     Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service.request.store');
+    Route::post('/update-status/{form_no}', [ServiceRequestController::class, 'updateStatus']);
+    Route::post('/deployments', [DeploymentController::class, 'store'])->name('deployments.store');
+    Route::get('/deployment/view/{id}', [Device_Management_Controller::class, 'showDeployment']);
 
     Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
     Route::post('/profile/complete', [Profile_Controller::class, 'completeProfile'])->name('profile.complete');
+    Route::get('/profile', [Profile_Controller::class, 'index'])->name('profile.index');
     Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
     Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');
