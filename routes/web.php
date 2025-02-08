@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\Signup_Controller;
+use App\Http\Controllers\AccountSecurityController;
 use App\Http\Controllers\Home_Controller;
 use App\Http\Controllers\Ticket_Controller;
 use App\Http\Controllers\Device_Management_Controller;
@@ -14,6 +15,8 @@ use App\Http\Controllers\Audit_logs_Controller;
 use App\Http\Controllers\Report_Controller;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 use App\Http\Controllers\PDFController;
 
@@ -30,6 +33,11 @@ Route::get('verification/verify/{id}/{hash}', [VerificationController::class, 'v
 Route::get('verification/email/{id}/{hash}', [VerificationController::class, 'RegistrationEmailValidate'])
     ->name('RegistrationEmailValidate');
 
+Route::get('forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 Route::middleware(['web'])->group(function() {
     // Routes accessible only to unauthenticated users
@@ -74,6 +82,12 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
     Route::post('/profile/complete', [Profile_Controller::class, 'completeProfile'])->name('profile.complete');
     Route::get('/profile', [Profile_Controller::class, 'index'])->name('profile.index');
+    // Update profile data
+    Route::post('/profile/update', [Profile_Controller::class, 'update'])->name('profile.update');   
+    Route::get('/account/security', [AccountSecurityController::class, 'index'])->name('account.security');
+    Route::post('/account/security/change-password', [AccountSecurityController::class, 'changePassword'])->name('account.changePassword');
+    Route::post('/account/security/change-email', [AccountSecurityController::class, 'changeEmail'])->name('account.changeEmail');
+    Route::post('/account/verify-password', [AccountSecurityController::class, 'verifyPassword'])->name('account.verifyPassword');
     Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
     Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');

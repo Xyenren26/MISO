@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Profile Details</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -22,24 +23,59 @@
             background-attachment: fixed; /* Keep the background fixed while scrolling */
             position: relative;
         }
+        /* Vertical Navigation Container */
+        .vertical-nav {
+            display: flex;
+            flex-direction: column; /* Align buttons vertically */
+            gap: 15px; /* Spacing between buttons */
+            width: 200px; /* Set a fixed width for sidebar */
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+            
+            /* Fix Position */
+            position: absolute; /* Keeps it from affecting the layout */
+            left: 20px; /* Adjust distance from the left */
+            top: 50px; /* Adjust distance from the top */
+            
+            /* Ensure it's above other elements */
+            z-index: 10; /* Make sure it's on top */
+        }
 
-        /* Home Button */
-        .home-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background-color: #0073e6;
-            color: white;
-            border: none;
-            border-radius: 5px;
+        /* General Button Styling */
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
             font-size: 16px;
-            cursor: pointer;
+            font-weight: bold;
             text-decoration: none;
+            color: white;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Home Button Styling */
+        .home-button {
+            background-color: #007bff; /* Blue */
         }
 
         .home-button:hover {
-            background-color: #005bb5;
+            background-color: #0056b3;
+        }
+
+        /* Security Button Styling */
+        .security-button {
+            background-color: #28a745; /* Green */
+        }
+
+        .security-button:hover {
+            background-color: #1e7e34;
+        }
+
+        /* Icon Styling */
+        .nav-button i {
+            font-size: 20px;
         }
 
         /* Profile Container */
@@ -99,6 +135,7 @@
 
         /* Form Styles */
         .info-item {
+            position: relative; /* Allows absolute positioning inside */
             margin-bottom: 15px;
         }
 
@@ -108,7 +145,16 @@
             color: #555555;
             margin-bottom: 5px;
         }
-
+        .department-select{
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            color: #333333;
+            padding-right: 120px; /* Make space for the text inside */
+        }
         .info-item input {
             width: 100%;
             padding: 10px;
@@ -117,10 +163,25 @@
             border-radius: 5px;
             background-color: #f9f9f9;
             color: #333333;
+            padding-right: 120px; /* Make space for the text inside */
         }
 
         .info-item input:disabled {
             background-color: #e6e6e6;
+        }
+
+        /* Resend text inside input container */
+        .resend-button {
+            position: absolute;
+            right: 10px; /* Position to the right inside the input */
+            top: 50%;
+            border:none;
+            transform: translateY(-50%); /* Align vertically */
+            color: blue;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            white-space: nowrap;
         }
 
         /* Save Button */
@@ -186,8 +247,18 @@
     </style>
 </head>
 <body>
+<!-- Vertical Navigation Menu -->
+<div class="vertical-nav">
     <!-- Home Button -->
-    <a href="{{ route('home') }}" class="home-button"><i class="fas fa-home"></i></a>
+    <a href="{{ route('home') }}" class="nav-button home-button">
+        <i class="fas fa-home"></i> <span>Home</span>
+    </a>
+
+    <!-- Account Security Button -->
+    <a href="{{ route('account.security') }}" class="nav-button security-button">
+        <i class="fas fa-user-shield"></i> <span>Account Security</span>
+    </a>
+</div>
 
     <div class="profile-container">
         <!-- Header Section -->
@@ -209,18 +280,22 @@
         <!-- Main Content -->
         <div class="profile-details">
             <h3>About</h3>
-            <form id="profile-form">
+            <form id="profile-form" action="{{ route('profile.update') }}" method="POST">
+                @csrf <!-- CSRF Token for protection -->
                 <div class="info-item">
                     <label for="firstname">First Name:</label>
-                    <input type="text" id="firstname" placeholder="Enter First Name" value="{{ $user->first_name }}" disabled>
+                    <input type="text" id="firstname" name="first_name" placeholder="Enter First Name" value="{{ $user->first_name }}" disabled>
                 </div>
                 <div class="info-item">
                     <label for="lastname">Last Name:</label>
-                    <input type="text" id="lastname" placeholder="Enter Last Name" value="{{ $user->last_name }}" disabled>
+                    <input type="text" id="lastname" name="last_name" placeholder="Enter Last Name" value="{{ $user->last_name }}" disabled>
                 </div>
-                <div class="info-item">
+                <div class="info-item" id="department-container">
                     <label for="department">Department:</label>
-                    <input type="text" id="department" placeholder="Enter Department" value="{{ $user->department }}" disabled>
+                    <input type="text" id="current-department" name="department" value="{{ $user->department }}" disabled /> <!-- Non-editable input initially -->
+                    <select id="department" name="department" class="department-select" style="display: none;" >
+                        @include('components.list_department')
+                    </select>
                 </div>
                 <div class="info-item">
                     <label for="role">Account Role:</label>
@@ -228,63 +303,32 @@
                 </div>
                 <div class="info-item">
                     <label for="phone">Phone Number:</label>
-                    <input type="text" id="phone" placeholder="Enter Phone Number" value="{{ $user->phone_number }}" disabled>
+                    <input type="text" id="phone_number" name="phone_number" placeholder="Enter Phone Number" value="{{ $user->phone_number }}" disabled>
                 </div>
                 <div class="info-item">
                     <label for="email">Email:</label>
                     <input type="email" id="email" value="{{ $user->email }}" disabled>
                     @if(!$user->hasVerifiedEmail())
                         <p style="color: red;">Your email is not verified.</p>
-                        <button type="button" class="save-button" id="trigger-modal-btn">Resend Verification Email</button>
+                        <button type="button" class="resend-button" id="trigger-modal-btn">Resend Verification Email</button>
                     @else
                         <p style="color: green;">Email Verified</p>
                     @endif
                 </div>
-            </form>
-            
-            <form id="verification-form" method="POST" action="{{ route('verification.send') }}" style="display: none;">
-                @csrf
-            </form>
-
-            <div id="verification-modal" class="modal" style="display: none;">
-                <div class="modal-content">
-                    <h4>Email Verification</h4>
-                    <p>A verification email has been sent to your email address. Please check your inbox.</p>
-                    <button id="close-modal" class="close-btn">Close</button>
-                </div>
             </div>
-            
             <button type="button" class="save-button" id="edit-save-btn">Edit</button>
+            </form>
         </div>
     </div>
+    <div id="verification-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h4>Email Verification</h4>
+        <p>A verification email has been sent to your email address. Please check your inbox.</p>
+        <button id="close-modal" class="close-btn">Close</button>
+    </div>
+    <form id="verification-form" method="POST" action="{{ route('verification.send') }}" style="display: none;">
+        @csrf
+    </form>
 </body>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const triggerBtn = document.getElementById("trigger-modal-btn");
-    const modal = document.getElementById("verification-modal");
-    const closeModal = document.getElementById("close-modal");
-    const verificationForm = document.getElementById("verification-form");
-
-    if (triggerBtn && verificationForm) {
-        triggerBtn.addEventListener("click", function() {
-            modal.style.display = "block";
-            verificationForm.submit();
-        });
-    }
-
-    if (closeModal) {
-        closeModal.addEventListener("click", function() {
-            modal.style.display = "none";
-        });
-    }
-
-    window.addEventListener("click", function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-});
-</script>
 <script src="{{ asset('js/profile.js') }}"></script>
-
 </html>

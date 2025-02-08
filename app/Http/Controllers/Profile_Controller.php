@@ -83,5 +83,34 @@ class Profile_Controller extends Controller
                 return 'User';
         }
     }
+    public function update(Request $request)
+{
+    // Force Laravel to return JSON for debugging
+    if (!$request->expectsJson()) {
+        return response()->json(['error' => 'Invalid request type'], 400);
+    }
+
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'department' => 'required|string|max:255',
+        'phone_number' => 'nullable|string|max:15',
+    ]);
+
+    try {
+        $user = auth()->user();
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'department' => $request->department,
+            'phone_number' => $request->phone_number,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+}
+
 
 }
