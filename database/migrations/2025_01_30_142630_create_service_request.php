@@ -11,27 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Check if the table doesn't exist before creating it
         if (!Schema::hasTable('service_requests')) {
             Schema::create('service_requests', function (Blueprint $table) {
                 $table->id(); // Auto-increment primary key
-                $table->string('form_no')->unique(); // Form number as unique identifier
+                $table->string('ticket_id')->nullable(); // Declare before the foreign key
+                $table->foreign('ticket_id')->references('control_no')->on('tickets')->onDelete('cascade');
+
+                $table->string('form_no')->unique();
                 $table->enum('service_type', ['walk_in', 'pull_out']);
-                $table->string('name'); // Employee name
-                $table->integer('employee_id');
+                $table->string('name'); 
+                $table->unsignedBigInteger('employee_id'); // Make sure it matches User model
                 $table->string('department');
                 $table->enum('condition', ['working', 'not-working', 'needs-repair']);
                 $table->enum('status', ['in-repairs', 'repaired']);
-                $table->integer('technical_support_id')->nullable(); // Technical support ID as integer
-                $table->foreign('technical_support_id') // Foreign key constraint for technical support ID
-                    ->references('employee_id') // Reference the employee_id in the users table
+
+                $table->unsignedBigInteger('technical_support_id')->nullable();
+                $table->foreign('technical_support_id')
+                    ->references('employee_id') // Ensure employee_id in users is also an unsignedBigInteger
                     ->on('users');
-                $table->timestamps(); // Created_at & updated_at timestamps
+
+                $table->timestamps();
             });
         }
     }
-    
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('service_requests');

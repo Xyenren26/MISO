@@ -104,10 +104,25 @@ function openViewModal(formNo) {
         .catch(error => console.error('Error fetching service request details:', error));
 }
 
-// Function to close the popup
-function closePopup(popupId) {
-    document.getElementById(popupId).style.display = 'none';
+function openPopup(ticketControlNo = null) {
+    // Get the modal element
+    var modal = document.getElementById("formPopup");
+    
+    // If ticketControlNo is provided, set it in the hidden input field
+    if (ticketControlNo) {
+        document.getElementById("ticket_id").value = ticketControlNo;
+    } else {
+        document.getElementById("ticket_id").value = ""; // Clear if opened from Device Management
+    }
+
+    // Display the modal
+    modal.style.display = "block";
 }
+
+ 
+ function closePopup(popupId) {
+   document.getElementById(popupId).style.display = 'none';
+ }
 
 
 let currentFormNo = '';
@@ -124,64 +139,6 @@ function closeModal() {
 
 function openDeploymentModal() {
     document.getElementById("deploymentModal").style.display = "block";
-}
-
-function openDeploymentView(deploymentId) {
-    // Show the modal
-    document.getElementById("deploymentview").style.display = "block";
-
-    // Fetch data from the server
-    fetch(`/deployment/view/${deploymentId}`)
-        .then(response => {
-            if (!response.ok) {
-                console.error("Fetch failed with status:", response.status);
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Fetched data:", data);  // Log the entire fetched data
-
-            // Fill the form fields with fetched data
-            document.getElementById('purpose').value = data.purpose;
-            document.getElementById('control_number').value = data.control_number;
-            document.getElementById('status_new').checked = data.status === 'new';
-            document.getElementById('status_used').checked = data.status === 'used';
-            
-            // Components
-            data.components.forEach(component => {
-                document.getElementById(`component_${component.toLowerCase()}`).checked = true;
-            });
-
-            // Software
-            data.software.forEach(software => {
-                document.getElementById(`software_${software.toLowerCase().replace(/ /g, '_')}`).checked = true;
-            });
-
-            // Equipment Items Section
-            if (data.equipment_items && data.equipment_items.length > 0) {
-                const item = data.equipment_items[0]; // Assuming one item
-                document.getElementById('equipment_description').value = item.description;
-                document.getElementById('equipment_serial_number').value = item.serial_number;
-                document.getElementById('equipment_quantity').value = item.quantity;
-            } else {
-                alert("No equipment items found.");
-            }
-
-            // Additional fields
-            document.getElementById('brand_name').value = data.brand_name;
-            document.getElementById('specification').value = data.specification;
-            document.getElementById('received_by').value = data.received_by;
-            document.getElementById('issued_by').value = data.issued_by;
-            document.getElementById('noted_by').value = data.noted_by;
-            document.getElementById('received_date').value = data.received_date;
-            document.getElementById('issued_date').value = data.issued_date;
-            document.getElementById('noted_date').value = data.noted_date;
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('There was an error loading the data. Please try again later.');
-        });
 }
 
 

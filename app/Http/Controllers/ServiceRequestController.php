@@ -18,6 +18,7 @@ class ServiceRequestController extends Controller
         try {
             // Validate the form input
             $validated = $request->validate([
+                'ticket_id' => 'nullable|exists:tickets,control_no', // Only validate if provided
                 'service_type' => 'required|in:walk_in,pull_out',
                 'name' => 'required|string|max:255',
                 'employee_id' => 'required|integer|min:1',
@@ -35,9 +36,9 @@ class ServiceRequestController extends Controller
                 'printer_remarks' => 'nullable|string|max:255',
                 'ups_remarks' => 'nullable|string|max:255',
             ]);
-    
-            \Log::info('Validation Passed:', $validated); // Log validated data
-    
+
+            \Log::info('Validation Passed:', $validated);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Validation Failed:', ['errors' => $e->errors()]);
             return redirect()->back()->withErrors($e->errors())->withInput();
@@ -48,24 +49,26 @@ class ServiceRequestController extends Controller
         $latestFormRequest = ServiceRequest::whereYear('created_at', $year)->latest('id')->first();
         $latestNumber = $latestFormRequest ? (int)substr($latestFormRequest->form_no, -6) : 0;
         $newFormNo = 'SRF-' . $year . '-' . str_pad($latestNumber + 1, 6, '0', STR_PAD_LEFT);
-    
+
         // Save the service request
         $serviceRequest = ServiceRequest::create([
+            'ticket_id' => $request->ticket_id ?? null, // Ensure ticket_id is nullable
             'form_no' => $newFormNo,
             'service_type' => $request->service_type,
             'name' => $request->name,
             'employee_id' => $request->employee_id,
             'department' => $request->department,
             'condition' => $request->condition[0] ?? null, // Save only the first value
-            'technical_support_id' => $request->technical_support_id, // Laravel will cast automatically
+            'technical_support_id' => $request->technical_support_id,
         ]);
 
         \Log::info('Service Request Saved', ['id' => $serviceRequest->id ?? 'Failed']);
+
         // Save Equipment Description and Parts
         $this->saveEquipmentDescriptions($newFormNo, $request);
-    
+
         return redirect()->route('device_management')->with('success', 'Service request submitted successfully!');
-    }    
+    }
 
     private function saveEquipmentDescriptions($formNo, $request)
     {
@@ -144,5 +147,19 @@ class ServiceRequestController extends Controller
         $serviceRequest->update(['status' => 'repaired']);
 
         return response()->json(['success' => true, 'message' => 'Status updated successfully']);
+    }
+
+    public function checkServiceRequest($ticketId)
+    {
+        $serviceRequest = ServiceRequest::where('ticket_id', $ticketId)->with('equipmentDescriptions.equipmentParts')->first();
+
+        if ($serviceRequest) {
+            return response()->json([
+                'exists' => true,
+                'formNo' => $serviceRequest->form_no ?? null,
+            ]);
+        }
+
+        return response()->json(['exists' => false]);
     }
 }

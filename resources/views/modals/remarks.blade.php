@@ -65,28 +65,14 @@ function saveRemarksAndStatus() {
             alert(data.message);
             closeRemarksModal();
 
-            // Handle endorsement modal if needed
-            if (status === "endorsed") {
-                openEndorsementModal(controlNo);
-            }
-
-            // Update the UI dynamically to reflect the new status
-            const remarksButton = document.getElementById(`remarks-btn-${controlNo}`);
-            if (remarksButton) {
-                remarksButton.outerHTML = `
-                    <button class="action-button" onclick="openEndorsementModal('${controlNo}')">
-                        <i class="fas fa-thumbs-up"></i>
-                    </button>
-                `;
-            }
-
             // Update the control number dynamically if needed (after endorsement)
             if (data.newControlNo) {
-                const endorsementControlNoElement = document.getElementById(`endorsement-control-no-${controlNo}`);
-                if (endorsementControlNoElement) {
-                    endorsementControlNoElement.textContent = `Endorsement Control No: ${data.newControlNo}`;
-                }
+                    const endorsementControlNoElement = document.getElementById(`endorsement-control-no-${controlNo}`);
+                    if (endorsementControlNoElement) {
+                        endorsementControlNoElement.textContent = `Endorsement Control No: ${data.newControlNo}`;
+                    }
             }
+            location.reload();
         } catch (error) {
             alert(`Error parsing JSON: ${error.message}`);
         }

@@ -148,6 +148,7 @@
             </header>
             <form action="{{ route('service.request.store') }}" method="POST">
                 @csrf
+                <input type="hidden" id="ticket_id" name="ticket_id">
                 <section class="form-popup-section">
                     <label><input type="radio" name="service_type" value="walk_in" required> Walk-In</label>
                     <label><input type="radio" name="service_type" value="pull_out" required> Pull-Out</label>
@@ -159,16 +160,17 @@
                     <div class="form-popup-row">
                         <div class="form-popup-input-group">
                             <label class="form-popup-label">Employee Name:</label>
-                            <input class="form-popup-input" type="text" name="name" required>
+                            <input class="form-popup-input" type="text" name="name" id="name" required>
                         </div>
+                        
                         <div class="form-popup-input-group">
                             <label class="form-popup-label">Employee ID:</label>
-                            <input class="form-popup-input" type="text" name="employee_id" required>
+                            <input class="form-popup-input" type="text" name="employee_id" id="employee_id" required>
                         </div>
                     </div>
                     <div class="form-popup-input-group">
                         <label class="form-popup-label">Department / Office / Unit:</label>
-                        <input class="form-popup-input" type="text" name="department" required>
+                        <input class="form-popup-input" type="text" name="department" id="Pulloutdepartment" required>
                     </div>
                     <div class="form-popup-checkbox-group">
                         <label class="form-popup-label">Condition of Equipment:</label>
@@ -250,14 +252,3 @@
         </div>
     </div>
 </div>
-<script>
-    // JavaScript for Popup
-function openPopup(popupId) {
-  document.getElementById(popupId).style.display = 'block';
-}
-
-function closePopup(popupId) {
-  document.getElementById(popupId).style.display = 'none';
-}
-
-</script>

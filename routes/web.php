@@ -70,10 +70,15 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/endorsment-details/{control_no}', [Ticket_Controller::class, 'createEndorsement']);
     Route::post('/endorsements/store', [Ticket_Controller::class, 'endorseStore'])->name('endorsements.store');
     Route::get('/endorsement-details/{ticketId}', [Ticket_Controller::class, 'getEndorsementDetails']);
+    Route::get('/endorsement/details/{ticketId}', [Ticket_Controller::class, 'getTicketDetails']);
+    Route::get('/technical-reports/check/{control_no}', [Ticket_Controller::class, 'checkTechnicalReport']);
+    Route::get('/get-ticket-details/{control_no}', [Ticket_Controller::class, 'getTechnicalReportDetails']);
+    Route::post('/technical-reports/store', [Ticket_Controller::class, 'storeTechnicalReport'])->name('technical-reports.store');
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
     Route::get('/service-request/{form_no}', [Device_Management_Controller::class, 'getServiceRequest']);
 
     // In web.php
+    Route::get('/check-service-request/{ticketId}', [ServiceRequestController::class, 'checkServiceRequest']);
     Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service.request.store');
     Route::post('/update-status/{form_no}', [ServiceRequestController::class, 'updateStatus']);
     Route::post('/deployments', [DeploymentController::class, 'store'])->name('deployments.store');
