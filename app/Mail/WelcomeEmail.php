@@ -6,6 +6,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\URL;
+
 
 class WelcomeEmail extends Mailable
 {
@@ -16,11 +18,12 @@ class WelcomeEmail extends Mailable
 
     public function __construct($user)
     {
-        $this->user = $user;
+    $this->user = $user;
 
-        // Pass employee_id as the ID and use sha1() for email hashing
-        $this->verificationUrl = route('RegistrationEmailValidate', [
-            'id' => $this->user->employee_id,  // Use employee_id as the ID
+    // Generate a signed URL with an expiration time (24 hours)
+    $this->verificationUrl = URL::temporarySignedRoute(
+        'RegistrationEmailValidate', now()->addHours(24), [
+            'id' => $this->user->employee_id,   // Use employee_id as the ID
             'hash' => sha1($this->user->email),  // Hash the email for verification
         ]);
     }
@@ -30,7 +33,7 @@ class WelcomeEmail extends Mailable
         return $this->subject('Welcome to Our System!')
                     ->view('emails.welcome')
                     ->with([
-                        'name' => $this->user->name,
+                        'name' => $this->user->username,
                         'verification_url' => $this->verificationUrl,
                     ]);
     }

@@ -68,15 +68,13 @@ body {
   color: #333;
 }
 
-/* Form Row */
 .form-group-row {
   display: flex;
-  justify-content: space-between;
-  gap: 10px; /* Reduced gap for compact layout */
-  margin-bottom: 10px; /* Reduced margin */
+  gap: 15px;
+  align-items: flex-start; /* Ensures alignment */
+  position: relative; /* Needed for absolute positioning */
 }
 
-/* Form Group */
 .form-group {
   flex: 1;
   display: flex;
@@ -185,17 +183,27 @@ body {
 
 .input-wrapper {
   position: relative;
+  display: flex;
+  align-items: center; /* Keeps input and icon aligned */
 }
-.eye-icon {
+
+.input-wrapper input {
+  width: 80%;
+  padding-right: 40px;
+  height: 20px; /* Set a fixed height */
+  font-size: 16px; /* Ensures text size doesn’t affect input height */
+}
+
+.toggle-password {
   position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
+  right: 10px;
   cursor: pointer;
   color: #888;
-}
-input[type="password"] {
-  padding-right: 30px; /* Add some padding on the right to make space for the icon */
+  font-size: 18px;
+  line-height: 1;
+  height: 20px; /* Match input height */
+  display: flex;
+  align-items: center; /* Center it properly */
 }
 
 /* Footer styles */
@@ -297,13 +305,33 @@ input[type="password"] {
   margin: 15px 0; /* Reduced margin */
 }
 
-.error input, .error select, .error textarea {
-  border-color: red;
+.alert-box {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
 }
 
-.error small {
-  color: red;
-  font-size: 12px;
+.alert-box.error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.alert-box.success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.alert-box button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  cursor: pointer;
 }
 
 /* Modal Styles */
@@ -410,12 +438,7 @@ input[type="password"] {
     font-size: 0.85rem; /* Smaller font for input fields */
     padding: 5px; /* Compact padding */
   }
-
-  .form-group-row {
-    flex-direction: column; /* Stack rows vertically */
-    gap: 5px; /* Smaller gap */
-  }
-
+  
   .sign-up-container h2 {
     font-size: 1.2rem; /* Smaller heading font size */
     margin-bottom: 10px; /* Reduce margin */

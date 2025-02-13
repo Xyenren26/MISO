@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up</title>
   <link rel="stylesheet" href="{{ asset('css/Signup_Style.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <div class="logo-container">
-    <img src="images/ELECTRONIC SERVICE QUEUING MANAGEMENT SYSTEM logo2.png" alt="Logo" class="logo">
+    <img src="images/SystemLogo.png" alt="Logo" class="logo">
     <div class="pasig-logo">
       <img src="images/pasiglogo.png" alt="Pasig Logo">
     </div>
@@ -20,18 +20,6 @@
   <div class="container">
     <div class="sign-up-container">
       <h2>Create Account</h2>
-
-      <!-- Display Validation Errors -->
-      @if ($errors->any())
-        <div class="error-messages">
-          <ul>
-            @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
-        </div>
-      @endif
-
       <form action="{{ route('signup.store') }}" method="POST">
         @csrf
 
@@ -51,11 +39,9 @@
           <div class="form-group">
             <label for="password">Password</label>
             <div class="input-wrapper">
-              <input type="password" id="password" name="password" placeholder="Password" required>
+              <input type="password" id="password" name="password"  placeholder="Password" required>
               <!-- FontAwesome Eye Icon for visibility toggle -->
-              <span id="toggle-password" class="eye-icon" onclick="togglePasswordVisibility('password')">
-                <i class="fas fa-eye"></i> <!-- Eye icon -->
-              </span>
+              <i id="toggle-password" class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('password')"></i>
             </div>
           </div>
           <div class="form-group">
@@ -63,9 +49,7 @@
             <div class="input-wrapper">
               <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password" required>
               <!-- FontAwesome Eye Icon for visibility toggle -->
-              <span id="toggle-password-confirm" class="eye-icon" onclick="togglePasswordVisibility('password_confirmation')">
-                <i class="fas fa-eye"></i> <!-- Eye icon -->
-              </span>
+              <i id="toggle-password-confirm" class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('password_confirmation')"></i>
             </div>
           </div>
         </div>
@@ -115,9 +99,44 @@
     <p>This Privacy Policy describes how Pasig City Hall's Management Information Systems Office (MISO) collects, uses, discloses, and protects your personal information when you use the E-PIS (Enhanced Pasig Inventory System) and related services...</p>
   </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script src="{{ asset('js/Signup_Script.js') }}"></script>
 </body>
 </html>
+<script>
+    function showAlert(type, message) {
+        // Remove existing alerts
+        document.querySelectorAll(".alert-box").forEach(alert => alert.remove());
+
+        const alertBox = document.createElement("div");
+        alertBox.classList.add("alert-box", "px-4", "py-3", "rounded-lg", "relative", "mb-4");
+
+        if (type === "success") {
+            alertBox.classList.add("success");
+        } else {
+            alertBox.classList.add("error");
+        }
+
+
+        alertBox.innerHTML = `
+            <strong class="font-bold">${type === "success" ? "Success!" : "Error!"}</strong>
+            <span class="block sm:inline">${message}</span>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove();">
+                &times;
+            </button>
+        `;
+
+        // Append to a valid container
+        document.querySelector(".sign-up-container").prepend(alertBox);
+
+    }
+
+    // Run showAlert for Laravel validation errors
+    document.addEventListener("DOMContentLoaded", function () {
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                showAlert("error", "{{ $error }}");
+            @endforeach
+        @endif
+    });
+</script>
+

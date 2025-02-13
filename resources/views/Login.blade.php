@@ -20,26 +20,8 @@
           <img src="{{ asset('images/pasiglogo.png') }}" alt="Pasig Logo">
         </div>
       </div>
-
       <div class="login-container">
         <h2>Login</h2>
-        @if(session('success'))
-          <div class="alert alert-success">
-              {{ session('success') }}
-          </div>
-        @endif
-
-         <!-- Display error messages -->
-        @if($errors->any())
-          <div class="alert alert-danger">
-            <ul class="error-list">
-              @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
-
 
         <form action="{{ route('login.authenticate') }}" method="POST">
           @csrf <!-- CSRF token for protection -->
@@ -104,6 +86,52 @@
     </div>
   </footer>
 
-  <script src="{{ asset('js/Login_Script.js') }}"> </script>
+<script src="{{ asset('js/Login_Script.js') }}"> </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Show Laravel validation errors
+    @if ($errors->any())
+        @foreach ($errors->all() as $error)
+            showAlert("error", "{{ $error }}");
+        @endforeach
+    @endif
+
+    // Show success message for email verification or account creation
+    @if (session('success'))
+        showAlert("success", "{{ session('success') }}");
+    @endif
+
+    // Show any other general messages
+    @if (session('message'))
+        showAlert("success", "{{ session('message') }}");
+    @endif
+});
+
+function showAlert(type, message) {
+    // Remove existing alerts
+    document.querySelectorAll(".alert-box").forEach(alert => alert.remove());
+
+    const alertBox = document.createElement("div");
+    alertBox.classList.add("alert-box", "px-4", "py-3", "rounded-lg", "relative", "mb-4");
+
+    if (type === "success") {
+        alertBox.classList.add("success");
+    } else {
+        alertBox.classList.add("error");
+    }
+
+    alertBox.innerHTML = `
+        <strong class="font-bold">${type === "success" ? "Success!" : "Error!"}</strong>
+        <span class="block sm:inline">${message}</span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove();">
+            &times;
+        </button>
+    `;
+
+    // Append to the login container
+    document.querySelector(".login-container").prepend(alertBox);
+}
+
+</script>
 </body>
 </html>
