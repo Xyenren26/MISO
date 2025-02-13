@@ -9,40 +9,36 @@ use Illuminate\Http\Request;
 class Audit_logs_Controller extends Controller
 {
     public function showAudit_logs(Request $request){
-        // Apply filters
         $query = Audit_logs::query();
 
         // Filter by date range
-        if ($request->has(['start_date', 'end_date'])) {
-            $query->whereBetween('date_time', [
-                $request->input('start_date'),
-                $request->input('end_date'),
-            ]);
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('date_time', [$request->start_date, $request->end_date]);
         }
-
+    
         // Filter by action type
-        if ($request->has('action_type')) {
-            $query->where('action_type', $request->input('action_type'));
+        if ($request->filled('action_type')) {
+            $query->where('action_type', $request->action_type);
         }
-
-        // Filter by user
-        if ($request->has('performed_by')) {
-            $query->where('performed_by', $request->input('performed_by'));
-        }
-
-        // Search by Ticket or Device ID
-        if ($request->has('search')) {
+    
+       // Filter by user role (end_user, technical_support)
+    if ($request->filled('user')) {
+        $query->whereHas('user', function ($q) use ($request) {
+            $q->where('account_type', $request->user);
+        });
+    }
+    
+        // Search by ticket/device ID or user name
+        if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('ticket_or_device_id', 'like', '%' . $request->input('search') . '%')
-                  ->orWhere('remarks', 'like', '%' . $request->input('search') . '%');
+                $q->where('ticket_or_device_id', 'LIKE', "%{$request->search}%")
+                  ->orWhere('performed_by', 'LIKE', "%{$request->search}%")
+                  ->orWhere('remarks', 'LIKE', "%{$request->search}%");
             });
         }
-
-        // Paginate results
-        $auditLogs = $query->with('user')->paginate(10);
-
-        // Return view with logs
+    
+        $auditLogs = $query->orderBy('date_time', 'desc')->paginate(10);
+    
         return view('audit_logs', compact('auditLogs'));
-
     }
 }

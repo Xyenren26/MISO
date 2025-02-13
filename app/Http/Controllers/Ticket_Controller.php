@@ -8,6 +8,7 @@ use App\Models\Endorsement;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\ServiceRequest;
+use App\Models\TechnicalReport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -55,8 +56,17 @@ class Ticket_Controller extends Controller
     $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
     $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
 
+    $technicalAssistSupports = collect(); // Prevent undefined variable
+        
+    // Fetch active technical supports (those who have a recent activity and a session)
+    $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
+    $technicalAssistSupports = User::where('last_activity', '>=', $threshold)
+        ->whereNotNull('session_id') // Ensure they have a session ID
+        ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
+        ->get();
+
     // Pass data to the view
-    return view('ticket', compact('tickets', 'technicalSupports', 'formattedControlNo', 'nextFormNo'));
+    return view('ticket', compact('tickets', 'technicalAssistSupports','technicalSupports', 'formattedControlNo', 'nextFormNo'));
 }
 
 
@@ -180,13 +190,18 @@ class Ticket_Controller extends Controller
             // Check if the status is one of the completed, endorsed, or technical_report
             $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out']);
         }
+        $technicalSupports = User::where('account_type', 'technical_support')->get();
+
+        $technicalAssistSupports = collect(); // Prevent undefined variable
         
         // Fetch active technical supports (those who have a recent activity and a session)
         $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
-        $technicalSupports = User::where('last_activity', '>=', $threshold)
+        $technicalAssistSupports = User::where('last_activity', '>=', $threshold)
             ->whereNotNull('session_id') // Ensure they have a session ID
             ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
             ->get();
+
+     
 
         // Generate next form number
         $latestFormNo = ServiceRequest::latest('form_no')->first();
@@ -194,7 +209,7 @@ class Ticket_Controller extends Controller
         $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
             
         // Render the ticket list view
-        return view('components.ticket-list', compact('tickets', 'technicalSupports','nextFormNo'))->render();
+        return view('components.ticket-list', compact('tickets', 'technicalSupports','technicalAssistSupports','nextFormNo'))->render();
     }
 
     
@@ -250,8 +265,8 @@ class Ticket_Controller extends Controller
             $ticket->status = $request->status;  // Update the status
             $ticket->save();
 
-            // Handle specific logic if the ticket status is "endorsed"
-            if ($ticket->status === 'endorsed') {
+             // Handle specific logic if the ticket status is "endorsed"
+             if ($ticket->status === 'endorsed') {
                 $this->createEndorsement($ticket);  // Your custom logic for endorsements
             }
 
@@ -264,7 +279,8 @@ class Ticket_Controller extends Controller
             // Return an error message as JSON
             return response()->json(['message' => 'Failed to update ticket.', 'error' => $e->getMessage()], 500);
         }
-    }
+    } 
+
     public function createEndorsement($ticket)
     {
         // Get the current year
@@ -300,7 +316,7 @@ class Ticket_Controller extends Controller
             'control_no' => $endorsement
         ]);
     } 
-
+    
     public function getEndorsementDetails($ticketId)
     {
         try {
@@ -324,9 +340,11 @@ class Ticket_Controller extends Controller
 
     public function endorseStore(Request $request)
     {
-        // Log the incoming request data
-        Log::info('Endorsement store request received:', $request->all());
+
+
+        // Validate request
         $validated = $request->validate([
+            'ticket_id' => 'required|string|max:255',
             'department' => 'required|string|max:255',
             'network' => 'nullable|array',
             'network_details' => 'nullable|array',
@@ -342,69 +360,146 @@ class Ticket_Controller extends Controller
             'endorsed_by_remarks' => 'nullable|string',
         ]);
 
-        // Generate dynamic control_no
-        $year = date('Y'); // Current year
-        $lastRecord = Endorsement::whereYear('created_at', $year)
-            ->orderBy('control_no', 'desc')
-            ->first();
 
-        $lastNumber = $lastRecord ? (int)substr($lastRecord->control_no, -6) : 0;
-        $nextNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-
-        $control_no = "ITS-$year-$nextNumber";
-
-        // Add control_no to validated data
-        $validated['control_no'] = $control_no;
-
-        // Save arrays as JSON
+        // Convert arrays to JSON
         $validated['network'] = json_encode($request->input('network', []));
         $validated['network_details'] = json_encode($request->input('network_details', []));
         $validated['user_account'] = json_encode($request->input('user_account', []));
         $validated['user_account_details'] = json_encode($request->input('user_account_details', []));
 
-        // Save to database
-        $endorsement = Endorsement::create($validated);
+        // Check if endorsement already exists
+        $endorsement = Endorsement::where('ticket_id', $validated['ticket_id'])->first();
 
-        // Generate Word Document
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        $section = $phpWord->addSection();
+        if ($endorsement) {
 
-        $section->addTitle('Technical Endorsement', 1);
-        $section->addText("Control No: {$endorsement->control_no}");
-        $section->addText("Department: {$endorsement->department}");
-        $section->addText("Endorsed To: {$endorsement->endorsed_to}");
-        $section->addText("Endorsed To Date: {$endorsement->endorsed_to_date}");
-        $section->addText("Endorsed To Time: {$endorsement->endorsed_to_time}");
-        $section->addText("Endorsed To Remarks: {$endorsement->endorsed_to_remarks}");
-        $section->addText("Endorsed By: {$endorsement->endorsed_by}");
-        $section->addText("Endorsed By Date: {$endorsement->endorsed_by_date}");
-        $section->addText("Endorsed By Time: {$endorsement->endorsed_by_time}");
-        $section->addText("Endorsed By Remarks: {$endorsement->endorsed_by_remarks}");
+            $endorsement->update($validated);
+            $message = 'Endorsement updated successfully!';
+        } else {
 
-        // Add Network Details
-        $section->addText("Network Details:");
-        $networkDetails = json_decode($endorsement->network_details, true);
-        if ($networkDetails) {
-            foreach ($networkDetails as $detail) {
-                $section->addText("- {$detail}");
-            }
+            // Generate control number
+            $year = date('Y');
+            $lastRecord = Endorsement::whereYear('created_at', $year)
+                ->orderBy('control_no', 'desc')
+                ->first();
+
+            $lastNumber = $lastRecord ? (int)substr($lastRecord->control_no, -6) : 0;
+            $nextNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+            $validated['control_no'] = "ITS-$year-$nextNumber";
+
+            $endorsement = Endorsement::create($validated);
+            $message = 'Endorsement saved successfully!';
         }
 
-        // Save the Word document to storage
-        $fileName = "endorsement_{$endorsement->id}.docx";
-        $filePath = storage_path("app/public/endorsements/{$fileName}");
-        $phpWord->save($filePath, 'Word2007');
+        return redirect()->back()->with('success', $message);
+    }
 
-        // Save the file path in the database
-        $endorsement->file_path = "endorsements/{$fileName}";
-        $endorsement->save();
+    public function getTicketDetails($ticketId)
+    {
+        $endorsement = Endorsement::where('ticket_id', $ticketId)->first();
+
+        if (!$endorsement) {
+            return response()->json(['error' => 'Ticket not found'], 404);
+        }
 
         return response()->json([
-            'success' => true,
-            'message' => 'Endorsement saved successfully!',
-            'data' => $endorsement,
-            'file_path' => url("storage/endorsements/{$fileName}"),
+            'control_no' => $endorsement->control_no,
+            'department' => $endorsement->department,
+            'endorsed_to' => $endorsement->endorsed_to,
+            'endorsed_to_date' => $endorsement->endorsed_to_date,
+            'endorsed_to_time' => $endorsement->endorsed_to_time,
+            'endorsed_to_remarks' => $endorsement->endorsed_to_remarks,
+            'endorsed_by' => $endorsement->endorsed_by,
+            'endorsed_by_date' => $endorsement->endorsed_by_date,
+            'endorsed_by_time' => $endorsement->endorsed_by_time,
+            'endorsed_by_remarks' => $endorsement->endorsed_by_remarks,
+            'network' => $this->safeJsonDecode($endorsement->network),
+            'network_details' => $this->safeJsonDecode($endorsement->network_details),
+            'user_account' => $this->safeJsonDecode($endorsement->user_account),
+            'user_account_details' => $this->safeJsonDecode($endorsement->user_account_details),
         ]);
+    }
+
+    /**
+     * Helper function to safely decode JSON values
+     */
+    private function safeJsonDecode($value)
+    {
+        $decoded = json_decode($value, true);
+        return json_last_error() === JSON_ERROR_NONE ? $decoded : [];
+    }
+
+    public function checkTechnicalReport($control_no)
+    {
+        $report = TechnicalReport::where('control_no', $control_no)->first();
+
+        if ($report) {
+            return response()->json([
+                'exists' => true,
+                'report' => $report
+            ]);
+        } else {
+            return response()->json([
+                'exists' => false
+            ]);
+        }
+    }
+
+    public function getTechnicalReportDetails($control_no)
+    {
+        $ticket = Ticket::where('control_no', $control_no)->first();
+
+        if (!$ticket) {
+            return response()->json(['error' => 'Ticket not found'], 404);
+        }
+
+        return response()->json([
+            'name' => $ticket->name,
+            'employee_id' => $ticket->employee_id,
+            'department' => $ticket->department,
+            'enduser' => $ticket->name, // Assuming 'name' is the end user field
+            'success' => true // To check if it's found
+        ]);
+    }
+    
+    public function storeTechnicalReport(Request $request)
+    {
+        $request->validate([
+            'control_no' => 'required|string|exists:tickets,control_no', // ✅ Validate control_no
+            'date_time' => 'required|date',
+            'department' => 'required|string|max:255',
+            'enduser' => 'required|string|max:255',
+            'specification' => 'required|string',
+            'problem' => 'required|string',
+            'workdone' => 'required|string',
+            'findings' => 'required|string',
+            'recommendation' => 'required|string',
+            'reported_by' => 'required|string|max:255',
+            'reported_date' => 'nullable|date',
+            'inspected_by' => 'required|string|max:255',
+            'inspected_date' => 'nullable|date',
+            'noted_by' => 'required|string|max:255',
+            'noted_date' => 'nullable|date',
+        ]);
+
+        TechnicalReport::create([
+            'control_no' => $request->control_no, // ✅ Ensure control_no is included
+            'date_time' => $request->date_time,
+            'department' => $request->department,
+            'enduser' => $request->enduser,
+            'specification' => $request->specification,
+            'problem' => $request->problem,
+            'workdone' => $request->workdone,
+            'findings' => $request->findings,
+            'recommendation' => $request->recommendation,
+            'reported_by' => $request->reported_by,
+            'reported_date' => $request->reported_date,
+            'inspected_by' => $request->inspected_by,
+            'inspected_date' => $request->inspected_date,
+            'noted_by' => $request->noted_by,
+            'noted_date' => $request->noted_date,
+        ]);
+
+        return redirect()->back()->with('success', 'Technical Report saved successfully.');
     }
 
 }

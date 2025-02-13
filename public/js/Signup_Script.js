@@ -1,153 +1,201 @@
-// Sign-Up Form Validation
-const form = document.querySelector('form');
-const email = document.getElementById('email');
-const password = document.getElementById('password');
-const privacyPolicy = document.getElementById('privacy-policy');
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("form");
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+  const passwordConfirmation = document.getElementById("password_confirmation");
 
-// Error message display function
-function displayError(input, message) {
-  const formGroup = input.parentElement;
-  formGroup.classList.add('error');
-  const errorElement = formGroup.querySelector('small');
-  if (errorElement) {
-    errorElement.textContent = message;
-  } else {
-    const small = document.createElement('small');
-    small.textContent = message;
-    formGroup.appendChild(small);
+  if (!form || !email || !password || !passwordConfirmation) {
+    console.error("Required form elements not found!");
+    return;
   }
-}
 
-// Clear error messages
-function clearError(input) {
-  const formGroup = input.parentElement;
-  formGroup.classList.remove('error');
-  const errorElement = formGroup.querySelector('small');
-  if (errorElement) {
-    errorElement.textContent = '';
-  }
-}
+  // Live validation for email
+  email.addEventListener("input", function () {
+    checkEmail(email);
+  });
 
-// Play beep sound using Web Audio API
-function playSound() {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const oscillator = audioContext.createOscillator();
-  oscillator.type = 'sine'; // Sound type: sine wave
-  oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // Frequency in Hz (440Hz = A4)
-  oscillator.connect(audioContext.destination);
-  oscillator.start();
-  setTimeout(() => oscillator.stop(), 200); // Play sound for 200ms
-}
+  // Live validation for password
+  password.addEventListener("input", () => {
+    checkPassword(password);
+    updatePasswordStrength(password);
+  });
 
-// Check if input is empty
-function checkRequired(inputArray) {
-  let isValid = true;
-  inputArray.forEach((input) => {
-    if (input.value.trim() === '') {
-      displayError(input, `${input.placeholder} is required`);
-      isValid = false;
+  passwordConfirmation.addEventListener("input", () => {
+    if (password.value !== passwordConfirmation.value) {
+      displayErrorPassword(passwordConfirmation, "Passwords do not match");
     } else {
-      clearError(input);
+      clearError(passwordConfirmation);
     }
   });
-  return isValid;
-}
 
-// Check email format
-function checkEmail(input) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(input.value.trim())) {
-    displayError(input, 'Invalid email address');
-    return false;
+  // Form validation on submit
+  form.addEventListener("submit", function (event) {
+    let isValid = true;
+
+    isValid = checkRequired([email, password, passwordConfirmation]) && isValid;
+    isValid = checkEmail(email) && isValid;
+    isValid = checkPassword(password) && isValid;
+
+    // Check if passwords match
+    if (password.value !== passwordConfirmation.value) {
+      displayError(passwordConfirmation, "Passwords do not match");
+      isValid = false;
+    } else {
+      clearError(passwordConfirmation);
+    }
+
+    if (!isValid) {
+      event.preventDefault();
+    }
+  });
+
+  // Function to check required fields
+  function checkRequired(inputs) {
+    let isValid = true;
+    inputs.forEach((input) => {
+      if (input.value.trim() === "") {
+        displayError(input, `${input.placeholder} is required`);
+        isValid = false;
+      } else {
+        clearError(input);
+      }
+    });
+    return isValid;
   }
-  clearError(input);
-  return true;
-}
 
-// Check password complexity
-function checkPassword(input) {
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d|.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/; 
-  // Password must be at least 6 characters long, and include at least one letter, one number or one special character.
-  if (!passwordRegex.test(input.value)) {
-    displayError(
-      input,
-      'Password must be at least 6 characters long and include at least one letter, one number or one special character (@$!%*?&).'
-    );
-    return false;
+  // Function to validate email format
+  function checkEmail(input) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(input.value.trim())) {
+      displayError(input, "Invalid email address");
+      return false;
+    }
+    clearError(input);
+    return true;
   }
-  clearError(input);
-  return true;
-}
 
-// Suggest password strength dynamically
-password.addEventListener('input', () => {
-  const passwordStrength = document.getElementById('password-strength');
-  if (!passwordStrength) {
-    const strengthMeter = document.createElement('small');
-    strengthMeter.id = 'password-strength';
-    password.parentElement.appendChild(strengthMeter);
+  // Function to validate password complexity
+  function checkPassword(input) {
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d|.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passwordRegex.test(input.value)) {
+      displayErrorPassword(
+        input,
+        "Password must be at least 6 characters and include at least one letter, one number, or one special character."
+      );
+      return false;
+    }
+    clearError(input);
+    return true;
   }
-  const strengthMeter = document.getElementById('password-strength');
 
-  const passwordValue = password.value;
-  const lengthCriteria = passwordValue.length >= 8;
-  const hasUpperCase = /[A-Z]/.test(passwordValue);
-  const hasLowerCase = /[a-z]/.test(passwordValue);
-  const hasDigits = /\d/.test(passwordValue);
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue);
+  // Function to update password strength meter
+  function updatePasswordStrength(input) {
+    let strengthMeter = document.getElementById("password-strength");
+    if (!strengthMeter) {
+      strengthMeter = document.createElement("small");
+      strengthMeter.id = "password-strength";
+      strengthMeter.style.display = "block";
+      strengthMeter.style.marginTop = "5px";
+      strengthMeter.style.fontWeight = "bold";
+      password.closest(".form-group-row").before(strengthMeter);
+    }
 
-  // Check password strength based on complexity
-  if (passwordValue.length < 6) {
-    strengthMeter.textContent = 'Weak';
-    strengthMeter.style.color = 'red';
-  } else if (
-    !lengthCriteria ||
-    !hasUpperCase ||
-    !hasLowerCase ||
-    !hasDigits ||
-    !hasSpecialChar
-  ) {
-    strengthMeter.textContent = 'Medium';
-    strengthMeter.style.color = 'orange';
-  } else {
-    strengthMeter.textContent = 'Strong';
-    strengthMeter.style.color = 'green';
+    const passwordValue = input.value;
+    const lengthCriteria = passwordValue.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(passwordValue);
+    const hasLowerCase = /[a-z]/.test(passwordValue);
+    const hasDigits = /\d/.test(passwordValue);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(passwordValue);
+
+    if (passwordValue.length < 6) {
+      strengthMeter.textContent = "Weak";
+      strengthMeter.style.color = "red";
+    } else if (
+      !lengthCriteria ||
+      !hasUpperCase ||
+      !hasLowerCase ||
+      !hasDigits ||
+      !hasSpecialChar
+    ) {
+      strengthMeter.textContent = "Medium";
+      strengthMeter.style.color = "orange";
+    } else {
+      strengthMeter.textContent = "Strong";
+      strengthMeter.style.color = "green";
+    }
   }
+
+  // Password visibility toggle
+  window.togglePasswordVisibility = function (inputId) {
+    const passwordInput = document.getElementById(inputId);
+    const eyeIcon = document.querySelector(`#toggle-${inputId} i`);
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      eyeIcon.classList.remove("fa-eye");
+      eyeIcon.classList.add("fa-eye-slash");
+    } else {
+      passwordInput.type = "password";
+      eyeIcon.classList.remove("fa-eye-slash");
+      eyeIcon.classList.add("fa-eye");
+    }
+  };
+
+  // Modal elements
+  const modal = document.getElementById("privacy-policy-modal");
+  const openModal = document.getElementById("privacy-policy-link");
+  const closeModal = document.querySelector(".close");
+
+  if (modal && openModal && closeModal) {
+    // Open modal
+    openModal.addEventListener("click", function (event) {
+      event.preventDefault();
+      modal.style.display = "block";
+    });
+
+    // Close modal
+    closeModal.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+
+    // Close modal when clicking outside content
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+
+  // Function to display error messages OUTSIDE input field
+  function displayError(input, message) {
+    let errorElement = document.getElementById(`${input.id}-error`);
+    if (!errorElement) {
+      errorElement = document.createElement("small");
+      errorElement.id = `${input.id}-error`;
+      errorElement.style.color = "red";
+      errorElement.style.display = "block";
+      errorElement.style.marginBottom = "10px";
+      input.closest(".form-group").after(errorElement);
+    }
+    errorElement.textContent = message;
+  }
+
+  // Function to display error messages OUTSIDE input field
+  function displayErrorPassword(input, message) {
+    let errorElement = document.getElementById(`${input.id}-error`);
+    if (!errorElement) {
+      errorElement = document.createElement("small");
+      errorElement.id = `${input.id}-error`;
+      errorElement.style.color = "red";
+      errorElement.style.display = "block";
+      input.closest(".input-wrapper").after(errorElement);
+    }
+    errorElement.textContent = message;
+  }
+  // Function to clear error messages
+  function clearError(input) {
+    let errorElement = document.getElementById(`${input.id}-error`);
+    if (errorElement) {
+      errorElement.remove();
+    }
+  }  
 });
-
-// Get modal elements
-const modal = document.getElementById("privacy-policy-modal");
-const openModal = document.getElementById("privacy-policy-link");
-const closeModal = document.querySelector(".close");
-
-// Open the modal when clicking the link
-openModal.addEventListener("click", function (event) {
-  event.preventDefault(); // Prevent default link behavior
-  modal.style.display = "block";
-});
-
-// Close the modal when clicking the "x"
-closeModal.addEventListener("click", function () {
-  modal.style.display = "none";
-});
-
-// Close the modal when clicking outside the modal content
-window.addEventListener("click", function (event) {
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
-});
-
-function togglePasswordVisibility(inputId) {
-  const passwordInput = document.getElementById(inputId);
-  const eyeIcon = document.querySelector(`#toggle-${inputId} i`);
-  if (passwordInput.type === "password") {
-    passwordInput.type = "text";
-    eyeIcon.classList.remove("fa-eye");
-    eyeIcon.classList.add("fa-eye-slash"); // Change to "eye-slash" to indicate visibility
-  } else {
-    passwordInput.type = "password";
-    eyeIcon.classList.remove("fa-eye-slash");
-    eyeIcon.classList.add("fa-eye"); // Revert back to "eye" icon to indicate hidden
-  }
-}

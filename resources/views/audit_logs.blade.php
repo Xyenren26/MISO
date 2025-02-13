@@ -26,26 +26,27 @@
             <div class="filters">
                 <form action="{{ route('audit_logs') }}" method="GET">
                     <label for="date-range">Date Range:</label>
-                    <input type="date" name="start_date" placeholder="Start Date">
-                    <input type="date" name="end_date" placeholder="End Date">
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" placeholder="Start Date">
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" placeholder="End Date">
 
                     <label for="action-type">Action Type:</label>
                     <select name="action_type">
                         <option value="">All</option>
-                        <option value="created">Created</option>
-                        <option value="updated">Updated</option>
-                        <option value="endorsed">Endorsed</option>
-                        <option value="unrepairable">Marked Unrepairable</option>
+                        <option value="created" {{ request('action_type') == 'created' ? 'selected' : '' }}>Created</option>
+                        <option value="updated" {{ request('action_type') == 'updated' ? 'selected' : '' }}>Updated</option>
+                        <option value="endorsed" {{ request('action_type') == 'endorsed' ? 'selected' : '' }}>Endorsed</option>
+                        <option value="unrepairable" {{ request('action_type') == 'unrepairable' ? 'selected' : '' }}>Marked Unrepairable</option>
                     </select>
 
                     <label for="user">User:</label>
                     <select name="user">
                         <option value="">All</option>
-                        <option value="admin">Admin</option>
-                        <option value="tech">Technical Support</option>
+                        <option value="end_user" {{ request('user') == 'end_user' ? 'selected' : '' }}>End User</option>
+                        <option value="technical_support" {{ request('user') == 'technical_support' ? 'selected' : '' }}>Technical Support</option>
                     </select>
 
-                    <input type="text" name="search" placeholder="Search by Ticket ID, Device ID, or User Name">
+
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Ticket ID, Device ID, or User Name">
                     <button type="submit">Apply Filters</button>
                 </form>
             </div>

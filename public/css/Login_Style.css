@@ -384,17 +384,41 @@
     display: none;
   }
   
-  .error-list {
-    list-style-type: none;  /* Removes the dot */
-    padding-left: 0;        /* Removes the default left padding for the list */
-  }
   
-  .error-list li {
-    color: red;            
-    font-size: 14px;        
-  }
-  /* Responsive Design */
-  
+.alert-box {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.alert-box.error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.alert-box.success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+.alert-box.message {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.alert-box button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  cursor: pointer;
+}
+
   /* Tablets (768px and below) */
   @media (max-width: 768px) {
     .split-screen {

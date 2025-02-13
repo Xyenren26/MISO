@@ -59,7 +59,7 @@ class Profile_Controller extends Controller
         ]);
 
         // Fallback redirect if no condition is met
-    return redirect()->route('login')->with('error', 'Successful Finish profile, please log in again.');
+        return redirect()->route('login')->with('success', 'Successful Finish profile, please log in again.');
     }
 
     public function index()

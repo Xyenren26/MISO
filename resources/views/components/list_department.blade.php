@@ -1,4 +1,4 @@
-<option value="">Select Department</option>
+            <option value="">Select Department</option>
 
             <!-- Office of the City Mayor -->
             <optgroup label="OFFICE OF THE CITY MAYOR">

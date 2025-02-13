@@ -10,7 +10,7 @@
                 <label for="technicalSupport">Choose Technical Support:</label>
                 <select id="technicalSupport" name="new_technical_support" required>
                     <option value="" disabled selected>Select Assist Technical Support</option>
-                    @foreach($technicalSupports as $tech)
+                    @foreach($technicalAssistSupports as $tech)
                         <option value="{{ $tech->employee_id }}">
                             {{ $tech->first_name }} {{ $tech->last_name }}
                         </option>

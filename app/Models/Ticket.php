@@ -4,24 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Ticket extends Model
 {
     use HasFactory;
 
-    // Define the table associated with the model
     protected $table = 'tickets';
-
-    // Specify the primary key for the table
     protected $primaryKey = 'control_no';
-
-
     public $incrementing = false;
-
-    // Specify the primary key type
     protected $keyType = 'string';
+    public $timestamps = true;
 
-    // Mass-assignable attributes
     protected $fillable = [
         'employee_id',
         'name',
@@ -35,30 +29,56 @@ class Ticket extends Model
         'time_in',
         'time_out',
         'created_at',
-        'created_at',
     ];
 
-    // Timestamps (created_at and updated_at) are enabled by default
-    public $timestamps = true;
-
-    /**
-     * Define a relationship with the Employee model.
-     */
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'id');
     }
 
-    /**
-     * Define a relationship with the Technical Support model.
-     */
     public function technicalSupport()
     {
         return $this->belongsTo(TechnicalSupport::class, 'technical_support_id', 'id');
     }
+
     public function history()
     {
         return $this->hasMany(TicketHistory::class, 'ticket_id', 'control_no');
-    }    
+    }
 
+    // 🔹 Model Events for Audit Logging
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($ticket) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'created',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $ticket->control_no,
+                'remarks' => 'Ticket created'
+            ]);
+        });
+
+        static::updated(function ($ticket) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'updated',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $ticket->control_no,
+                'remarks' => 'Ticket updated'
+            ]);
+        });
+
+        static::deleted(function ($ticket) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'deleted',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $ticket->control_no,
+                'remarks' => 'Ticket deleted'
+            ]);
+        });
+    }
 }

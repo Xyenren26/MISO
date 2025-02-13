@@ -13,12 +13,12 @@ class Signup_Controller extends Controller
 {
     public function storeSignup(Request $request)
     {
-        // Validate input
         $request->validate([
-            'username' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
         ]);
+        
 
         // Generate a random 6-digit employee ID
         $employeeId = rand(100000, 999999);

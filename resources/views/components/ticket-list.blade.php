@@ -57,23 +57,43 @@
                     <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
                     <td class="{{ getStatusClass($ticket->status) }}">{{ ucfirst($ticket->status) }}</td>
                     <td>
+                        <!-- View Ticket Details -->
                         <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
                             <i class="fas fa-eye"></i>
                         </button>
 
                         @if ($ticket->status == 'technical-report')
-                            <button class="action-button" onclick="openTechnicalReportModal('{{ $ticket->control_no }}')">
+                            <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')">
                                 <i class="fas fa-file-alt"></i>
                             </button>
+
                         @elseif ($ticket->status == 'endorsed')
-                            <button class="action-button" onclick="openEndorsementModal('{{ $ticket->control_no }}')">
-                                <i class="fas fa-thumbs-up"></i>
-                            </button>
+                            @php
+                                $endorsement = \App\Models\Endorsement::where('ticket_id', $ticket->control_no)->first();
+                                $isSubmitted = $endorsement && $endorsement->endorsed_to; // Change this to another required field if needed
+                            @endphp
+
+                            @if ($isSubmitted)
+                                <!-- Show "View Endorsement" button if endorsement is submitted -->
+                                <button class="action-button" onclick="openViewEndorsementModal('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-book"></i> <!-- Changed to book icon for viewing -->
+                                </button>
+                            @else
+                                <!-- Show "Submit Endorsement" button if not yet submitted -->
+                                <button class="action-button" onclick="openEndorsementModal('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-folder-open"></i> <!-- Folder open icon for submission -->
+                                </button>
+                            @endif
+
                         @elseif ($ticket->status == 'pull-out')
-                            <button class="action-button" onclick="openPopup('{{ $ticket->control_no }}')">
+                            <!-- Pull-Out Button -->
+                            <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
                                 <i class="fas fa-laptop"></i>
                             </button>
+
+
                         @else
+                            <!-- Remarks Button -->
                             <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
                                     id="remarks-btn-{{ $ticket->control_no }}">
                                 <i class="fas fa-sticky-note"></i>
@@ -114,8 +134,13 @@
 @include('modals.view')
 @include('modals.assist')
 @include('modals.remarks')
-@include('modals.endorsement')
 @include('modals.technical_report')
+@include('modals.view_endorsement')
+@include('modals.view_device')
+@include('modals.technical_report_view')
 @include('modals.new_device_form')
-<script src="{{ asset('js/Ticket_Components_Script.js') }}"></script>
+@include('modals.endorsement')
+
+<script src="{{ asset('js/Ticket_Components_Script.js') }}" defer></script>
+
 
