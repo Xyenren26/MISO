@@ -1,10 +1,10 @@
 /* Sidebar Styles */
 .sidebar {
-    position: fixed; /* Keep it sticky */
+    position: fixed;
     top: 0;
     width: 250px;
     height: 90vh;
-    background-color: transparent; /* Make the background transparent to show the image */
+    background-color: transparent;
     color: black;
     margin-top: 60px;
     padding-top: 20px;
@@ -12,7 +12,7 @@
     box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
     border-radius: 15px;
-    overflow: hidden; /* Prevent content from overflowing */
+    overflow: hidden;
 }
 
 /* Sidebar Background Image */
@@ -27,24 +27,21 @@
     background-size: contain;
     background-position: bottom;
     background-repeat: no-repeat;
-    opacity: 0.5; /* Optional: make the background semi-transparent */
-    z-index: -1; /* Keep the background behind the content */
+    opacity: 0.5;
+    z-index: -1;
     border-radius: 15px;
 }
 
-
-
 /* Main Content */
 .main-content {
-    flex-grow: 1; /* Take remaining space */
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     margin-left: 250px;
-    justify-content: flex-start; /* Align content to the top */
+    justify-content: flex-start;
     padding: 20px;
-    transition: margin-left 0.3s ease-in-out; /* Smooth transition */
+    transition: margin-left 0.3s ease-in-out;
 }
-
 
 /* Minimized Sidebar Styling */
 .sidebar.minimized {
@@ -53,7 +50,7 @@
 }
 
 .sidebar.minimized + .main-content {
-    margin-left: 60px; /* Adjust margin for minimized sidebar */
+    margin-left: 60px;
 }
 
 /* Logo Styling */
@@ -95,18 +92,18 @@
 .sidebar .menu {
     list-style-type: none;
     padding: 0;
-    margin-top: 40px;
-}
-
-/* Menu Styling */
-.sidebar .menu a {
-    text-decoration: none;
-    display: block; /* Ensures the entire li is clickable */
-    color: #003067; /* Default text color */
-    width: 100%; /* Ensure it takes up full width of li */
+    margin-top: 0;
 }
 
 /* Menu Items */
+.sidebar .menu a {
+    text-decoration: none;
+    display: block;
+    color: #003067;
+    width: 100%;
+}
+
+/* Menu Styling */
 .sidebar .menu li {
     padding: 15px 20px;
     border-bottom: 1px solid #ddd;
@@ -115,7 +112,7 @@
     text-align: left;
     display: flex;
     align-items: center;
-    justify-content: start; /* Align content horizontally */
+    justify-content: start;
     transition: all 0.3s ease;
 }
 
@@ -135,7 +132,6 @@
 .sidebar .menu li:hover i, .sidebar .menu li:hover a {
     color: white;
 }
-
 
 /* Minimized Sidebar Styling */
 .sidebar.minimized {
@@ -167,8 +163,7 @@
     padding: 0;
 }
 
-
-.sidebar.minimized .menu-label{
+.sidebar.minimized .menu-label {
     display: none;
 }
 
@@ -176,7 +171,7 @@
 .sidebar .menu .label {
     pointer-events: none;
 }
-.sidebar.minimized .menu a{
+.sidebar.minimized .menu a {
     text-align: center;
 }
 
@@ -185,22 +180,21 @@
     background-color: #003067;
     opacity: 0.8;
     color: white;
-    border-radius: 25px; /* Optional: add rounded corners */
+    border-radius: 25px;
 }
 
 .sidebar .menu li.active a {
-    color: white; /* Ensure link color is white when active */
+    color: white;
 }
 
 .sidebar .menu li.active i {
-    color: white; /* Ensure icon color is white when active */
+    color: white;
 }
 
 /* Hover Effect for Menu Items */
 .sidebar .menu li:hover {
     background-color: #003067;
     color: white;
-    border-radius: 25px;
 }
 
 /* Modify the hover effect so the active state doesn't interfere */
@@ -208,3 +202,101 @@
     background-color: #003067;
     color: white;
 }
+
+/* Responsive Styles */
+
+/* For tablets and smaller screens */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        margin-left: 200px;
+    }
+
+    .sidebar.minimized {
+        width: 50px;
+    }
+
+    .sidebar .logo-container {
+        text-align: center;
+        padding: 5px 0;
+    }
+
+    .sidebar .sidebar-logo {
+        width: 150px;
+    }
+
+    .sidebar .menu li {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+
+    .sidebar .menu li i {
+        margin-right: 10px;
+        font-size: 18px;
+    }
+
+    .sidebar .sidebar-toggle-btn {
+        top: 70px;
+    }
+
+    .sidebar.minimized + .main-content {
+        margin-left: 50px;
+    }
+}
+
+/* For mobile screens */
+@media (max-width: 480px) {
+    .sidebar {
+        width: 100%;
+        height: 100vh;
+        position: relative; /* Fix positioning for mobile */
+        margin-top: 0;
+        box-shadow: none;
+        padding-top: 10px;
+    }
+
+    .sidebar .logo-container {
+        display: none;
+    }
+
+    .sidebar .sidebar-logo {
+        width: 120px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .sidebar .menu li {
+        font-size: 12px;
+        padding: 10px 12px;
+    }
+
+    .sidebar .menu li i {
+        margin-right: 8px;
+        font-size: 16px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    .sidebar .sidebar-toggle-btn {
+        position: absolute;
+        top: 20px;
+        right: 10px;
+    }
+}
+
+.status-active {
+    color: green;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: red;
+    font-weight: bold;
+}
+

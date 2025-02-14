@@ -17,7 +17,9 @@
         </h1>
         <div class="navbar-icons">
             <i class="fas fa-bell navbar-icon"></i>
-            <i class="fas fa-envelope navbar-icon"></i>
+            <a href="{{ url('/chat') }}" title="View Messages">
+    <i class="fas fa-envelope navbar-icon"></i>
+</a>
             <div class="user-dropdown">
                 <i class="fas fa-user navbar-icon" onclick="toggleDropdown()"></i>
                 <div class="dropdown-menu" id="dropdownMenu">

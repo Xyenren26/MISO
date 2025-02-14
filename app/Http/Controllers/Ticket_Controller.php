@@ -16,8 +16,8 @@ class Ticket_Controller extends Controller
     // Get the current logged-in user
     $user = auth()->user();
 
-    // Ensure the user is a technical support user
-    if ($user->account_type !== 'technical_support') {
+    // Ensure the user is a technical support user or an administrator
+    if (!in_array($user->account_type, ['technical_support', 'administrator'])) {
         abort(403, 'Unauthorized access');
     }
 
