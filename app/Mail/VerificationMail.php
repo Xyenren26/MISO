@@ -5,6 +5,7 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Carbon\Carbon;
 
 class VerificationMail extends Mailable
 {
@@ -12,15 +13,18 @@ class VerificationMail extends Mailable
 
     public $user;
     public $verificationUrl;
+    public $expiresAt;
 
     public function __construct($user)
     {
         $this->user = $user;
         
-        // Pass employee_id as the ID and use sha1() for email hashing
+        $this->expiresAt = now()->addMinutes(60); // Expiration time
+
         $this->verificationUrl = route('verification.custom.verify', [
-            'id' => $this->user->employee_id,  // Use employee_id as the ID
-            'hash' => sha1($this->user->email),  // Hash the email for verification
+            'id' => $this->user->employee_id,  
+            'hash' => sha1($this->user->email),
+            'expires' => $this->expiresAt->timestamp // Add expiration timestamp
         ]);
     }
 
@@ -29,8 +33,9 @@ class VerificationMail extends Mailable
         return $this->subject('Verify Your Email')
                     ->view('emails.verification-email')
                     ->with([
-                        'name' => $this->user->name,
-                        'verification_url' => $this->verificationUrl,
+                        'user' => $this->user,
+                        'verificationUrl' => $this->verificationUrl,
+                        'expiresAt' => $this->expiresAt
                     ]);
     }
 }

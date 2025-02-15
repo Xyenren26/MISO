@@ -71,7 +71,6 @@
         </button>
     </div>
 </div>
-
 <!-- Modal for Creating a New Ticket -->
 <div id="ticketFormModal" class="modal" style="display: none;">
     <div class="modal-content">
@@ -80,12 +79,11 @@
 
     </div>
 </div>
-
 <div class="content">
     <div class="table-container">
         @if ($tickets->count() > 0)
             <div id="ticket-list" class="table-container">
-                @include('components.ticket-list', ['tickets' => $tickets, 'technicalSupports' => $technicalSupports])
+                @include('components.employee.ticket-list', ['tickets' => $tickets])
             </div>
         @else
             <div class="no-records">NO RECORDS FOUND</div>
@@ -109,5 +107,14 @@
     </div>
 </div>
 <script src="{{ asset('js/Ticket_Script.js') }}"></script>
+<script>
+    function openTicketFormModal() {
+    toggleModal('ticketFormModal', true);
+}
+
+function closeTicketFormModal() {
+    toggleModal('ticketFormModal', false);
+}
+</script>
 </body>
 </html>

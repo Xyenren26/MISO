@@ -7,6 +7,7 @@ use App\Models\EquipmentDescription;
 use App\Models\EquipmentPart;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Notifications\SystemNotification;
 use Carbon\Carbon;
 
 class ServiceRequestController extends Controller
@@ -16,6 +17,10 @@ class ServiceRequestController extends Controller
         \Log::info('Received request:', $request->all()); // Log the input request
 
         try {
+            $request->merge([
+                'ticket_id' => ($request->ticket_id === 'formPopup' || empty($request->ticket_id)) ? null : $request->ticket_id,
+            ]);            
+            
             // Validate the form input
             $validated = $request->validate([
                 'ticket_id' => 'nullable|exists:tickets,control_no', // Only validate if provided
@@ -66,6 +71,15 @@ class ServiceRequestController extends Controller
 
         // Save Equipment Description and Parts
         $this->saveEquipmentDescriptions($newFormNo, $request);
+
+        $technicalSupport = User::where('employee_id', $request->technical_support_id)->first();
+        if ($technicalSupport) {
+            $technicalSupport->notify(new SystemNotification(
+                'Service Request',
+                'You have been assigned a new Service Request.',
+                route('device_management', ['id' => $serviceRequest->form_no])
+            ));
+        }
 
         return redirect()->route('device_management')->with('success', 'Service request submitted successfully!');
     }

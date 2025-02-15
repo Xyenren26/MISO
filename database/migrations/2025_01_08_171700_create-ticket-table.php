@@ -28,8 +28,8 @@ return new class extends Migration
             $table->timestamps(); // Adds created_at and updated_at columns
 
             // Foreign Key Constraints (both referencing users table)
-            $table->foreign('employee_id')->references('employee_id')->on('users');
-            $table->foreign('technical_support_id')->references('employee_id')->on('users')->onDelete('set null');
+            $table->foreign('employee_id')->references('employee_id')->on('users')->onDelete('cascade');
+            $table->foreign('technical_support_id')->references('employee_id')->on('users')->onDelete('cascade');
         });
     }
     }

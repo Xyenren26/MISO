@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use App\Mail\VerificationMail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
@@ -24,17 +25,23 @@ class VerificationController extends Controller
         return back()->with('message', 'Verification email sent!');
     }
 
-    public function verifyEmail($id, $hash)
+    public function verifyEmail(Request $request, $id, $hash)
     {
-        // Find the user using employee_id instead of the default ID
+        $expires = $request->input('expires');
+
+        if (!$expires || Carbon::now()->timestamp > $expires) {
+            return redirect()->route('login')->with('error', 'Verification link has expired.');
+        }
+
+        // Find user by employee_id
         $user = User::where('employee_id', $id)->firstOrFail();
 
-        // Check if the hash matches the user's email
+        // Validate hash
         if (sha1($user->email) !== $hash) {
             return redirect('/login')->with('error', 'Invalid verification link!');
         }
 
-        // Proceed with the email verification process
+        // Mark email as verified
         $user->email_verified_at = now();
         $user->save();
 

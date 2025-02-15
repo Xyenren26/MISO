@@ -21,20 +21,56 @@
         <!-- General Section -->
         <ul class="menu">
             <li class="label">General</li>
-            <li class="{{ Request::is('home') ? 'active' : '' }}">
-                <a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
-            </li>
-            <li class="{{ Request::is('ticket') ? 'active' : '' }}"><a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a></li>
-            <li class="{{ Request::is('device_management') ? 'active' : '' }}"><a href="{{ route('device_management') }}"><i class="fas fa-cogs"></i><span class="menu-label">Device Management</span></a></li>
+            
+            @if(auth()->user()->account_type == 'end_user')
+                <div class="employeeticketssection">
+                    <button class="employeetickets" onclick="openTicketFormModal()">
+                        <span class="employeeticketsicon">➕</span> 
+                        <span class="employeeticketstext">Request Support</span>
+                    </button>
+                </div>
+                <li class="{{ Request::is('employee/home') ? 'active' : '' }}">
+                    <a href="{{ route('employee.home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
+                </li>
+                <li class="{{ request()->routeIs('employee.tickets') ? 'active' : '' }}">
+                    <a href="{{ route('employee.tickets') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
+                </li>
+            @elseif(auth()->user()->account_type == 'technical_support')
+                <li class="{{ Request::is('home') ? 'active' : '' }}">
+                    <a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
+                </li>
+                <li class="{{ Request::is('ticket') ? 'active' : '' }}">
+                    <a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
+                </li>
+                <li class="{{ Request::is('device_management') ? 'active' : '' }}">
+                    <a href="{{ route('device_management') }}">
+                        <i class="fas fa-cogs"></i><span class="menu-label">Device Management</span>
+                    </a>
+                </li>
+            @endif
         </ul>
 
-        <!-- Administrative Section -->
-        <ul class="menu">
-            <li class="label">Administrative</li>
-            <li class="{{ Request::is('user_management') ? 'active' : '' }}"><a href="{{ route('user_management') }}"><i class="fas fa-users"></i><span class="menu-label">User Management</span></a></li>
-            <li class="{{ Request::is('report') ? 'active' : '' }}"><a href="{{ route('report') }}"><i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span></a></li>
-            <li class="{{ Request::is('audit_logs') ? 'active' : '' }}"><a href="{{ route('audit_logs') }}"><i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span></a></li>
-        </ul>
+        @if(auth()->user()->account_type == 'technical_support')
+            <!-- Administrative Section -->
+            <ul class="menu">
+                <li class="label">Administrative</li>
+                <li class="{{ Request::is('user_management') ? 'active' : '' }}">
+                    <a href="{{ route('user_management') }}">
+                        <i class="fas fa-users"></i><span class="menu-label">User Management</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('report') ? 'active' : '' }}">
+                    <a href="{{ route('report') }}">
+                        <i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span>
+                    </a>
+                </li>
+                <li class="{{ Request::is('audit_logs') ? 'active' : '' }}">
+                    <a href="{{ route('audit_logs') }}">
+                        <i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span>
+                    </a>
+                </li>
+            </ul>
+        @endif
     </div>
 
     <script src="{{ asset('js/Sidebar_Script.js') }}"></script>

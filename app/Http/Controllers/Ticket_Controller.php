@@ -10,64 +10,65 @@ use App\Models\User;
 use App\Models\ServiceRequest;
 use App\Models\TechnicalReport;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\SystemNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Ticket_Controller extends Controller
 {
     public function showTicket()
-{
-    // Get the current logged-in user
-    $user = auth()->user();
+    {
+        // Get the current logged-in user
+        $user = auth()->user();
 
-   // Ensure the user is a technical support user or an administrator
-    if (!in_array($user->account_type, ['technical_support', 'administrator'])) {
-        abort(403, 'Unauthorized access');
-    }
+     // Ensure the user is a technical support user or an administrator
+        if (!in_array($user->account_type, ['technical_support', 'administrator'])) {
+            abort(403, 'Unauthorized access');
+        }
 
 
-    // Fetch tickets assigned to the logged-in technical support user
-    $status = request('filter');
-    $tickets = Ticket::where('technical_support_id', $user->employee_id)
-        ->when($status, function ($query, $status) {
-            return $query->where('status', $status);
-        })
-        ->with('history') // Include histories in the query
-        ->orderBy('created_at', 'desc')
-        ->paginate(20);
+        // Fetch tickets assigned to the logged-in technical support user
+        $status = request('filter');
+        $tickets = Ticket::where('technical_support_id', $user->employee_id)
+            ->when($status, function ($query, $status) {
+                return $query->where('status', $status);
+            })
+            ->with('history') // Include histories in the query
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
-    // Fetch all technical support users excluding the current one
-    $technicalSupports = User::where('account_type', 'technical_support')
-    ->whereNotNull('session_id')  // Check if 'time_in' is not null
-    ->get();
-
-    // Get the current year for control number formatting
-    $currentYear = now()->year;
-    $lastTicket = Ticket::whereYear('created_at', $currentYear)
-        ->orderBy('control_no', 'desc')
-        ->first();
-
-    // Calculate the next control number
-    $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
-    $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
-    
-    // Generate next form number
-    $latestFormNo = ServiceRequest::latest('form_no')->first();
-    $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
-    $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
-
-    $technicalAssistSupports = collect(); // Prevent undefined variable
-        
-    // Fetch active technical supports (those who have a recent activity and a session)
-    $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
-    $technicalAssistSupports = User::where('last_activity', '>=', $threshold)
-        ->whereNotNull('session_id') // Ensure they have a session ID
-        ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
+        // Fetch all technical support users excluding the current one
+        $technicalSupports = User::where('account_type', 'technical_support')
+        ->whereNotNull('session_id')  // Check if 'time_in' is not null
         ->get();
 
-    // Pass data to the view
-    return view('ticket', compact('tickets', 'technicalAssistSupports','technicalSupports', 'formattedControlNo', 'nextFormNo'));
-}
+        // Get the current year for control number formatting
+        $currentYear = now()->year;
+        $lastTicket = Ticket::whereYear('created_at', $currentYear)
+            ->orderBy('control_no', 'desc')
+            ->first();
+
+        // Calculate the next control number
+        $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
+        $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
+        
+        // Generate next form number
+        $latestFormNo = ServiceRequest::latest('form_no')->first();
+        $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
+        $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
+
+        $technicalAssistSupports = collect(); // Prevent undefined variable
+            
+        // Fetch active technical supports (those who have a recent activity and a session)
+        $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
+        $technicalAssistSupports = User::where('last_activity', '>=', $threshold)
+            ->whereNotNull('session_id') // Ensure they have a session ID
+            ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
+            ->get();
+
+        // Pass data to the view
+        return view('ticket', compact('tickets', 'technicalAssistSupports','technicalSupports', 'formattedControlNo', 'nextFormNo'));
+    }
 
 
     public function store(Request $request)
@@ -123,6 +124,15 @@ class Ticket_Controller extends Controller
 
             $ticket->save();
 
+            if ($technicalSupport) {
+                $technicalSupport->notify(new SystemNotification(
+                    'TicketAssigned',
+                    'You have been assigned a new ticket.',
+                    route('ticket', $ticket->control_no)
+                ));
+            }
+            
+
             return redirect()->route('ticket')->with('success', 'Ticket created successfully!');
         }
     }
@@ -130,23 +140,34 @@ class Ticket_Controller extends Controller
     public function passTicket(Request $request)
     {
         $ticketControlNo = $request->input('ticket_control_no');
-        $newTechnicalSupport = $request->input('new_technical_support'); // Ensure this value is correctly retrieved
+        $newTechnicalSupport = $request->input('new_technical_support');
 
         $ticket = Ticket::where('control_no', $ticketControlNo)->first();
 
         if ($ticket) {
+            // Check if the ticket has already been passed before
+            $alreadyPassed = $ticket->history()->exists();
+
+            if ($alreadyPassed) {
+                return redirect()->route('ticket')->with('error', 'This ticket has already been passed once and cannot be reassigned.');
+            }
+
+            // If not passed yet, proceed with creating history and updating the ticket
             $ticket->history()->create([
                 'previous_technical_support' => $ticket->technical_support_id,
-                'new_technical_support' => $newTechnicalSupport, // Check if this value is being passed correctly
-                'ticket_id' => $ticket->id, // Ensure you’re passing the correct ticket ID
+                'new_technical_support' => $newTechnicalSupport,
+                'ticket_id' => $ticket->id,
             ]);
 
             $ticket->technical_support_id = $newTechnicalSupport;
             $ticket->save();
+
+            return redirect()->route('ticket')->with('success', 'Pass Ticket created successfully!');
         }
 
-        return redirect()->route('ticket')->with('success', 'Pass Ticket created successfully!');
+        return redirect()->route('ticket')->with('error', 'Ticket not found.');
     }
+
 
     public function filterTickets(Request $request)
     {

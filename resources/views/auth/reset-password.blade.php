@@ -48,6 +48,27 @@
             text-align: center;
         }
 
+        .alert-box {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+        }
+
+        .bg-green-100 { background-color: #d4edda; border: 1px solid #155724; color: #155724; }
+        .bg-red-100 { background-color: #f8d7da; border: 1px solid #721c24; color: #721c24; }
+        .not{
+            margin-top: -37px;
+            margin-right: -14px;
+            color:black;
+        }
+
         /* Form Styling */
         form {
             display: flex;
@@ -93,7 +114,7 @@
                 <input type="hidden" name="token" value="{{ $token }}">
                 
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" value="{{ request()->email ?? old('email', $email) }}" required readonly>
                 
                 <label for="password">New Password:</label>
                 <input type="password" id="password" name="password" required>

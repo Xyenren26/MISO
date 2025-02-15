@@ -232,6 +232,15 @@ gap: 15px;
 margin: 20px 0;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center; /* Centers buttons horizontally */
+    align-items: center; /* Centers buttons vertically */
+    gap: 10px; /* Adds spacing between buttons */
+    flex-wrap: wrap; /* Prevents layout breaking if buttons adjust */
+}
+
+
 .action-button {
     background: none;
     border: none;

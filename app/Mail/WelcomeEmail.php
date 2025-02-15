@@ -5,9 +5,8 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\URL;
-
+use Carbon\Carbon;
 
 class WelcomeEmail extends Mailable
 {
@@ -15,17 +14,22 @@ class WelcomeEmail extends Mailable
 
     public $user;
     public $verificationUrl;
+    public $expiresAt;
 
     public function __construct($user)
     {
-    $this->user = $user;
+        $this->user = $user;
 
-    // Generate a signed URL with an expiration time (24 hours)
-    $this->verificationUrl = URL::temporarySignedRoute(
-        'RegistrationEmailValidate', now()->addHours(24), [
-            'id' => $this->user->employee_id,   // Use employee_id as the ID
-            'hash' => sha1($this->user->email),  // Hash the email for verification
-        ]);
+        // Set expiration time (60 mns from now)
+        $this->expiresAt = now()->addMinutes(60);
+
+        // Generate a signed URL with expiration time
+        $this->verificationUrl = URL::temporarySignedRoute(
+            'RegistrationEmailValidate', $this->expiresAt, [
+                'id' => $this->user->employee_id,  
+                'hash' => sha1($this->user->email),  
+            ]
+        );
     }
 
     public function build()
@@ -35,6 +39,7 @@ class WelcomeEmail extends Mailable
                     ->with([
                         'name' => $this->user->username,
                         'verification_url' => $this->verificationUrl,
+                        'expiresAt' => $this->expiresAt
                     ]);
     }
 }

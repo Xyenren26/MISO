@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>ELECTRONIC SERVICE QUEUING MANAGEMENT SYSTEM</title>
+  <title>TechTrack</title>
+    <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
   <link rel="stylesheet" href="{{ asset('css/Login_Style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
@@ -37,7 +38,7 @@
           <button type="submit" class="login-btn">Login</button>
           
       </form>
-      <a href="forgotpass.html" class="forgot-password">Forgot Password?</a>
+      <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
         <div class="create-account">
           <span>Don't have an account?</span>
           <a href="/signup">Create an account</a> <!-- Link to Sign Up page -->

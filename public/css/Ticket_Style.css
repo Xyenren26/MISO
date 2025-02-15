@@ -224,34 +224,42 @@
 /* Priority color classes */
 .priority-urgent {
     color: #ff0000; /* Red for urgent */
+    font-weight: bold;
 }
 
 .priority-semi-urgent {
     color: #ff9900; /* Orange for semi-urgent */
+    font-weight: bold;
 }
 
 .priority-non-urgent {
     color: #32cd32; /* Green for non-urgent */
+    font-weight: bold;
 }
 
 /* Status color classes */
 .status-endorsed {
     color: #007bff; /* Blue for endorsed */
+    font-weight: bold;
 }
 
 .status-completed {
     color: #28a745; /* Green for completed */
+    font-weight: bold;
 }
 
 .status-in-progress {
     color: #ffc107; /* Yellow for in-progress */
+    font-weight: bold;
 }
 
 .status-technical-report {
     color: #ff0000; /* Purple for technical-report */
+    font-weight: bold;
 }
 .status-pull-out {
     color: hsl(318, 55%, 46%); /* Purple for technical-report */
+    font-weight: bold;
 }
 
 /* Results Count */

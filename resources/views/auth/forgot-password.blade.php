@@ -12,12 +12,11 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Apply Background Image to the Body */
         body {
-            background-image: url('../images/leftscreenbg2.png'); /* Your global background image */
-            background-size: auto; /* Keep the image in its original size */
-            background-position: bottom center; /* Position the image at the bottom */
-            background-attachment: fixed; /* Keep the background fixed while scrolling */
+            background-image: url('../images/leftscreenbg2.png');
+            background-size: auto;
+            background-position: bottom center;
+            background-attachment: fixed;
             position: relative;
             height: 100vh;
             display: flex;
@@ -25,20 +24,18 @@
             align-items: center;
         }
 
-        /* Modal Overlay */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Modal Box */
         .modal {
             background-color: white;
             padding: 20px;
@@ -46,9 +43,29 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 300px;
             text-align: center;
+            position: relative;
         }
 
-        /* Form Styling */
+        .alert-box {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+        }
+
+        .bg-green-100 { background-color: #d4edda; border: 1px solid #155724; color: #155724; }
+        .bg-red-100 { background-color: #f8d7da; border: 1px solid #721c24; color: #721c24; }
+        .not{
+            margin-top: -37px;
+            margin-right: -14px;
+            color:black;
+        }
         form {
             display: flex;
             flex-direction: column;
@@ -82,7 +99,7 @@
     </style>
 </head>
 <body>
-    <!-- Modal Structure -->
+
     <div class="modal-overlay">
         <div class="modal">
             <form method="POST" action="{{ route('password.email') }}">
@@ -93,5 +110,47 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function showAlert(type, message) {
+            document.querySelectorAll(".alert-box").forEach(alert => alert.remove());
+
+            const alertBox = document.createElement("div");
+            alertBox.classList.add("alert-box");
+
+            if (type === "success" || type === "message") { 
+                alertBox.classList.add("bg-green-100"); // Green background for success & message
+            } else {
+                alertBox.classList.add("bg-red-100"); // Red background for errors
+            }
+
+            alertBox.innerHTML = `
+                <strong>${type === "success" ? "Success!" : type === "message" ? "Message!" : "Error!"}</strong> 
+                <span>${message}</span>
+                <button class="not" type="button" onclick="this.parentElement.remove();" style="float:right; background:none; border:none; font-weight:bold; cursor:pointer;">&times;</button>
+            `;
+
+            document.querySelector(".modal").prepend(alertBox);
+        }
+
+        // Ensure session messages are available after the page loads
+        window.onload = function () {
+            const successMessage = @json(session('success'));
+            const unverifiedMessage = @json(session('unverified'));
+            const errorMessage = @json($errors->first());
+
+            if (successMessage) {
+                showAlert('success', successMessage);
+            }
+            if (unverifiedMessage) {
+                showAlert('message', unverifiedMessage); // Treat "unverified" as a message
+            }
+            if (errorMessage) {
+                showAlert('error', errorMessage);
+            }
+        };
+
+    </script>
+
 </body>
 </html>

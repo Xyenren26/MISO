@@ -80,7 +80,7 @@
                                 </span>
                                 {{ ucfirst($log->action_type) }}
                             </td>
-                            <td>{{ $log->performed_by }}</td>
+                            <td>{{ $log->user ? $log->user->first_name . ' ' . $log->user->last_name : 'N/A' }}</td>
                             <td>{{ $log->ticket_or_device_id }}</td>
                             <td>{{ $log->remarks }}</td>
                         </tr>

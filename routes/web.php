@@ -6,6 +6,7 @@ use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\Signup_Controller;
 use App\Http\Controllers\AccountSecurityController;
 use App\Http\Controllers\Home_Controller;
+use App\Http\Controllers\EndUserController;
 use App\Http\Controllers\Ticket_Controller;
 use App\Http\Controllers\Device_Management_Controller;
 use App\Http\Controllers\DeploymentController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\PDFController;
 
@@ -56,14 +58,21 @@ Route::middleware(['web'])->group(function() {
 });
 
 
+Route::get('/employee/home', [EndUserController::class, 'index'])->name('employee.home');
+Route::get('/employee/ticket', [EndUserController::class, 'showEmployeeTicket'])->name('employee.tickets');
+Route::get('/employee/filter', [EndUserController::class, 'filterEmployeeTickets']);
 
 // Routes for technical-support and administrator (protected by 'auth' middleware)
 Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {
     // Routes that require authentication
-    Route::get('/home', [Home_Controller::class, 'showHome'])->name('home');
+    Route::get('/notifications', [NotificationController::class, 'fetchNotifications']);
+    Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead']);
+
+    Route::get('/home', [Home_Controller::class, 'showHome'])->middleware('CustomAuthenticate')->name('home');
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
     Route::post('/ticket', [Ticket_Controller::class, 'store'])->name('ticket.store'); // POST request for submitting the form
     Route::get('/tickets/filter', [Ticket_Controller::class, 'filterTickets'])->name('tickets.filter');
+
     // Route for fetching ticket details by control_no
     Route::get('/ticket-details/{control_no}', [Ticket_Controller::class, 'show']);
     Route::post('/api/pass-ticket', [Ticket_Controller::class, 'passTicket']);

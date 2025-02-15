@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #003067; /* Background Color */
+            background-color: #003067;
             margin: 0;
             padding: 0;
             text-align: center;
@@ -31,16 +31,15 @@
             font-size: 16px;
             line-height: 1.5;
         }
-        /* Center Button & Hover Effect */
         .button-container {
-            text-align: center; /* Centering */
+            text-align: center;
             margin-top: 20px;
         }
         .button {
             display: inline-block;
             padding: 12px 18px;
             background-color: #003067;
-            color: white; /* Corrected from text-color */
+            color: white;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
@@ -48,8 +47,13 @@
         }
         .button:hover {
             background-color: rgb(232, 230, 233);
-            color: #003067; /* Corrected hover text color */
+            color: #003067;
             transform: scale(1.05);
+        }
+        .expired {
+            background-color: #ccc;
+            pointer-events: none;
+            cursor: not-allowed;
         }
         .footer {
             margin-top: 20px;
@@ -65,10 +69,20 @@
         <p>Welcome to our system! We are thrilled to have you on board.</p>
         <p>If you have any questions, feel free to reach out to our support team.</p>
         <p>Thanks for joining us!</p>
-        
+
         <!-- Verification Button -->
         <div class="button-container">
-            <a href="{{ $verification_url }}" class="button">Verify Email</a>
+            @php
+                $isExpired = now()->timestamp > $expiresAt->timestamp;
+            @endphp
+
+            @if ($isExpired)
+                <p style="color: red;"><strong>This verification link has expired.</strong></p>
+                <a class="button expired">Expired</a>
+            @else
+                <a href="{{ $verification_url }}" class="button">Verify Email</a>
+                <p style="font-size: 14px; color: gray;">This link will expire in {{ $expiresAt->diffInHours(now()) }} hours.</p>
+            @endif
         </div>
 
         <p class="footer">If you did not sign up for this account, please ignore this email.</p>

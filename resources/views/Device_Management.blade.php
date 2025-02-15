@@ -115,8 +115,8 @@
                                     <th>Software</th>
                                     <th>Received By</th>
                                     <th>Received Date</th>
-                                    <th>Actions</th>
                                     <th>QR CODE</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -181,10 +181,15 @@
                                 @foreach ($serviceRequests as $request)
                                     <tr>
                                         <td>{{ $request->form_no }}</td>
-                                        <td>{{ ucfirst($request->service_type) }}</td>
-                                        <td>{{ $request->department }}</td>
-                                        <td>{{ $request->condition ?? 'No Condition Available' }}</td>
-                                        <td>{{ ucfirst($request->status) }}</td>
+                                        <td style="color: {{ $request->service_type === 'walk_in' ? '#2563eb' : '#9333ea' }}; font-weight: bold;">
+                                            {{ ucwords(str_replace('_', ' ', $request->service_type)) }}
+                                        </td>
+                                        <td>{{ ucwords(strtolower($request->department)) }}</td>
+                                        <td>{{ $request->condition ? ucwords(strtolower($request->condition)) : 'No Condition Available' }}</td>
+                                        <td style="color: {{ $request->status === 'in-repairs' ? '#dc2626' : '#16a34a' }}; font-weight: bold;">
+                                            {{ ucwords(str_replace('-', ' ', $request->status)) }}
+                                        </td>
+
                                         <td>
                                             @if($request->status === 'repaired')
                                                 <div class="qr-code" onclick="printQRCode()">

@@ -22,13 +22,13 @@ return new class extends Migration
 
             // Foreign key constraints with cascading deletes and setting null on delete for technical supports
             $table->foreign('ticket_id')
-                ->references('control_no')->on('tickets');
+                ->references('control_no')->on('tickets')->onDelete('cascade');
             $table->foreign('previous_technical_support')
-                ->references('employee_id')->on('users');  
+                ->references('employee_id')->on('users')->onDelete('cascade');
                 
             $table->foreign('new_technical_support')
                 ->references('employee_id')->on('users')
-                ->onDelete('set null');  // When a user is deleted, set the new support to null
+                ->onDelete('cascade');  // When a user is deleted, set the new support to null
 
             // Indexes for better performance on foreign key columns
             $table->index('ticket_id');

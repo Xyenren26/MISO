@@ -50,13 +50,15 @@
         <tbody>
             @foreach ($tickets as $ticket)
                 <tr>
-                    <td>{{ $ticket->control_no }}</td>
-                    <td>{{ $ticket->name }}</td>
-                    <td>{{ $ticket->department }}</td>
-                    <td>{{ $ticket->concern }}</td>
+                <td>{{ $ticket->control_no }}</td>
+                <td>{{ ucwords(strtolower($ticket->name)) }}</td>
+                <td>{{ ucwords(strtolower($ticket->department)) }}</td>
+                <td>{{ ucfirst(strtolower($ticket->concern)) }}</td>
+
                     <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
                     <td class="{{ getStatusClass($ticket->status) }}">{{ ucfirst($ticket->status) }}</td>
                     <td>
+                    <div class="button-container">
                         <!-- View Ticket Details -->
                         <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
                             <i class="fas fa-eye"></i>
@@ -66,50 +68,48 @@
                             <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')">
                                 <i class="fas fa-file-alt"></i>
                             </button>
-
                         @elseif ($ticket->status == 'endorsed')
                             @php
                                 $endorsement = \App\Models\Endorsement::where('ticket_id', $ticket->control_no)->first();
-                                $isSubmitted = $endorsement && $endorsement->endorsed_to; // Change this to another required field if needed
+                                $isSubmitted = $endorsement && $endorsement->endorsed_to;
                             @endphp
 
                             @if ($isSubmitted)
-                                <!-- Show "View Endorsement" button if endorsement is submitted -->
                                 <button class="action-button" onclick="openViewEndorsementModal('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-book"></i> <!-- Changed to book icon for viewing -->
+                                    <i class="fas fa-book"></i>
                                 </button>
                             @else
-                                <!-- Show "Submit Endorsement" button if not yet submitted -->
                                 <button class="action-button" onclick="openEndorsementModal('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-folder-open"></i> <!-- Folder open icon for submission -->
+                                    <i class="fas fa-folder-open"></i>
                                 </button>
                             @endif
-
                         @elseif ($ticket->status == 'pull-out')
-                            <!-- Pull-Out Button -->
                             <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
                                 <i class="fas fa-laptop"></i>
                             </button>
-
-
                         @else
-                            <!-- Remarks Button -->
-                            <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
-                                    id="remarks-btn-{{ $ticket->control_no }}">
-                                <i class="fas fa-sticky-note"></i>
-                            </button>
+                            @if (!$ticket->isRemarksDone)
+                                <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
+                                        id="remarks-btn-{{ $ticket->control_no }}">
+                                    <i class="fas fa-sticky-note"></i>
+                                </button>
+                            @endif
                         @endif
 
-                        <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" 
-                                @if ($ticket->isRemarksDone) disabled @endif>
-                            <i class="fas fa-comments"></i> 
-                        </button>
+                        @if (!$ticket->isRemarksDone)
+                            <button class="action-button" id="chat-btn-{{ $ticket->control_no }}">
+                                <i class="fas fa-comments"></i> 
+                            </button>
 
-                        <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
-                                id="assist-btn-{{ $ticket->control_no }}" 
-                                @if ($ticket->isAssistDone || $ticket->isRemarksDone) disabled @endif>
-                            <i class="fas fa-handshake"></i> 
-                        </button>
+                            @if (!$ticket->isAssistDone)
+                                <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
+                                        id="assist-btn-{{ $ticket->control_no }}">
+                                    <i class="fas fa-handshake"></i> 
+                                </button>
+                            @endif
+                        @endif
+                    </div>
+
                     </td>
                 </tr>
             @endforeach

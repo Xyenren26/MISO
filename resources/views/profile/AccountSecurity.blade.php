@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Profile Details</title>
+    <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
 
 <style>
     /* Reset */
@@ -170,9 +172,15 @@ p a:hover {
 <!-- Vertical Navigation Menu -->
 <div class="vertical-nav">
     <!-- Home Button -->
-    <a href="{{ route('home') }}" class="nav-button home-button">
-        <i class="fas fa-home"></i> <span>Home</span>
-    </a>
+    @if(auth()->user()->account_type == 'end_user')
+        <a href="{{ route('employee.home') }}" class="nav-button home-button">
+            <i class="fas fa-home"></i> <span>Home</span>
+        </a>
+    @elseif(auth()->user()->account_type == 'technical_support')
+        <a href="{{ route('home') }}" class="nav-button home-button">
+            <i class="fas fa-home"></i> <span>Home</span>
+        </a>
+    @endif
 
     <!-- Account Security Button -->
     <a href="{{ route('profile.index') }}" class="nav-button security-button">

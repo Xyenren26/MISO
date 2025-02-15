@@ -18,6 +18,11 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        .logo {
+            width: 300px;
+            margin: 20px auto;
+            display: block;
+        }
         h2 {
             color: #333;
         }
@@ -44,6 +49,11 @@
             background-color: #005bb5;
             transform: scale(1.05);
         }
+        .expired {
+            background-color: #ccc;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
         .footer {
             margin-top: 20px;
             font-size: 12px;
@@ -53,11 +63,22 @@
 </head>
 <body>
     <div class="container">
+    <img src="https://i.imgur.com/aQrIRgy.png" alt="System Logo" class="logo">
         <h2>Hello, {{ $user->first_name }}!</h2>
         <p>Thank you for registering. Please verify your email by clicking the button below:</p>
 
         <div class="button-container">
-            <a href="{{ $verificationUrl }}" class="button">Verify Email</a>
+            @php
+                $isExpired = now()->timestamp > $expiresAt->timestamp;
+            @endphp
+
+            @if ($isExpired)
+                <p style="color: red;"><strong>This verification link has expired.</strong></p>
+                <a class="button expired">Expired</a>
+            @else
+                <a href="{{ $verificationUrl }}" class="button">Verify Email</a>
+                <p style="font-size: 14px; color: gray;">This link will expire in {{ $expiresAt->diffInMinutes(now()) }} minutes.</p>
+            @endif
         </div>
 
         <p>If you did not create an account, no further action is required.</p>

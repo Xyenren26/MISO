@@ -2,7 +2,7 @@
     <div class="modal-content">
         <span class="close" onclick="closeAssistModal()">&times;</span>
         <h2>Select Technical Support</h2>
-        <form id="assistForm" action="/api/pass-ticket" method="POST">
+        <form id="assistForm" onsubmit="event.preventDefault(); submitAssist();">
             @csrf <!-- CSRF token for form submission -->
             <input type="hidden" id="ticketControlNo" name="ticket_control_no">
 
@@ -24,42 +24,66 @@
         </form>
     </div>
 </div>
+
 <script>
-    async function submitAssist() {
-  const ticketControlNo = document.getElementById('ticketControlNo').value;
-  const technicalSupport = document.getElementById('technicalSupport').value;
-  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');  // Get the CSRF token
+    function showAlert(type, message) {
+        // Remove existing alerts
+        document.querySelectorAll(".alert-box").forEach(alert => alert.remove());
 
-  if (!ticketControlNo || !technicalSupport) {
-    alert("Please select a technical support and ensure the ticket control number is correct.");
-    return;
-  }
+        const alertBox = document.createElement("div");
+        alertBox.classList.add("alert-box", "px-4", "py-3", "rounded-lg", "relative", "mb-4");
 
-  try {
-    const response = await fetch('/api/pass-ticket', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': csrfToken,  // Include CSRF token in the header
-      },
-      body: JSON.stringify({
-        ticket_control_no: ticketControlNo,
-        new_technical_support: technicalSupport,
-      }),
-    });
+        if (type === "success") {
+            alertBox.classList.add("bg-green-100", "border", "border-green-400", "text-green-700");
+        } else {
+            alertBox.classList.add("bg-red-100", "border", "border-red-400", "text-red-700");
+        }
 
-    if (response.ok) {
-      alert('Ticket successfully passed!');
-      closeAssistModal();
-    } else {
-      const errorData = await response.json();
-      console.error("Error response:", errorData);
-      alert('Error passing ticket: ' + errorData.error || 'Unknown error');
+        alertBox.innerHTML = `
+            <strong class="font-bold">${type === "success" ? "Success!" : "Error!"}</strong>
+            <span class="block sm:inline">${message}</span>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove();">
+                &times;
+            </button>
+        `;
+
+        document.querySelector(".tickets-table").prepend(alertBox);
     }
-  } catch (error) {
-    console.error("Request failed:", error);
-    alert('Request failed: ' + error.message);
-  }
-}
+    async function submitAssist() {
+        const ticketControlNo = document.getElementById('ticketControlNo').value;
+        const technicalSupport = document.getElementById('technicalSupport').value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        if (!ticketControlNo || !technicalSupport) {
+            showAlert("error", "Please select a technical support and ensure the ticket control number is correct.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/pass-ticket', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    ticket_control_no: ticketControlNo,
+                    new_technical_support: technicalSupport,
+                }),
+            });
+
+            const responseData = await response.json();
+
+            if (response.ok) {
+                showAlert("success", "Ticket successfully passed!");
+                closeAssistModal();
+            } else {
+                console.error("Error response:", responseData);
+                showAlert("error", responseData.error || "Unknown error occurred while passing the ticket.");
+            }
+        } catch (error) {
+            console.error("Request failed:", error);
+            showAlert("error", "Request failed: " + error.message);
+        }
+    }
 </script>
