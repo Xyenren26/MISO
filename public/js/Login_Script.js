@@ -1,3 +1,4 @@
+// Slideshow and Button Functionality
 let slideIndex = 0;
 const slides = document.getElementsByClassName("slide");
 const dots = document.getElementsByClassName("dot");
@@ -39,7 +40,7 @@ function currentSlide(n) {
 
 // Start the auto slide
 function startAutoSlide() {
-  slideInterval = setInterval(nextSlide, 5000); // Change slide every 7 seconds
+  slideInterval = setInterval(nextSlide, 4000); // Change slide every 5 seconds
 }
 
 // Stop the auto slide
@@ -55,7 +56,7 @@ function pauseAutoSlide() {
     setTimeout(() => {
       isPaused = false;
       startAutoSlide();
-    }, 60000); // Pause for 60 seconds (1 minute)
+    }, 60000); // Pause for 60 seconds
   }
 }
 
@@ -82,15 +83,17 @@ for (let i = 0; i < dots.length; i++) {
 showSlides(slideIndex);
 startAutoSlide();
 
-//open and hide eye function 
+// Open and Hide Eye Function
 const togglePassword = document.getElementById('togglePassword');
 const passwordField = document.getElementById('password');
 
-togglePassword.addEventListener('click', function () {
-  const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-  passwordField.setAttribute('type', type);
-  
-  // Toggle eye and eye-slash icons
-  this.classList.toggle('fa-eye');
-  this.classList.toggle('fa-eye-slash');
-});
+if (togglePassword && passwordField) {
+  togglePassword.addEventListener('click', function () {
+    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordField.setAttribute('type', type);
+
+    // Toggle eye and eye-slash icons
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+  });
+}

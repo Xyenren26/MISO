@@ -50,8 +50,9 @@
     <div class="right-screen">
       <div class="slideshow-container">
         <img src="{{ asset('images/slide1.jpg') }}" class="slide" alt="Slide 1">
-        <img src="{{ asset('images/slide2.jpg') }}" class="slide" alt="Slide 2">
+        <img src="{{ asset('images/slide2.png') }}" class="slide" alt="Slide 2">
         <img src="{{ asset('images/technicalsupport.png') }}" class="slide" alt="Slide 3">
+        <img src="{{ asset('images/PasigMunicipal.jpg') }}" class="slide" alt="Slide 4">
 
         <!-- Navigation buttons -->
         <a class="prev">&#10094;</a>
@@ -59,6 +60,7 @@
 
         <!-- Dots -->
         <div class="dot-container">
+          <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
