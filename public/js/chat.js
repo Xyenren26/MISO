@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     
-
     // Event listener for each user in the user list
     usersList.forEach(user => {
         user.addEventListener('click', () => {
