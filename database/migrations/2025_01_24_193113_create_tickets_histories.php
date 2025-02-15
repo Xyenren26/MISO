@@ -15,7 +15,7 @@ return new class extends Migration
             Schema::create('ticket_histories', function (Blueprint $table) {
             $table->engine = 'InnoDB';  // Ensure InnoDB is used for foreign key support
             $table->string('ticket_id');  // Ticket ID (foreign key to tickets table)
-            $table->integer('previous_technical_support')->nullable();  // Previous technical support ID (nullable)
+            $table->integer('previous_technical_support');  // Previous technical support ID (nullable)
             $table->integer('new_technical_support')->nullable();  // New technical support ID (nullable)
             $table->timestamp('changed_at');  // Timestamp of when the change occurred
             $table->timestamps();  // Laravel's created_at and updated_at timestamps

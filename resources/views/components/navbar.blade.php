@@ -33,8 +33,9 @@
                 </div>
             </div>
 
-
-            <i class="fas fa-envelope navbar-icon"></i>
+            <a href="{{ url('/chat') }}" title="View Messages">
+                <i class="fas fa-envelope navbar-icon"></i>
+            </a>
             <div class="user-dropdown">
                 <i class="fas fa-user navbar-icon" onclick="toggleDropdown()"></i>
                 <div class="dropdown-menu" id="dropdownMenu">
