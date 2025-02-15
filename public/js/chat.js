@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     
+
     // Event listener for each user in the user list
     usersList.forEach(user => {
         user.addEventListener('click', () => {
@@ -63,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`/chat/fetch-messages/${receiverId}`)
             .then(response => response.json())
             .then(messages => {
+                const wasAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 10;
+    
                 messagesContainer.innerHTML = ''; // Clear existing messages
     
                 messages.forEach(msg => {
@@ -99,16 +102,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     messagesContainer.appendChild(msgElement);
                 });
     
-                scrollToBottom();
+                // Scroll to bottom only if user was already at the bottom
+                if (wasAtBottom) {
+                    scrollToBottom();
+                } else {
+                    checkScrollButton();
+                }
     
-                // Clear the unread badge for the selected user
+                // Clear unread badge & notify server that messages are read
                 clearUnreadBadge(receiverId);
-    
-                // Notify the server that messages have been read
                 markMessagesAsRead(receiverId);
             })
             .catch(error => console.error('Error fetching messages:', error));
     }
+    
+    // Function to check if the "Scroll to Bottom" button should be shown
+    function checkScrollButton() {
+        const isAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 10;
+        scrollButton.style.display = isAtBottom ? 'none' : 'block';
+    }
+    
+    // Function to scroll to the bottom when the button is clicked
+    function scrollToBottom() {
+        messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
+    }
+    
+    // Attach event listener to the scroll button
+    scrollButton.addEventListener('click', scrollToBottom);
+    
+    // Detect user scroll to hide the button if at bottom
+    messagesContainer.addEventListener('scroll', checkScrollButton);
+    
     
     // Clear the unread badge for a specific user
     function clearUnreadBadge(userId) {
@@ -219,7 +243,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Run the function every 10 seconds
     setInterval(updateUserStatuses, 10000);
     updateUserStatuses();
-    
-    
     
 });

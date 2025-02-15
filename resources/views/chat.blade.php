@@ -76,17 +76,24 @@
         <!-- Messages will be dynamically loaded here -->
     </div>
 
-    <!-- Chat Input Area with Send Button (Moved inside chat-area) -->
+    <!-- Scroll to Bottom Button (Inside Chat Area) -->
+    <button id="scrollButton" style="display: none;">
+        <i class="fas fa-arrow-down"></i>
+    </button>
+
+    <!-- Chat Input Area -->
     <div id="chat-input-container">
         <label for="file-upload" id="send-file" title="Send File">
-        <i class="fas fa-paperclip"></i> <!-- Font Awesome paperclip icon -->
-    </label>
-    <textarea id="chat-input" placeholder="Type your message..."></textarea>
-    <input type="file" id="file-upload" style="display: none;">
-    <button id="send-message" title="Send Message">
-        <span>&#10148;</span> <!-- Unicode for right arrow -->
-    </button>
+            <i class="fas fa-paperclip"></i>
+        </label>
+        <textarea id="chat-input" placeholder="Type your message..."></textarea>
+        <input type="file" id="file-upload" style="display: none;">
+        <button id="send-message" title="Send Message">
+            <span>&#10148;</span>
+        </button>
+    </div>
 </div>
+
 
 
 
