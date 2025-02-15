@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class ChatController extends Controller
 {
@@ -18,7 +19,7 @@ class ChatController extends Controller
 
         return view('chat', ['users' => $users]);
     }
-
+  
     public function sendMessage(Request $request)
     {
         if (Auth::check()) {

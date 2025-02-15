@@ -78,10 +78,16 @@
 
     <!-- Chat Input Area with Send Button (Moved inside chat-area) -->
     <div id="chat-input-container">
-        <textarea id="chat-input" placeholder="Type your message..."></textarea>
-        <button id="send-message"><span>&#10148;</span></button> <!-- Unicode for right arrow -->
-    </div>
+        <label for="file-upload" id="send-file" title="Send File">
+        <i class="fas fa-paperclip"></i> <!-- Font Awesome paperclip icon -->
+    </label>
+    <textarea id="chat-input" placeholder="Type your message..."></textarea>
+    <input type="file" id="file-upload" style="display: none;">
+    <button id="send-message" title="Send Message">
+        <span>&#10148;</span> <!-- Unicode for right arrow -->
+    </button>
 </div>
+
 
 
     <!-- Link to the external JavaScript file -->

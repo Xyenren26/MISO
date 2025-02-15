@@ -384,6 +384,49 @@ body {
     display: none;
 }
 
+/*file sender style*/
+#send-file {
+    background-color: #003366; /* Your preferred blue color */
+    color: #fff;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-right: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#send-file:hover {
+    background-color: #0055a5;
+}
+
+#send-file i {
+    font-size: 20px;
+}
+
+/* scroll style*/
+/* Scroll-to-bottom button */
+.scroll-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: none; /* Initially hidden */
+    transition: opacity 0.3s ease-in-out;
+}
+
+.scroll-btn:hover {
+    background: #0056b3;
+}
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {

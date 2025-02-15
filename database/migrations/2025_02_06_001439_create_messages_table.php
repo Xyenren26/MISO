@@ -13,8 +13,9 @@ return new class extends Migration {
                 $table->id();
                 $table->unsignedInteger('sender_id');
                 $table->unsignedInteger('receiver_id');
-                $table->text('message');
-                $table->boolean('is_read')->default(false); // Add column directly here if needed
+                $table->text('message')->nullable();
+                $table->string('file_path')->nullable(); // Add file path column
+                $table->boolean('is_read')->default(false);
                 $table->timestamps();
 
                 // Foreign key constraints
@@ -22,10 +23,16 @@ return new class extends Migration {
                 $table->foreign('receiver_id')->references('employee_id')->on('users')->onDelete('cascade');
             });
         } else {
-            // Add the column if it doesn't already exist
+            // Add missing columns if they don't exist
             if (!Schema::hasColumn('messages', 'is_read')) {
                 Schema::table('messages', function (Blueprint $table) {
                     $table->boolean('is_read')->default(false);
+                });
+            }
+
+            if (!Schema::hasColumn('messages', 'file_path')) {
+                Schema::table('messages', function (Blueprint $table) {
+                    $table->string('file_path')->nullable();
                 });
             }
         }
@@ -38,4 +45,3 @@ return new class extends Migration {
         }
     }
 };
-
