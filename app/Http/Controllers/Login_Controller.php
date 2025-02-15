@@ -29,12 +29,6 @@ class Login_Controller extends Controller
 
     public function authenticate(Request $request)
     {
-
-        // Validate input fields
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-
         // Validate the inputs for username and password
         $request->validate([
             'username' => 'required|string',
@@ -49,6 +43,13 @@ class Login_Controller extends Controller
 
         if ($user) {
             $currentSessionId = session()->getId();
+
+            // Check if the user account is inactive or disabled
+            if ($user->status !== 'active') {
+                return redirect()->back()->withErrors([
+                    'login' => 'Your account is inactive or disabled. Please contact support.',
+                ])->withInput();
+            }
 
             // 🔹 Check if user is already logged in from another browser
             if ($user->session_id && $user->session_id !== $currentSessionId) {
@@ -94,62 +95,6 @@ class Login_Controller extends Controller
         } elseif (in_array($user->account_type, ['technical_support', 'administrator'])) {
             return redirect()->route('home'); // Redirect to technical roles or admin home
         }
-    }
-
-            // Check if the user account is inactive or disabled
-            if ($user->status !== 'active') {
-                return redirect()->back()->withErrors([
-                    'login' => 'Your account is inactive or disabled. Please contact support.',
-                ])->withInput();
-            }
-
-            // Check if the user is already logged in from another session
-            if ($user->session_id) {
-                return redirect()->back()->withErrors([
-                    'login' => 'You are already logged in from another session. Please log out first.',
-                ])->withInput();
-            }
-
-            $remember = $request->has('remember');
-
-            // Set session lifetime based on "Remember Me"
-            if ($remember) {
-                Config::set('session.lifetime', env('REMEMBER_ME_LIFETIME', 43200));
-                Config::set('session.expire_on_close', false); // Session persists even when the browser is closed
-            } else {
-                Config::set('session.lifetime', env('SESSION_LIFETIME', 5));
-                Config::set('session.expire_on_close', true); // Session expires when the browser is closed
-            }
-
-            // Attempt to log the user in
-            if (Auth::attempt(['username' => $request->username, 'password' => $request->password], $remember)) {
-                // Check if this is the user's first login
-                if ($user->is_first_login) {
-                    return redirect()->route('profile.complete.form'); // Replace with actual route name for profile completion
-                }
-
-                // Save the user's session info
-                session(['user_id' => $user->id]); // Save user ID in session, not employee_id
-                session(['last_activity' => now()]); // Track last activity time
-
-                // Update user session ID
-                $user->last_activity = now();
-                $user->session_id = session()->getId();
-                $user->save();
-
-                // Redirect based on account type
-                if ($user->account_type === 'end_user') {
-                    return redirect('/employee/home'); // Redirect to employee's home page
-                } elseif (in_array($user->account_type, ['technical_support', 'administrator'])) {
-                    return redirect()->route('home'); // Redirect to technical roles or admin home
-                }
-            }
-        }
-
-        // If login fails, redirect back with an error
-        return redirect()->back()->withErrors([
-            'login' => 'Invalid username or password.',
-        ])->withInput();
     }
 
     public function logout()

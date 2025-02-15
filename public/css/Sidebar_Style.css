@@ -177,7 +177,7 @@
 
 .sidebar.minimized .sidebar-logo {
     width: 60px;
-    margin-bottom: 50px;
+    margin-bottom: 100px;
 }
 
 .sidebar.minimized .menu li {
@@ -256,10 +256,6 @@
         width: 200px;
     }
 
-    .main-content {
-        margin-left: 200px;
-    }
-}
 
 @media screen and (max-width: 1024px) {
     /* On screens smaller than 1024px, make the sidebar smaller */
@@ -331,6 +327,7 @@
         margin-left: 50px;
     }
 }
+
 /* For mobile screens */
 @media (max-width: 480px) {
     .sidebar {
