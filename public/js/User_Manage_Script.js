@@ -86,11 +86,19 @@ document.getElementById('newEmployeeId').addEventListener('input', function(even
     // Remove non-digit characters
     input.value = input.value.replace(/\D/g, '');
 
+// Restrict the Employee ID to exactly 7 digits only
+document.getElementById('newEmployeeId').addEventListener('input', function(event) {
+    const input = event.target;
+    // Remove non-digit characters
+    input.value = input.value.replace(/\D/g, '');
+
     // Limit input length to exactly 7 digits
     if (input.value.length > 7) {
         input.value = input.value.slice(0, 7);
     }
 });
+
+
 // Password validation: At least 6 characters, including one letter, one number, or one special character
 function validatePassword(password) {
     const regex = /^(?=.*[A-Za-z])(?=.*\d|[^A-Za-z0-9]).{6,}$/;
