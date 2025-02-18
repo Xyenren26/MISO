@@ -7,6 +7,7 @@ class CreateEndorsementsTable extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('endorsements')) {
         Schema::create('endorsements', function (Blueprint $table) {
             $table->string('control_no')->primary();  // control_no as primary key
             $table->string('ticket_id')->nullable();
@@ -27,6 +28,7 @@ class CreateEndorsementsTable extends Migration
             $table->foreign('ticket_id')->references('control_no')->on('tickets')->onDelete('cascade');
         });
     }
+}
 
     public function down()
     {

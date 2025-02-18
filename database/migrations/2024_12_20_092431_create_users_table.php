@@ -13,6 +13,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('users')) {
         Schema::create('users', function (Blueprint $table) {
             $table->integer('employee_id')->nullable(); // Fixed the column definition
             $table->string('first_name')->nullable(); // First name
@@ -31,6 +32,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('last_activity')->nullable();
         });
     }
+}
 
     /**
      * Reverse the migrations.

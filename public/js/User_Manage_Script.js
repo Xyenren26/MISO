@@ -80,6 +80,11 @@ function toggleStatus(event, employeeId, currentStatus) {
         document.getElementById(`disableForm${employeeId}`).submit();
     }
 }
+// Restrict the Employee ID to exactly 7 digits only
+document.getElementById('newEmployeeId').addEventListener('input', function(event) {
+    const input = event.target;
+    // Remove non-digit characters
+    input.value = input.value.replace(/\D/g, '');
 
 // Restrict the Employee ID to exactly 7 digits only
 document.getElementById('newEmployeeId').addEventListener('input', function(event) {
@@ -92,6 +97,7 @@ document.getElementById('newEmployeeId').addEventListener('input', function(even
         input.value = input.value.slice(0, 7);
     }
 });
+
 
 // Password validation: At least 6 characters, including one letter, one number, or one special character
 function validatePassword(password) {

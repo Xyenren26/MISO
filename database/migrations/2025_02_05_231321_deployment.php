@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
+        if (!Schema::hasTable('deployments')) {
         Schema::create('deployments', function (Blueprint $table) {
             $table->id();
             $table->string('control_number')->unique();
@@ -24,7 +25,7 @@ return new class extends Migration {
             $table->date('noted_date')->nullable();
             $table->timestamps();
         });
-    }
+    }}
 
     public function down()
     {

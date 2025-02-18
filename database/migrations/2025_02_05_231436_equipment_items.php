@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
+        if (!Schema::hasTable('equipment_items')) {
         Schema::create('equipment_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('deployment_id')->constrained('deployments')->onDelete('cascade');
@@ -16,6 +17,7 @@ return new class extends Migration {
             $table->timestamps();
         });
     }
+}
 
     public function down()
     {
