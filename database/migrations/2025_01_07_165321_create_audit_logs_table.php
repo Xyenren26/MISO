@@ -13,6 +13,7 @@ class CreateAuditLogsTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('audit_logs')) {
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id(); // Primary key
             $table->timestamp('date_time'); // Date and time of the action
@@ -24,6 +25,7 @@ class CreateAuditLogsTable extends Migration
             $table->timestamps(); // Laravel's created_at and updated_at timestamps
         });
     }
+}
 
     /**
      * Reverse the migrations.

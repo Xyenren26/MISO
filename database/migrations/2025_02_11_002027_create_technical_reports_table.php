@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (!Schema::hasTable('technical_reports')) {
         Schema::create('technical_reports', function (Blueprint $table) {
             $table->id();
             $table->string('control_no'); // Reference to tickets table
@@ -27,7 +28,7 @@ return new class extends Migration {
             $table->timestamp('noted_date')->nullable();
             $table->timestamps();
         });
-    }
+    }}
 
     public function down(): void
     {
