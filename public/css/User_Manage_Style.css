@@ -33,6 +33,13 @@
     gap: 20px; /* Adjusted for better spacing */
 }
 
+#searchFilterForm{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px; /* Adjusted for better spacing */   
+}
+
 /* Search Controls */
 .search-container {
     display: flex;
@@ -163,6 +170,14 @@
     font-style: italic;
     color: #666;
 }
+.button-container {
+    display: flex;
+    justify-content: flex-start; /* Adjust alignment (flex-start, center, space-between, etc.) */
+    gap: 10px; /* Space between buttons */
+    align-items: center; /* Align items vertically (optional) */
+}
+
+
 
 /* Action Buttons */
 .action-button {
@@ -414,6 +429,43 @@
 .info-column:last-child {
     border-right: none;  /* Removes the right border for the last column */
 }
+
+.alert-box {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .alert-box.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    font-size: 12px;
+  }
+
+  .alert-box.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    font-size: 12px;
+  }
+  .alert-box.message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    font-size: 12px;
+  }
+
+  .alert-box button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    cursor: pointer;
+  }
 
 
 /* Animation for fading and sliding */

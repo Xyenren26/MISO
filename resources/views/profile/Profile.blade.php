@@ -213,27 +213,50 @@
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
         }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
+        .modal-verification {
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .email-verification-modal {
+            background: white;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            margin: auto;
         }
 
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        .email-verification-modal h4 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
         }
 
-        .close-btn:hover,
-        .close-btn:focus {
-            color: black;
-            text-decoration: none;
+        .email-verification-modal p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .email-verification-modal .close-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background 0.3s;
         }
+
+        .email-verification-modal .close-btn:hover {
+            background: #0056b3;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .profile-header {
@@ -329,11 +352,14 @@
         </div>
     </div>
     <div id="verification-modal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <h4>Email Verification</h4>
-        <p>A verification email has been sent to your email address. Please check your inbox.</p>
-        <button id="close-modal" class="close-btn">Close</button>
+    <div class="modal-verification">
+        <div class="modal-content email-verification-modal">
+            <h4>Email Verification</h4>
+            <p>A verification email has been sent to your email address. Please check your inbox.</p>
+            <button id="close-modal" class="close-btn">Close</button>
+        </div>
     </div>
+
     <form id="verification-form" method="POST" action="{{ route('verification.send') }}" style="display: none;">
         @csrf
     </form>

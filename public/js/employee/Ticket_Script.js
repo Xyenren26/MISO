@@ -76,7 +76,7 @@ function fetchAndRenderTickets(page = 1) {
         page: page // Pass the page number
     }).toString();
 
-    fetch(`/tickets/filter?${queryParams}`, {
+    fetch(`/employee/filter?${queryParams}`, {
         method: "GET",
         headers: { "X-Requested-With": "XMLHttpRequest" }
     })

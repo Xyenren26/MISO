@@ -18,58 +18,156 @@ class Ticket_Controller extends Controller
 {
     public function showTicket()
     {
-        // Get the current logged-in user
         $user = auth()->user();
 
-         // Ensure the user is a technical support user or an administrator
         if (!in_array($user->account_type, ['technical_support', 'administrator'])) {
             abort(403, 'Unauthorized access');
         }
 
-
-        // Fetch tickets assigned to the logged-in technical support user
+        // Fetch all tickets (without pagination)
         $status = request('filter');
         $tickets = Ticket::where('technical_support_id', $user->employee_id)
             ->when($status, function ($query, $status) {
                 return $query->where('status', $status);
             })
-            ->with('history') // Include histories in the query
+            ->with('history') // Include histories
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(6); // Changed from paginate() to get()
 
-        // Fetch all technical support users excluding the current one
+        // Fetch other data
         $technicalSupports = User::where('account_type', 'technical_support')
-        ->whereNotNull('session_id')  // Check if 'time_in' is not null
-        ->get();
+            ->whereNotNull('session_id')
+            ->get();
 
-        // Get the current year for control number formatting
         $currentYear = now()->year;
         $lastTicket = Ticket::whereYear('created_at', $currentYear)
             ->orderBy('control_no', 'desc')
             ->first();
 
-        // Calculate the next control number
         $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
         $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
-        
+
         // Generate next form number
         $latestFormNo = ServiceRequest::latest('form_no')->first();
         $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
         $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
 
-        $technicalAssistSupports = collect(); // Prevent undefined variable
-            
-        // Fetch active technical supports (those who have a recent activity and a session)
-        $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
+        $threshold = now()->subMinutes(30);
         $technicalAssistSupports = User::where('last_activity', '>=', $threshold)
-            ->whereNotNull('session_id') // Ensure they have a session ID
-            ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
+            ->where('account_type', 'technical_support') // Correct comparison here
+            ->whereNotNull('session_id')
+            ->where('employee_id', '!=', $user->employee_id)
             ->get();
+    
 
-        // Pass data to the view
-        return view('ticket', compact('tickets', 'technicalAssistSupports','technicalSupports', 'formattedControlNo', 'nextFormNo'));
+        return view('ticket', compact('tickets', 'technicalAssistSupports', 'technicalSupports', 'formattedControlNo', 'nextFormNo'));
     }
 
+    public function filterTickets(Request $request)
+    {
+        $status = $request->get('status');
+        $priority = $request->get('priority');
+        $search = $request->get('search'); // Get search input
+        
+        // Get the currently logged-in user
+        $currentTechnicalSupportId = Auth::user()->employee_id;
+        $user = Auth::user(); 
+
+        // Start building the query for tickets
+        $query = Ticket::query();
+
+        // Filter tickets assigned to the logged-in technical support user
+        $query->where('technical_support_id', $currentTechnicalSupportId);
+
+        // Add search filter for control_no and name
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('control_no', 'LIKE', "%{$search}%")
+                ->orWhere('name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Handle the "recent" filter to show all latest records
+        if ($status === 'recent') {
+            $query->orderBy('created_at', 'desc');
+        } else {
+            // If the status is not "recent", check if there are multiple statuses (comma-separated)
+            if (!empty($status)) {
+                $statusArray = explode(',', $status);
+                $query->whereIn('status', $statusArray);
+            }
+        }
+
+        // Filter by priority if provided
+        if (!empty($priority)) {
+            $query->where('priority', $priority);
+        }
+
+        // Paginate the results
+        $tickets = $query->paginate(6);
+
+        // Process each ticket to determine assist and remarks status
+        foreach ($tickets as $ticket) {
+            $ticket->isAssistDone = $ticket->history->where('ticket_id', $ticket->control_no)->count() > 0;
+            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out']);
+        }
+
+        // Fetch technical supports
+        $technicalSupports = User::where('account_type', 'technical_support')->get();
+
+        // Fetch active technical supports (last activity within 30 minutes)
+        $threshold = now()->subMinutes(30);
+        $technicalAssistSupports = User::where('last_activity', '>=', $threshold)
+            ->where('account_type', 'technical_support') // Correct comparison here
+            ->whereNotNull('session_id')
+            ->where('employee_id', '!=', $user->employee_id)
+            ->get();
+
+        // Generate next form number
+        $latestFormNo = ServiceRequest::latest('form_no')->first();
+        $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
+        $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
+
+        // Render the ticket list view
+        return view('components.ticket-list', compact('tickets', 'technicalSupports', 'technicalAssistSupports', 'nextFormNo'))->render();
+    }
+
+    // Render the ticket view
+    public function show($id)
+    {
+        $ticket = Ticket::findOrFail($id);
+
+        // Fetch technical support name based on technical_support_id
+        $technicalSupport = User::where('employee_id', $ticket->technical_support_id)
+            ->selectRaw("CONCAT(first_name, ' ', last_name) AS technical_support_name")
+            ->first();
+
+        $ticket->technical_support_name = $technicalSupport->technical_support_name ?? 'N/A';
+
+        // Fetch the first history record for this ticket (if it exists)
+        $ticketHistory = $ticket->history()->orderBy('changed_at', 'asc')->first();
+
+        // Fetch full names for previous and new technical support
+        if ($ticketHistory) {
+            $previousTechnicalSupport = User::where('employee_id', $ticketHistory->previous_technical_support)
+                ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
+                ->first();
+
+            $newTechnicalSupport = User::where('employee_id', $ticketHistory->new_technical_support)
+                ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
+                ->first();
+
+            // Add the names to the ticket history
+            $ticketHistory->previous_technical_support_name = $previousTechnicalSupport ? $previousTechnicalSupport->name : 'N/A';
+            $ticketHistory->new_technical_support_name = $newTechnicalSupport ? $newTechnicalSupport->name : 'N/A';
+        }
+
+        // Pass ticket data along with the first technical support history record (if available)
+        return response()->json([
+            'ticket' => $ticket,
+            'ticketHistory' => $ticketHistory
+        ]);
+    }
 
     public function store(Request $request)
     {
@@ -132,6 +230,16 @@ class Ticket_Controller extends Controller
                 ));
             }
             
+            // Retrieve the employee based on employee_id in the tickets table
+            $ticketOwner = User::where('employee_id', $ticket->employee_id)->first();
+            
+            if ($ticketOwner) {
+                $ticketOwner->notify(new SystemNotification(
+                    'TicketUpdated',
+                    'A new update has been made to your ticket.',
+                    route('ticket', $ticket->control_no)
+                ));
+            }            
 
             return redirect()->route('ticket')->with('success', 'Ticket created successfully!');
         }
@@ -166,108 +274,6 @@ class Ticket_Controller extends Controller
         }
 
         return redirect()->route('ticket')->with('error', 'Ticket not found.');
-    }
-
-
-    public function filterTickets(Request $request)
-    {
-        $status = $request->get('status');
-        $priority = $request->get('priority');
-        
-        // Get the currently logged-in user
-        $currentTechnicalSupportId = Auth::user()->employee_id;
-        $user = Auth::user();  // Define the user for filtering active technical supports
-        
-        // Start building the query for tickets
-        $query = Ticket::query();
-        
-        // Filter tickets assigned to the logged-in technical support user
-        $query->where('technical_support_id', $currentTechnicalSupportId);
-        
-        // Handle the "recent" filter to show all latest records
-        if ($status === 'recent') {
-            $query->orderBy('created_at', 'desc'); // Sort by creation date (latest first)
-        } else {
-            // If the status is not "recent", check if there are multiple statuses (comma-separated)
-            if ($status) {
-                $statusArray = explode(',', $status); // Split the status string by commas
-                $query->whereIn('status', $statusArray); // Use whereIn to filter by multiple statuses
-            }
-        }
-        
-        // Filter by priority if provided
-        if ($priority) {
-            $query->where('priority', $priority);
-        }
-        
-        // Paginate the results
-        $tickets = $query->paginate(10);
-        
-        // For each ticket, determine if assist is done and if remarks are done
-        foreach ($tickets as $ticket) {
-            // Check if assist has been done (if the ticket exists in ticket_histories)
-            $ticket->isAssistDone = $ticket->history->where('ticket_id', $ticket->control_no)->count() > 0;
-
-            // Check if the status is one of the completed, endorsed, or technical_report
-            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out']);
-        }
-        $technicalSupports = User::where('account_type', 'technical_support')->get();
-
-        $technicalAssistSupports = collect(); // Prevent undefined variable
-        
-        // Fetch active technical supports (those who have a recent activity and a session)
-        $threshold = now()->subMinutes(30);  // Set the threshold to 30 minutes ago (can be adjusted)
-        $technicalAssistSupports = User::where('last_activity', '>=', $threshold)
-            ->whereNotNull('session_id') // Ensure they have a session ID
-            ->where('employee_id', '!=', $user->employee_id)  // Exclude the current technical support
-            ->get();
-
-     
-
-        // Generate next form number
-        $latestFormNo = ServiceRequest::latest('form_no')->first();
-        $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
-        $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
-            
-        // Render the ticket list view
-        return view('components.ticket-list', compact('tickets', 'technicalSupports','technicalAssistSupports','nextFormNo'))->render();
-    }
-
-    
-    public function show($id)
-    {
-        $ticket = Ticket::findOrFail($id);
-
-        // Fetch technical support name based on technical_support_id
-        $technicalSupport = User::where('employee_id', $ticket->technical_support_id)
-            ->selectRaw("CONCAT(first_name, ' ', last_name) AS technical_support_name")
-            ->first();
-
-        $ticket->technical_support_name = $technicalSupport->technical_support_name ?? 'N/A';
-
-        // Fetch the first history record for this ticket (if it exists)
-        $ticketHistory = $ticket->history()->orderBy('changed_at', 'asc')->first();
-
-        // Fetch full names for previous and new technical support
-        if ($ticketHistory) {
-            $previousTechnicalSupport = User::where('employee_id', $ticketHistory->previous_technical_support)
-                ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
-                ->first();
-
-            $newTechnicalSupport = User::where('employee_id', $ticketHistory->new_technical_support)
-                ->selectRaw("CONCAT(first_name, ' ', last_name) AS name")
-                ->first();
-
-            // Add the names to the ticket history
-            $ticketHistory->previous_technical_support_name = $previousTechnicalSupport ? $previousTechnicalSupport->name : 'N/A';
-            $ticketHistory->new_technical_support_name = $newTechnicalSupport ? $newTechnicalSupport->name : 'N/A';
-        }
-
-        // Pass ticket data along with the first technical support history record (if available)
-        return response()->json([
-            'ticket' => $ticket,
-            'ticketHistory' => $ticketHistory
-        ]);
     }    
 
     public function updateRemarks(Request $request)

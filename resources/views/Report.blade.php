@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management Information System</title>
+    <title>TechTrack Report and Analytics</title>
+    <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ asset('css/Report_Style.css') }}">
 
     <!-- Include Font Awesome for icons -->
