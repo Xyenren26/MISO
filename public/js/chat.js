@@ -3,44 +3,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const sendMessageButton = document.getElementById('send-message');
     const messagesContainer = document.getElementById('messages');
-    const chatHeader = document.getElementById('chat-header'); // Reference to chat header
+    const chatHeader = document.getElementById('chat-header');
     let selectedUserId = null;
-    let selectedUserName = null; // Store selected user's name
+    let selectedUserName = null;
     let pollInterval;
+    const visibleTimestamps = new Set();
+
+    
 
     // Accordion functionality
-    const accordions = document.querySelectorAll('.accordion h4');
-
-    accordions.forEach(accordion => {
+    document.querySelectorAll('.accordion h4').forEach(accordion => {
         accordion.addEventListener('click', () => {
             const list = accordion.nextElementSibling;
             list.style.display = list.style.display === 'none' ? 'block' : 'none';
-            accordion.classList.toggle('active'); // Add/remove active class
+            accordion.classList.toggle('active');
         });
-    
         accordion.nextElementSibling.style.display = 'none';
     });
-    
-    
 
-    // Event listener for each user in the user list
+    // Event listener for selecting users
     usersList.forEach(user => {
         user.addEventListener('click', () => {
             selectedUserId = user.dataset.userId;
-            selectedUserName = user.querySelector('span').textContent; // Get the name of the selected user
-            chatHeader.textContent = `Chatting with ${selectedUserName}`; // Update the header text
-            clearInterval(pollInterval); // Clear any previous polling
+            selectedUserName = user.querySelector('span').textContent;
+            chatHeader.textContent = `Chatting with ${selectedUserName}`;
+            clearInterval(pollInterval);
             loadMessages(selectedUserId);
-            pollInterval = setInterval(() => loadMessages(selectedUserId), 2000); // Poll every 2 seconds
+            pollInterval = setInterval(() => loadMessages(selectedUserId), 2000);
         });
     });
 
-    // Event listener for the send message button
-    sendMessageButton.addEventListener('click', () => {
-        const message = chatInput.value.trim();
+    // Send message event
+    sendMessageButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
 
+    function sendMessage() {
+        const message = chatInput.value.trim();
         if (message && selectedUserId) {
-            fetch(`/chat/send-message`, {
+            fetch('/chat/send-message', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,104 +54,85 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ message, receiver_id: selectedUserId })
             })
             .then(response => response.json())
-            .then(data => {
-                chatInput.value = ''; // Clear the input field
-                loadMessages(selectedUserId); // Reload messages after sending
+            .then(() => {
+                chatInput.value = '';
+                loadMessages(selectedUserId);
             })
-            .catch(error => console.error(error));
+            .catch(console.error);
         }
-    });
-
-    // Function to load messages from the server
-    const visibleTimestamps = new Set(); // Set to track visible timestamps
+    }
 
     function loadMessages(receiverId) {
         fetch(`/chat/fetch-messages/${receiverId}`)
             .then(response => response.json())
             .then(messages => {
                 const wasAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 10;
-    
-                messagesContainer.innerHTML = ''; // Clear existing messages
-    
+                messagesContainer.innerHTML = '';
+
                 messages.forEach(msg => {
                     const msgElement = document.createElement('div');
                     const isSentByMe = msg.sender_id !== parseInt(receiverId);
                     msgElement.className = `message ${isSentByMe ? 'me' : 'them'}`;
-    
-                    const timestamp = msg.timestamp ? new Date(msg.timestamp) : null;
-                    const formattedTimestamp = timestamp 
-                        ? timestamp.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+
+                    const formattedTimestamp = msg.timestamp 
+                        ? new Date(msg.timestamp).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
                         : '';
-    
+
                     const msgId = msg.id || `${msg.sender_id}-${msg.timestamp}`;
-    
+
                     msgElement.innerHTML = `
                         <div class="message-content">${msg.message}</div>
                         <div class="timestamp" style="display: ${visibleTimestamps.has(msgId) ? 'block' : 'none'};">
                             ${formattedTimestamp}
                         </div>
                     `;
-    
+
                     msgElement.addEventListener('click', () => {
                         const timestampElement = msgElement.querySelector('.timestamp');
-                        const isVisible = timestampElement.style.display === 'block';
-                        timestampElement.style.display = isVisible ? 'none' : 'block';
-    
-                        if (isVisible) {
-                            visibleTimestamps.delete(msgId);
-                        } else {
+                        timestampElement.style.display = timestampElement.style.display === 'block' ? 'none' : 'block';
+
+                        if (timestampElement.style.display === 'block') {
                             visibleTimestamps.add(msgId);
+                        } else {
+                            visibleTimestamps.delete(msgId);
                         }
                     });
-    
+
                     messagesContainer.appendChild(msgElement);
                 });
-    
-                // Scroll to bottom only if user was already at the bottom
+
                 if (wasAtBottom) {
                     scrollToBottom();
                 } else {
                     checkScrollButton();
                 }
-    
-                // Clear unread badge & notify server that messages are read
+
                 clearUnreadBadge(receiverId);
                 markMessagesAsRead(receiverId);
             })
-            .catch(error => console.error('Error fetching messages:', error));
+            .catch(console.error);
     }
-    
-    // Function to check if the "Scroll to Bottom" button should be shown
+
     function checkScrollButton() {
-        const isAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 10;
-        scrollButton.style.display = isAtBottom ? 'none' : 'block';
+        document.getElementById('scrollButton').style.display =
+            messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 10 ? 'none' : 'block';
     }
-    
-    // Function to scroll to the bottom when the button is clicked
+
     function scrollToBottom() {
         messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
     }
-    
-    // Attach event listener to the scroll button
-    scrollButton.addEventListener('click', scrollToBottom);
-    
-    // Detect user scroll to hide the button if at bottom
+
+    document.getElementById('scrollButton').addEventListener('click', scrollToBottom);
     messagesContainer.addEventListener('scroll', checkScrollButton);
-    
-    
-    // Clear the unread badge for a specific user
+
     function clearUnreadBadge(userId) {
-        const selectedUser = document.querySelector(`.user[data-user-id="${userId}"]`);
-        if (selectedUser) {
-            const badge = selectedUser.querySelector('.badge');
-            if (badge) {
-                badge.textContent = '';
-                badge.style.display = 'none';
-            }
+        const badge = document.querySelector(`.user[data-user-id="${userId}"] .badge`);
+        if (badge) {
+            badge.textContent = '';
+            badge.style.display = 'none';
         }
     }
-    
-    // Notify the server that messages were read
+
     function markMessagesAsRead(receiverId) {
         fetch(`/chat/mark-read/${receiverId}`, {
             method: 'POST',
@@ -154,94 +140,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
-        }).catch(error => console.error('Error marking messages as read:', error));
-    }
-    
-
-    // Add functionality to send the message on Enter key press
-    chatInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();  // Prevent the default Enter behavior (new line)
-            sendMessageButton.click();  // Trigger send button click
-        }
-    });
-
-    // Ensure messages container scrolls to the bottom after loading messages
-    function scrollToBottom() {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }).catch(console.error);
     }
 
     function updateUnreadBadges() {
         fetch('/chat/unread-count', {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
         })
         .then(response => response.json())
         .then(data => {
             document.querySelectorAll('.user').forEach(user => {
                 const userId = user.getAttribute('data-user-id');
                 const unreadCount = data.find(item => item.sender_id == userId)?.unread_count || 0;
-    
-                let badge = user.querySelector('.badge');
-                if (!badge) {
-                    badge = document.createElement('span');
-                    badge.classList.add('badge');
-                    user.appendChild(badge);
-                }
-    
+                let badge = user.querySelector('.badge') || document.createElement('span');
+                badge.classList.add('badge');
+                user.appendChild(badge);
                 badge.textContent = unreadCount > 0 ? unreadCount : '';
                 badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
             });
         })
-        .catch(error => console.error('Error fetching unread counts:', error));
+        .catch(console.error);
     }
-    
-    // Automatically refresh badges every 5 seconds
+
     setInterval(updateUnreadBadges, 5000);
     updateUnreadBadges();
 
-//Fetch Active Users
     function fetchActiveUsers() {
         fetch('/chat/active-users')
             .then(response => response.json())
             .then(users => {
                 const activeUsersList = document.querySelector('#active-users-list');
-                activeUsersList.innerHTML = ''; // Clear previous entries
-
-                users.forEach(user => {
-                    const userItem = document.createElement('li');
-                    userItem.textContent = `${user.name} (${user.email})`;
-                    activeUsersList.appendChild(userItem);
-                });
+                activeUsersList.innerHTML = users.map(user => `<li>${user.name} (${user.email})</li>`).join('');
             })
-            .catch(error => console.error('Error fetching active users:', error));
+            .catch(console.error);
     }
 
-    setInterval(fetchActiveUsers, 30000); // Refresh every 30 seconds
+    setInterval(fetchActiveUsers, 30000);
     fetchActiveUsers();
 
-    //for status indicator if the user are offline or online 
     function updateUserStatuses() {
         fetch('/get-user-status')
             .then(response => response.json())
             .then(data => {
                 document.querySelectorAll('.user-status').forEach(statusElement => {
-                    let userId = statusElement.getAttribute('id').replace('status-', '');
-                    if (data.onlineUsers.includes(parseInt(userId))) {
-                        statusElement.classList.add('online');
-                        statusElement.classList.remove('offline');
-                    } else {
-                        statusElement.classList.add('offline');
-                        statusElement.classList.remove('online');
-                    }
+                    const userId = statusElement.id.replace('status-', '');
+                    statusElement.classList.toggle('online', data.onlineUsers.includes(parseInt(userId)));
+                    statusElement.classList.toggle('offline', !data.onlineUsers.includes(parseInt(userId)));
                 });
             })
-            .catch(error => console.error('Error fetching user status:', error));
+            .catch(console.error);
     }
-    
-    // Run the function every 10 seconds
+
     setInterval(updateUserStatuses, 10000);
     updateUserStatuses();
+    
     
 });

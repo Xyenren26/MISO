@@ -15,7 +15,9 @@ return new class extends Migration
             Schema::create('tickets', function (Blueprint $table) {
             $table->string('control_no')->primary(); // control_no as the primary key (if not auto-incrementing)
             $table->integer('employee_id')->nullable(); // Foreign key to users table (general employee)
-            $table->integer('technical_support_id'); // Foreign key to users table (specific to technical-support role)
+
+            // pinalitan ko yung technical - rogelio
+            $table->integer('technical_support_id')->nullable(false)->default(0); // Ensures a default value  // Foreign key to users table (specific to technical-support role)
             $table->string('name');
             $table->string('department');
             $table->enum('priority', ['urgent', 'semi-urgent', 'non-urgent']);
