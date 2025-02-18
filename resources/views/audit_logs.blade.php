@@ -89,9 +89,10 @@
             </table>
 
             <!-- Pagination -->
-            <div class="pagination">
-                {{ $auditLogs->links() }} <!-- Correct variable name -->
+            <div class="pagination flex justify-center mt-4 text-sm">
+                {{ $auditLogs->links() }}
             </div>
+
         </section>
     </div>
 </div>

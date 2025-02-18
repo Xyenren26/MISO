@@ -12,10 +12,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const phone = document.getElementById("phone_number");
     const form = document.getElementById("profile-form");
 
-    // ✅ Handle Verification Modal
+    // ✅ Handle Verification Modal and Email Resend
     if (triggerBtn && verificationForm) {
         triggerBtn.addEventListener("click", function () {
+            // Show modal
             modal.style.display = "block";
+
+            // Send verification request via Fetch API
+            fetch(verificationForm.action, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector("meta[name='csrf-token']").getAttribute("content"),
+                    "Accept": "application/json"
+                },
+                body: new FormData(verificationForm)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Verification email sent! Check your inbox.");
+                } else {
+                    alert("Error sending verification email.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
         });
     }
 
@@ -58,13 +78,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: formData,
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector("meta[name='csrf-token']").getAttribute("content"),
-                    "Accept": "application/json" // Ensures Laravel responds with JSON
+                    "Accept": "application/json"
                 }
             })
-            .then(response => response.text()) // Convert response to text
+            .then(response => response.text())
             .then(text => {
                 console.log("Response Text:", text);
-                return JSON.parse(text); // Parse JSON manually
+                return JSON.parse(text);
             })
             .then(data => {
                 if (data.success) {

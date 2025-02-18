@@ -27,8 +27,7 @@
         <form action="{{ route('login.authenticate') }}" method="POST">
           @csrf <!-- CSRF token for protection -->
           <label for="username">Username</label>
-          <input type="text" name="username" id="username" placeholder="Enter your Username" required>
-
+          <input type="text" name="username" id="username" placeholder="Enter you username" required oninput="this.value = this.value.toUpperCase()">
           <label for="password">Password</label>
           <div class="password-container">
               <input type="password" name="password" id="password" placeholder="Enter your password" required>

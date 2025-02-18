@@ -129,6 +129,25 @@
     cursor: pointer;
 }
 
+.date-filter label{
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #003067; /* A deep blue color */
+    margin-right: 10px; /* Spacing between the label and the input */
+    display: inline-block;
+}
+
+#datePicker{
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #003067; /* Deep blue border */
+    border-radius: 5px;
+    background-color: #f7f7f7; /* Light background for the input */
+    color: #003067; /* Matching text color */
+    transition: border-color 0.3s ease-in-out;
+    margin-bottom: 10px;
+}
+
 /* Responsive Design for Table */
 @media (max-width: 768px) {
     .performance-details table {

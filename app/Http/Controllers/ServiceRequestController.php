@@ -77,7 +77,7 @@ class ServiceRequestController extends Controller
             $technicalSupport->notify(new SystemNotification(
                 'Service Request',
                 'You have been assigned a new Service Request.',
-                route('device_management', ['id' => $serviceRequest->form_no])
+                route('device_management', ['form_no' => $serviceRequest->form_no])
             ));
         }
 

@@ -98,23 +98,15 @@ body {
 .pagination {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 5px; /* Reduce space */
     margin-top: 20px;
 }
 
-.pagination .page-link {
-    color: #003067;
-    padding: 8px 12px;
-    border: 1px solid #003067;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.3s ease;
+/* Hide the entire SVG (not just the path) */
+.pagination svg {
+    display: none; 
 }
 
-.pagination .page-link:hover {
-    background-color: #003067;
-    color: white;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
