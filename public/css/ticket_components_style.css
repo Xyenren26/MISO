@@ -201,6 +201,14 @@ border-radius: 5px;
 margin-bottom: 5px;
 }
 
+.sub-dropdown{
+    display: none;
+    background-color: #a7d4f7;
+    padding: 10px;
+    border: 1px solid #0056b3;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
 /* Control Number Styling */
 .control-number {
 position: absolute;
@@ -537,6 +545,7 @@ background-color: #00214e;
     width: 50%; /* You can adjust this width */
     box-sizing: border-box;
     text-align: center;
+    border-radius: 10px;
 }
 
 /* Close button */
@@ -556,9 +565,62 @@ background-color: #00214e;
 
 /* Styling for the text area and select */
 #remarksInput, #statusDropdown {
-    width: 100%;
+    width: 97%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+.pagination-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+/* Style the pagination links */
+.pagination-buttons ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination-buttons ul li {
+    margin: 0 5px;
+}
+
+/* Default pagination button style */
+.pagination-buttons ul li a,
+.pagination-buttons ul li span {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hover effect for active links */
+.pagination-buttons ul li a:hover {
+    background: #007bff;
+    color: #fff;
+}
+
+/* Style active page number */
+.pagination-buttons ul li.active span {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+/* Disable previous/next when not clickable */
+.pagination-buttons ul li.disabled span {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
 }

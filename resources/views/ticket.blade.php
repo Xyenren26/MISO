@@ -42,9 +42,13 @@
 <div class="actions">
     <!-- Search Container -->
     <div class="search-container">
-        <input type="text" placeholder="Search..." class="search-input">
-        <button class="search-button"><i class="fas fa-search"></i></button>
+        <input type="text" id="ticketSearch" placeholder="Search..." class="search-input">
+        <button type="button" class="search-button">
+            <i class="fas fa-search"></i>
+        </button>
     </div>
+
+
 
     <!-- Space Between Search and Filter/Add New Buttons -->
     <div class="spacer"></div>
@@ -90,24 +94,9 @@
         @else
             <div class="no-records">NO RECORDS FOUND</div>
         @endif
-
-        <div class="pagination-container">
-            <div class="results-count">
-                @if ($tickets->count() > 0)
-                    Showing {{ $tickets->firstItem() }} to {{ $tickets->lastItem() }} of {{ $tickets->total() }} results
-                @else
-                    Showing 1 to 0 of 0 results
-                @endif
-            </div>
-            <div class="pagination-buttons">
-                {{ $tickets->appends(request()->input())->links('pagination::bootstrap-4') }}
-            </div>
-        </div>
     </div>
 </div>
 
-    </div>
-</div>
 <script src="{{ asset('js/Ticket_Script.js') }}"></script>
 </body>
 </html>

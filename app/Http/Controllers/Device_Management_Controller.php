@@ -9,6 +9,7 @@ use App\Models\ServiceRequest;
 use App\Models\Deployment;
 use App\Models\EquipmentDescription;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\URL;
 
 class Device_Management_Controller extends Controller
 {
@@ -47,7 +48,7 @@ class Device_Management_Controller extends Controller
                 });
             }
 
-            $deployments = $query->paginate(10);
+            $deployments = $query->paginate(3);
         } else {
             // Otherwise, fetch from ServiceRequests
             $query = ServiceRequest::with('equipmentDescriptions', 'technicalSupport');
@@ -76,7 +77,7 @@ class Device_Management_Controller extends Controller
                 });
             }
 
-            $serviceRequests = $query->paginate(10);
+            $serviceRequests = $query->paginate(3);
         }
 
         // Generate next form number (only for service requests)
@@ -172,4 +173,53 @@ class Device_Management_Controller extends Controller
     
         return response()->json($responseData);
     }
+
+
+    public function getFilteredRecords(Request $request)
+    {
+        $filter = $request->get('filter');
+        $search = $request->get('search');
+    
+        if ($filter === 'new-deployment') {
+            $query = Deployment::query();
+    
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('control_number', 'LIKE', "%{$search}%")
+                      ->orWhere('received_by', 'LIKE', "%{$search}%");
+                });
+            }
+    
+            $records = $query->get();
+    
+            foreach ($records as $record) {
+                $qrCodeSvg = QrCode::size(100)->generate(route('generate.deployment.pdf', ['control_number' => $record->control_number]));
+                $record->qr_code = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
+            }
+        } else {
+            $query = ServiceRequest::query();
+    
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('form_no', 'LIKE', "%{$search}%")
+                      ->orWhere('name', 'LIKE', "%{$search}%");
+                });
+            }
+    
+            $records = $query->get();
+    
+            foreach ($records as $record) {
+                if ($record->status === 'repaired') {
+                    $qrCodeSvg = QrCode::size(100)->generate(route('generate.pdf', ['form_no' => $record->form_no]));
+                    $record->qr_code = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
+                } else {
+                    $record->qr_code = null;
+                }
+            }
+        }
+    
+        return response()->json($records);
+    }
+    
+        
 }    

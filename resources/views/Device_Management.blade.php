@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Management Information System</title>
+    <title>TechTrack</title>
+    <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ asset('css/Dev_Manage_Style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -37,8 +38,11 @@
 <div class="actions">
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search..." class="search-input">
-        <button class="search-button"><i class="fas fa-search"></i></button>
+        <button class="search-button" onclick="fetchFilteredRecords(document.getElementById('searchInput').value)">
+            <i class="fas fa-search"></i>
+        </button>
     </div>
+
 
     <div class="spacer"></div>
 
@@ -170,7 +174,7 @@
                                 <tr>
                                     <th>Form No.</th>
                                     <th>Service Type</th>
-                                    <th>Department</th>
+                                    <th>Employee Name</th>
                                     <th>Condition</th>
                                     <th>Status</th>
                                     <th>QR CODE</th>
@@ -184,7 +188,7 @@
                                         <td style="color: {{ $request->service_type === 'walk_in' ? '#2563eb' : '#9333ea' }}; font-weight: bold;">
                                             {{ ucwords(str_replace('_', ' ', $request->service_type)) }}
                                         </td>
-                                        <td>{{ ucwords(strtolower($request->department)) }}</td>
+                                        <td>{{ ucwords(strtolower($request->name)) }}</td>
                                         <td>{{ $request->condition ? ucwords(strtolower($request->condition)) : 'No Condition Available' }}</td>
                                         <td style="color: {{ $request->status === 'in-repairs' ? '#dc2626' : '#16a34a' }}; font-weight: bold;">
                                             {{ ucwords(str_replace('-', ' ', $request->status)) }}
@@ -220,29 +224,29 @@
         </div>
 
         <div class="pagination-container">
-    <div class="results-count">
-        @if ($filter === 'new-deployment')
-            @if ($deployments->count() > 0)
-                Showing {{ $deployments->firstItem() }} to {{ $deployments->lastItem() }} of {{ $deployments->total() }} results
-            @else
-                Showing 1 to 0 of 0 results
-            @endif
-        @else
-            @if ($serviceRequests->count() > 0)
-                Showing {{ $serviceRequests->firstItem() }} to {{ $serviceRequests->lastItem() }} of {{ $serviceRequests->total() }} results
-            @else
-                Showing 1 to 0 of 0 results
-            @endif
-        @endif
-    </div>
-    <div class="pagination-buttons">
-        @if ($filter === 'new-deployment')
-            {{ $deployments->appends(['filter' => request('filter')])->links('pagination::bootstrap-4') }}
-        @else
-            {{ $serviceRequests->appends(['filter' => request('filter')])->links('pagination::bootstrap-4') }}
-        @endif
-    </div>
-</div>
+            <div class="results-count">
+                @if ($filter === 'new-deployment')
+                    @if ($deployments->count() > 0)
+                        Showing {{ $deployments->firstItem() }} to {{ $deployments->lastItem() }} of {{ $deployments->total() }} results
+                    @else
+                        Showing 1 to 0 of 0 results
+                    @endif
+                @else
+                    @if ($serviceRequests->count() > 0)
+                        Showing {{ $serviceRequests->firstItem() }} to {{ $serviceRequests->lastItem() }} of {{ $serviceRequests->total() }} results
+                    @else
+                        Showing 1 to 0 of 0 results
+                    @endif
+                @endif
+            </div>
+            <div class="pagination-buttons">
+                @if ($filter === 'new-deployment')
+                    {{ $deployments->appends(['filter' => request('filter')])->links('pagination::bootstrap-4') }}
+                @else
+                    {{ $serviceRequests->appends(['filter' => request('filter')])->links('pagination::bootstrap-4') }}
+                @endif
+            </div>
+        </div>
 
 @include('modals.new_device_form')
 @include('modals.view_device')
@@ -282,6 +286,107 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         window.location.href = url.toString();
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const filterType = "{{ $filter }}"; // Get the filter type from Blade
+        const tableBody = document.querySelector(".device-table tbody");
+
+        searchInput.addEventListener("input", function () {
+            const searchQuery = searchInput.value.trim().toLowerCase();
+            fetchFilteredRecords(searchQuery);
+        });
+
+        function fetchFilteredRecords(searchQuery) {
+            fetch(`{{ route('fetch.records') }}?filter=${filterType}&search=${searchQuery}`)
+                .then(response => response.json())
+                .then(data => {
+                    renderData(data);
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+
+        function renderData(data) {
+            const table = document.querySelector(".device-table"); // Select the table
+            const tableBody = table.querySelector("tbody"); // Select the table body
+            let noRecordsDiv = document.querySelector(".no-records"); // Check if "No Records Found" div exists
+
+            if (!noRecordsDiv) {
+                noRecordsDiv = document.createElement("div");
+                noRecordsDiv.classList.add("no-search-record");
+                noRecordsDiv.textContent = "NO RECORDS FOUND";
+                table.parentElement.appendChild(noRecordsDiv); // Append after the table
+            }
+
+            tableBody.innerHTML = ""; // Clear previous rows
+
+            if (data.length === 0) {
+                table.style.display = "none"; // Hide the table
+                noRecordsDiv.style.display = "block"; // Show "No Records Found"
+                return;
+            }
+
+            table.style.display = "table"; // Show the table when data exists
+            noRecordsDiv.style.display = "none"; // Hide "No Records Found"
+
+            data.forEach(item => {
+                const row = document.createElement("tr");
+
+                if (filterType === "new-deployment") {
+                    row.innerHTML = `
+                        <td>${item.control_number}</td>
+                        <td>${item.purpose || "No Purpose"}</td>
+                        <td>${item.status || "Unknown"}</td>
+                        <td>${Array.isArray(item.components) ? item.components.join(", ") : item.components || "No Components"}</td>
+                        <td>${Array.isArray(item.software) ? item.software.join(", ") : item.software || "No Software"}</td>
+                        <td>${item.received_by || "Unknown"}</td>
+                        <td>${item.received_date || "No Date"}</td>
+                        <td>
+                            ${item.qr_code 
+                                ? `<img src="${item.qr_code}" alt="QR Code" width="100" height="100" onclick="printQRCode()">` 
+                                : "No QR Code Available"}
+                        </td>
+                        <td>
+                            <button class="view-btn" onclick="openDeploymentView('${item.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td>${item.form_no}</td>
+                        <td style="color: ${item.service_type === "walk_in" ? "#2563eb" : "#9333ea"}; font-weight: bold;">
+                            ${capitalize(item.service_type.replace("_", " "))}</td>
+                        <td>${capitalize(item.name || "No Name")}</td>
+                        <td>${item.condition ? capitalize(item.condition) : "No Condition Available"}</td>
+                        <td style="color: ${item.status === "in-repairs" ? "#dc2626" : "#16a34a"}; font-weight: bold;">
+                            ${capitalize(item.status.replace("-", " "))}</td>
+                        <td>
+                            ${item.qr_code 
+                                ? `<img src="${item.qr_code}" alt="QR Code" width="100" height="100" onclick="printQRCode()">` 
+                                : "No QR Code Available"}
+                        </td>
+                        <td>
+                            <button class="view-btn" onclick="openViewModal('${item.form_no}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="status-button" onclick="openConfirmationModal('${item.form_no}')" 
+                                ${item.status === "repaired" ? "disabled" : ""}>
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </td>
+                    `;
+                }
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+});
+
 </script>
 </body>
 </html>

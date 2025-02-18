@@ -35,7 +35,7 @@
                 <li class="{{ request()->routeIs('employee.tickets') ? 'active' : '' }}">
                     <a href="{{ route('employee.tickets') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
                 </li>
-            @elseif(auth()->user()->account_type == 'technical_support')
+            @elseif(in_array(auth()->user()->account_type, ['administrator', 'technical_support']))
                 <li class="{{ Request::is('home') ? 'active' : '' }}">
                     <a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
                 </li>
@@ -50,7 +50,7 @@
             @endif
         </ul>
 
-        @if(auth()->user()->account_type == 'technical_support')
+        @if(in_array(auth()->user()->account_type, ['administrator', 'technical_support']))
             <!-- Administrative Section -->
             <ul class="menu">
                 <li class="label">Administrative</li>

@@ -67,15 +67,15 @@ Route::middleware(['web'])->group(function() {
 });
 
 
-Route::get('/employee/home', [EndUserController::class, 'index'])->name('employee.home');
-Route::get('/employee/ticket', [EndUserController::class, 'showEmployeeTicket'])->name('employee.tickets');
-Route::get('/employee/filter', [EndUserController::class, 'filterEmployeeTickets']);
-
 // Routes for technical-support and administrator (protected by 'auth' middleware)
 Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {
     // Routes that require authentication
     Route::get('/notifications', [NotificationController::class, 'fetchNotifications']);
     Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead']);
+
+    Route::get('/employee/home', [EndUserController::class, 'index'])->name('employee.home');
+    Route::get('/employee/ticket', [EndUserController::class, 'showEmployeeTicket'])->name('employee.tickets');
+    Route::get('/employee/filter', [EndUserController::class, 'filterEmployeeTickets']);
 
     Route::get('/home', [Home_Controller::class, 'showHome'])->middleware('CustomAuthenticate')->name('home');
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
@@ -94,6 +94,8 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/get-ticket-details/{control_no}', [Ticket_Controller::class, 'getTechnicalReportDetails']);
     Route::post('/technical-reports/store', [Ticket_Controller::class, 'storeTechnicalReport'])->name('technical-reports.store');
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
+    Route::get('/fetch/records', [Device_Management_Controller::class, 'getFilteredRecords'])->name('fetch.records');
+
     Route::get('/service-request/{form_no}', [Device_Management_Controller::class, 'getServiceRequest']);
 
     // In web.php
@@ -113,30 +115,12 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/account/security/change-email', [AccountSecurityController::class, 'changeEmail'])->name('account.changeEmail');
     Route::post('/account/verify-password', [AccountSecurityController::class, 'verifyPassword'])->name('account.verifyPassword');
     Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
+    Route::get('/user/management', [User_Management_Controller::class, 'showUser_Management'])->name('user.management');
+    Route::post('/user/update/{employee_id}', [User_Management_Controller::class, 'update'])->name('user.update');
+    Route::post('/user/change-role/{employee_id}', [User_Management_Controller::class, 'changeRole'])->name('user.changeRole');
+    Route::patch('/user/toggle-status/{employee_id}', [User_Management_Controller::class, 'toggleStatus'])->name('user.toggleStatus');
     Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');
-
-    //Gawa ni Rogelio
-    // Route for displaying user management page
-    Route::get('/user-management', [User_Management_Controller::class, 'showUser_Management'])->name('user.management');
-    
-    // Route for editing a user
-    Route::get('/user/edit/{employee_id}', [User_Management_Controller::class, 'editUser'])->name('user.edit');
-
-    // Define the route to handle POST requests for editing user info
-    Route::post('/user/edit/{employee_id}', [User_Management_Controller::class, 'update'])->name('user.edit');
-
-    // Route for deleting a user
-    Route::delete('/user/delete/{employee_id}', [User_Management_Controller::class, 'deleteUser'])->name('user.delete');
-
-    //Route for updating user 
-    Route::patch('/user/update/{employee_id}', [User_Management_Controller::class, 'updateUser'])->name('user.update');
-    
-    //Routes for disable user status
-    Route::patch('/user/disable/{employee_id}', [User_Management_Controller::class, 'disable'])->name('user.disable');
-
-    //Route for enable user status
-    Route::patch('/user/toggle-status/{employee_id}', [User_Management_Controller::class, 'toggleStatus'])->name('user.toggleStatus');
 
     //For messaging
 

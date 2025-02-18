@@ -29,13 +29,14 @@
             <!-- Metrics Container (4 Blocks horizontally) -->
             <div class="metrics-container">
                 <!-- Pending Tickets -->
-                <div class="metrics-box">
-                    <h4>Pending Ticket Request</h4>
+                <div class="metrics-box" onclick="window.location.href='{{ route('ticket') }}';">
+                <h4>Pending Ticket Request</h4>
                     <div class="metrics-content">
                         <p id="pendingTicketCount">{{ $ticketCountsByStatus['in-progress'] ?? 0 }}</p> <!-- Pending count -->
                         <canvas id="pendingTicketGraph"></canvas> <!-- Bar graph -->
                     </div>
                 </div>
+
 
                 <!-- Solved Tickets -->
                 <div class="metrics-box">
