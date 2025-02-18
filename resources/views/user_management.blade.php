@@ -175,7 +175,7 @@
             <div id="passwordField" style="display: none;">
                 <label for="newPassword">New Password:</label>
                 <input type="password" id="newPassword" name="newPassword" minlength="8" 
-                       title="Password must be at least 8 characters long">
+                       title="Password must be at least 8 characters long" required>
             </div>
 
             <button type="submit" class="modal-button confirm-button">Confirm</button>

@@ -77,15 +77,24 @@ function openEditModal(employeeId, firstName, lastName, account_type) {
 }
 
 // Toggle fields based on the selected edit option
+// Ensure the correct input field is required based on edit option
 function toggleEditFields(option) {
+    const employeeIdField = document.getElementById('employeeIdField');
+    const passwordField = document.getElementById('passwordField');
+
     if (option === 'employee_id') {
-        document.getElementById('employeeIdField').style.display = 'block';
-        document.getElementById('passwordField').style.display = 'none';
+        employeeIdField.style.display = 'block';
+        passwordField.style.display = 'none';
+        passwordField.querySelector('input').removeAttribute('required');
+        employeeIdField.querySelector('input').setAttribute('required', true);
     } else if (option === 'password') {
-        document.getElementById('employeeIdField').style.display = 'none';
-        document.getElementById('passwordField').style.display = 'block';
+        employeeIdField.style.display = 'none';
+        passwordField.style.display = 'block';
+        passwordField.querySelector('input').setAttribute('required', true);
+        employeeIdField.querySelector('input').removeAttribute('required');
     }
 }
+
 
 // Close the edit modal
 function closeEditModal() {
