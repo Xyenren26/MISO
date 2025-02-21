@@ -2,7 +2,7 @@
 <!-- Modal Popup (Initially Hidden) -->
 <div id="ticketModal" class="ticket-modal">
     <div class="ticket-modal-content">
-        <button class="close-modal" onclick="closeModal()">✖</button>
+        <button class="close-modal" onclick="closeModalTicket()">✖</button>
 
         <!-- Print Button -->
         <button class="print-modal" onclick="printModal()">🖨️ Print</button>
@@ -45,6 +45,10 @@
                     <div class="personal-info-field">
                         <label>Department:</label>
                         <span id="ticketDepartment" class="boxed-span"></span>
+                    </div>
+                    <div class="personal-info-field">
+                        <label>Phone Number:</label>
+                        <span id="ticketuserphonenumber" class="boxed-span"></span>
                     </div>
                 </div>
             </fieldset>
@@ -89,6 +93,12 @@ function showTicketDetails(controlNo) {
           document.getElementById('ticketEmployeeId').innerText = data.ticket.employee_id;
           document.getElementById('ticketTechnicalSupport').innerText = data.ticket.technical_support_name;
           document.getElementById('ticketTimeIn').innerText = data.ticket.time_in;
+          if (data.user && data.user.phone_number) {
+                document.getElementById('ticketuserphonenumber').innerText = data.user.phone_number;
+            } else {
+                document.getElementById('ticketuserphonenumber').innerText = 'No phone number available';
+            }
+
   
           // Populate the Support History Section
           const historyList = document.getElementById('supportHistoryList');
@@ -115,5 +125,14 @@ function showTicketDetails(controlNo) {
       .catch(error => {
           console.error('Error fetching ticket details:', error);
       });
+}
+
+// Function to close the modal
+function closeModalTicket() {
+    // Get the modal element
+    var modal = document.getElementById('ticketModal');
+
+    // Set the display style of the modal to 'none' to hide it
+    modal.style.display = "none";
 }
 </script>

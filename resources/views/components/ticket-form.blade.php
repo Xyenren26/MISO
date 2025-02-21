@@ -220,7 +220,6 @@ function toggleOtherInput() {
 function updateSelectedConcerns() {
     let selectedConcerns = [];
 
-    // Loop through checked main concerns
     document.querySelectorAll("input[name='issues[]']:checked").forEach(checkbox => {
         let mainConcern = checkbox.value;
         let subDropdown = document.getElementById(checkbox.getAttribute("onchange")?.match(/'(.*?)'/)?.[1]);
@@ -229,7 +228,6 @@ function updateSelectedConcerns() {
             let selectElement = subDropdown.querySelector("select");
             let subConcern = selectElement && selectElement.value ? selectElement.value : "";
 
-            // Check if "Other" is selected and get user input
             let otherInput = subDropdown.querySelector(".other-sub-issue");
             if (subConcern === "Other" && otherInput && otherInput.value.trim() !== "") {
                 subConcern = otherInput.value;
@@ -245,7 +243,6 @@ function updateSelectedConcerns() {
         }
     });
 
-    // Handle "Other" concern input separately
     let otherCheckbox = document.getElementById("otherIssueCheckbox");
     let otherConcernInput = document.getElementById("otherConcern");
 
@@ -253,7 +250,23 @@ function updateSelectedConcerns() {
         selectedConcerns.push(otherConcernInput.value);
     }
 
-    // Update the "Select Concern" button text
+    // Ensure the form has an input field for concerns
+    let form = document.getElementById("ticketForm"); // Update with your actual form ID
+    let existingInput = document.querySelector("input[name='concern']");
+
+    if (!existingInput) {
+        let concernInput = document.createElement("input");
+        concernInput.type = "hidden";
+        concernInput.name = "concern";
+        form.appendChild(concernInput);
+        existingInput = concernInput;
+    }
+
+    // Assign selected concerns as value before form submission
+    existingInput.value = selectedConcerns.join(", ");
+
+    console.log("Selected Concerns:", existingInput.value);
+
     document.getElementById("selectedConcerns").textContent = selectedConcerns.length > 0 ? selectedConcerns.join(", ") : "Select Concern";
 }
 

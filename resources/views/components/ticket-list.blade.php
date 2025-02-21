@@ -19,7 +19,9 @@
             case 'completed':
                 return 'status-completed';
             case 'pull-out':
-                return 'status-pull-out';     
+                return 'status-pull-out';
+            case 'deployment':
+                return 'status-pull-out';        
 
             case 'in-progress':
                 return 'status-in-progress';
@@ -52,9 +54,17 @@
                     <td>{{ $ticket->control_no }}</td>
                     <td>{{ ucwords(strtolower($ticket->name)) }}</td>
                     <td>{{ ucwords(strtolower($ticket->department)) }}</td>
-                    <td>{{ ucfirst(strtolower($ticket->concern)) }}</td>
+                    <td>{{ ucwords(strtolower($ticket->concern)) }}</td>
                     <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
-                    <td class="{{ getStatusClass($ticket->status) }}">{{ ucfirst($ticket->status) }}</td>
+                    <td class="{{ getStatusClass($ticket->status) }}">
+                        @if ($ticket->isRemarksDone && !$ticket->isApproved && $ticket->existsInModels)
+                            <span style="color: red; font-weight: bold; font-size:15px;">Waiting for Admin Approval</span>
+                        @else
+                            {{ $ticket->status === 'pull-out' ? 'Equipment Handover' : ucfirst($ticket->status) }}
+                        @endif
+                    </td>
+
+
                     <td>
                         <div class="button-container">
                             <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
@@ -84,6 +94,10 @@
                                 <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
                                     <i class="fas fa-laptop"></i>
                                 </button>
+                            @elseif ($ticket->status == 'deployment')                
+                                <button class="action-button" onclick="checkDeploymentAndOpenPopup('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-laptop"></i>
+                                </button>
                             @else
                                 @if (!$ticket->isRemarksDone)
                                     <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
@@ -105,6 +119,20 @@
                                     </button>
                                 @endif
                             @endif
+                            @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
+                                <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            @endif
+
+                            @if ($ticket->status == 'pull-out' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->serviceRequest)
+                                <button class="status-button" 
+                                    onclick="openConfirmationModal('{{ $ticket->serviceRequest->form_no ?? '' }}')"
+                                    @if(optional($ticket->serviceRequest)->status === 'repaired') disabled @endif>
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            @endif
+
                         </div>
                     </td>
                 </tr>
@@ -167,6 +195,9 @@
 @include('modals.view')
 @include('modals.assist')
 @include('modals.remarks')
+@include('modals.status_change')
+@include('modals.new_device_deployment')
+@include('modals.view_deployment')
 @include('modals.technical_report')
 @include('modals.view_endorsement')
 @include('modals.view_device')

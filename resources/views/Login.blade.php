@@ -26,8 +26,9 @@
 
         <form action="{{ route('login.authenticate') }}" method="POST">
           @csrf <!-- CSRF token for protection -->
-          <label for="username">Username</label>
-          <input type="text" name="username" id="username" placeholder="Enter you username" required oninput="this.value = this.value.toUpperCase()">
+          <label for="employee-id">Employee ID</label>
+            <input type="text" id="employee_id" name="employee_id" placeholder="Employee ID" value="{{ old('employee_id') }}" maxlength="7" required>      
+            <span id="error-message" style="color: red; display: none;">Please enter a valid 7-digit Employee ID. Only numbers are allowed.</span>
           <label for="password">Password</label>
           <div class="password-container">
               <input type="password" name="password" id="password" placeholder="Enter your password" required>
@@ -90,6 +91,23 @@
 
 <script src="{{ asset('js/Login_Script.js') }}"> </script>
 <script>
+  document.getElementById("employee_id").addEventListener("input", function () {
+        let input = this.value;
+        let errorMessage = document.getElementById("error-message");
+        let submitBtn = document.getElementById("submit-btn");
+
+        // Remove any non-numeric characters
+        this.value = input.replace(/\D/g, '');
+
+        // Show error if the length is not exactly 7 digits
+        if (this.value.length !== 7) {
+            errorMessage.style.display = "block";
+            submitBtn.disabled = true; // Disable button
+        } else {
+            errorMessage.style.display = "none";
+            submitBtn.disabled = false; // Enable button
+        }
+    });
 document.addEventListener("DOMContentLoaded", function () {
     // Show Laravel validation errors
     @if ($errors->any())

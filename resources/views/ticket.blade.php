@@ -22,18 +22,36 @@
                 </button>
                 <button class="tab-button" data-status="in-progress" onclick="filterTickets('in-progress', event)">
                     <i class="fas fa-tools"></i> In-Progress
+                    @if($inProgressCount > 0)
+                        <span class="notifcounter">{{ $inProgressCount }}</span>
+                    @endif
                 </button>
                 <button class="tab-button" data-status="completed" onclick="filterTickets('completed', event)">
                     <i class="fas fa-check-circle"></i> Solved
                 </button>
                 <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
                     <i class="fas fa-arrow-right"></i> Endorsed
+                    @if($endorsedCount > 0)
+                        <span class="notifcounter">{{ $endorsedCount }}</span>
+                    @endif
                 </button>
                 <button class="tab-button" data-status="technical-report" onclick="filterTickets('technical-report', event)">
                     <i class="fas fa-times-circle"></i> Technical-Report
+                    @if($technicalReportCount > 0)
+                        <span class="notifcounter">{{ $technicalReportCount }}</span>
+                    @endif
                 </button>
                 <button class="tab-button" data-status="pull-out" onclick="filterTickets('pull-out', event)">
-                    <i class="fas fa-times-circle"></i> Pull-Out
+                    <i class="fas fa-times-circle"></i> Equipment Handover
+                    @if($pullOutCount > 0)
+                        <span class="notifcounter">{{ $pullOutCount }}</span>
+                    @endif
+                </button>
+                <button class="tab-button" data-status="deployment" onclick="filterTickets('deployment', event)">
+                    <i class="fas fa-times-circle"></i> New Device Deployment
+                    @if($deploymentCount > 0)
+                        <span class="notifcounter">{{ $deploymentCount }}</span>
+                    @endif
                 </button>
             </div>
         </div>

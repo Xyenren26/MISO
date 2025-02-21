@@ -13,7 +13,7 @@ class Deployment extends Model
     protected $fillable = [
         'control_number', 'purpose', 'status', 'components', 'software',
         'brand_name', 'specification', 'received_by', 'received_date', 
-        'issued_by', 'issued_date', 'noted_by', 'noted_date'
+        'issued_by', 'issued_date',
     ];
 
     protected $casts = [
@@ -25,6 +25,12 @@ class Deployment extends Model
     {
         return $this->hasMany(EquipmentItem::class);
     }
+
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class, 'control_no', 'control_number');
+    }
+
 
     // 🔹 Model Events for Audit Logging
     protected static function boot()

@@ -192,7 +192,7 @@
 .tickets-table th,
 .tickets-table td {
     padding: 12px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid #ddd;
 }
 
@@ -331,4 +331,16 @@
     background: #e9ecef;
     color: #6c757d;
     cursor: not-allowed;
+}
+
+.notifcounter {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+    font-size: 12px;
+    position: absolute;
+    top: 0; /* Move to the top */
+    right: 0; /* Move to the right */
+    transform: translate(50%, -50%); /* Adjust position */
 }

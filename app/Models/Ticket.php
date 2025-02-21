@@ -46,6 +46,20 @@ class Ticket extends Model
         return $this->hasMany(TicketHistory::class, 'ticket_id', 'control_no');
     }
 
+    public function approval() {
+        return $this->hasOne(Approval::class, 'ticket_id', 'control_no');
+    }
+
+    public function serviceRequest()
+    {
+        return $this->hasOne(ServiceRequest::class, 'ticket_id', 'control_no');
+    }
+    
+    public function deployment()
+    {
+        return $this->hasOne(Deployment::class, 'control_number', 'control_no');
+    }
+
     // 🔹 Model Events for Audit Logging
     protected static function boot()
     {

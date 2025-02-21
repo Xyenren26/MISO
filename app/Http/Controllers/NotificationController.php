@@ -33,4 +33,17 @@ class NotificationController extends Controller
 
         return response()->json(['message' => 'Notification not found'], 404);
     }
+    
+    public function markAllAsRead()
+    {
+        $user = Auth::user();
+        
+        if ($user) {
+            $user->unreadNotifications->markAsRead(); // Mark all notifications as read
+            return response()->json(['success' => true, 'message' => 'All notifications marked as read.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'User not authenticated.'], 401);
+    }
+    
 }

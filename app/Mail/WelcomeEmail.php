@@ -37,7 +37,7 @@ class WelcomeEmail extends Mailable
         return $this->subject('Welcome to Our System!')
                     ->view('emails.welcome')
                     ->with([
-                        'name' => $this->user->username,
+                        'name' => $this->user->employee_id,
                         'verification_url' => $this->verificationUrl,
                         'expiresAt' => $this->expiresAt
                     ]);

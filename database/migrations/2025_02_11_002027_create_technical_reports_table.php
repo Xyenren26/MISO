@@ -24,8 +24,6 @@ return new class extends Migration {
             $table->timestamp('reported_date')->nullable();
             $table->string('inspected_by');
             $table->timestamp('inspected_date')->nullable();
-            $table->string('noted_by');
-            $table->timestamp('noted_date')->nullable();
             $table->timestamps();
         });
     }}

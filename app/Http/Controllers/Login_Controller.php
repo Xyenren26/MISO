@@ -31,15 +31,15 @@ class Login_Controller extends Controller
     {
         // Validate the inputs for username and password
         $request->validate([
-            'username' => 'required|string',
+            'employee_id' => 'required|string',
             'password' => 'required|string',
         ], [
-            'username.required' => 'Please enter your username.',
+            'employee_id.required' => 'Please enter your username.',
             'password.required' => 'Please enter your password.',
         ]);
 
         // Find user by username
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('employee_id', $request->employee_id)->first();
 
         if ($user) {
             $currentSessionId = session()->getId();
@@ -66,7 +66,7 @@ class Login_Controller extends Controller
             }
 
             // 🔹 Proceed with normal authentication
-            if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
+            if (Auth::attempt(['employee_id' => $request->employee_id, 'password' => $request->password])) {
                 // 🔹 Check if this is the user's first login
                 if ($user->is_first_login) {
                     return redirect()->route('profile.complete.form'); 
@@ -84,7 +84,7 @@ class Login_Controller extends Controller
         }
 
         // If authentication fails
-        return redirect()->back()->withErrors(['login' => 'Invalid username or password.'])->withInput();
+        return redirect()->back()->withErrors(['login' => 'Invalid ID or password.'])->withInput();
     }
 
     // 🔹 Helper function to redirect users based on account type

@@ -73,11 +73,7 @@
 }
 
 /* Filter Dropdown */
-/* Dropdown styles */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
+
 
 .dropdown-button {
     background-color: #003067;

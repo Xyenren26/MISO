@@ -182,181 +182,218 @@
 <!-- Modal HTML Structure -->
 <form id="endorsementForm" action="{{ route('endorsements.store') }}" method="POST">
     @csrf
-<input type="hidden" name="ticket_id" id="ticket_id">
-<div id="endorsementModal" class="modal" style="display: none;">
-    <div class="endorsed-modal-content">
-        <span class="close" onclick="closeEndorsementModal()">&times;</span>
+    <input type="hidden" name="ticket_id" id="ticket_id" value="{{ $ticket->ticket_id ?? '' }}">
+    <div id="endorsementModal" class="modal" style="display: none;">
+        <div class="endorsed-modal-content">
+            <span class="close" onclick="closeEndorsementModal()">&times;</span>
 
-        <!-- Header Section -->
-        <div class="modal-header">
-            <img src="{{ asset('images/SystemLogo.png') }}" alt="System Logo">
-            <h2>Technical Endorsement</h2>
-            <p><strong>MISO</strong><br>Management Information Systems Office</p>
-        </div>
-        <!-- Control No Section -->
-        <div class="modal-form-section">
-            <label for="control_no">Control No:</label>
-            <input type="text" id="EndorsementControlNo" name="control_no" class="modal-input-box" readonly>
-        </div>
-
-        <!-- Department Section -->
-        <div class="modal-form-section">
-            <label for="department">Department/Office/Unit:</label>
-            <input type="text" id="EndorsementDepartment" name="department" class="modal-input-box" readonly>
-        </div>
-
-        <!-- Concern Section -->
-        <div class="modal-form-section">
-            <h3>Concern</h3>
-            <div class="modal-two-column">
-
-            <!-- Left Column -->
-            <div class="modal-column">
-                <h4>Internet/System/Void</h4>
-                <!-- Network Section -->
-                <div class="modal-checkbox-group">
-                    <div>
-                        <input type="checkbox" name="network[]" value="IP ADDRESS">
-                        <label>IP ADDRESS</label>
-                        <input type="text" name="network_details[IP ADDRESS]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="network[]" value="MAC ADDRESS">
-                        <label>MAC ADDRESS</label>
-                        <input type="text" name="network_details[MAC ADDRESS]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="network[]" value="PING TEST">
-                        <label>PING TEST</label>
-                        <input type="text" name="network_details[PING TEST]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="network[]" value="TRACET">
-                        <label>TRACET</label>
-                        <input type="text" name="network_details[TRACET]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="network[]" value="NETWORK CABLE TEST">
-                        <label>NETWORK CABLE TEST</label>
-                        <input type="text" name="network_details[NETWORK CABLE TEST]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="network[]" value="WEBSITE ACCESS">
-                        <label>WEBSITE ACCESS</label>
-                        <input type="text" name="network_details[WEBSITE ACCESS]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="network[]" value="ROUTER / ACCESS POINT">
-                        <label>ROUTER / ACCESS POINT</label>
-                        <input type="text" name="network_details[ROUTER / ACCESS POINT]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="network[]" value="VOID">
-                        <label>VOID</label>
-                        <input type="text" name="network_details[VOID]" placeholder="Details">
-                    </div>
-                </div>
+            <!-- Header Section -->
+            <div class="modal-header">
+                <img src="{{ asset('images/SystemLogo.png') }}" alt="System Logo">
+                <h2>Technical Endorsement</h2>
+                <p><strong>MISO</strong><br>Management Information Systems Office</p>
             </div>
-            <!-- Right Column -->
-            <div class="modal-column">
-                <h4>User Account</h4>
-                <!-- User Account Section -->
-                <div class="modal-checkbox-group">
-                    <div>
-                        <input type="checkbox" name="user_account[]" value="NEW DOMAIN ACCOUNT CREATION">
-                        <label>NEW DOMAIN ACCOUNT CREATION</label>
-                        <input type="text" name="user_account_details[NEW DOMAIN ACCOUNT CREATION]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="user_account[]" value="WINDOWS ACCOUNT RESET">
-                        <label>WINDOWS ACCOUNT RESET</label>
-                        <input type="text" name="user_account_details[WINDOWS ACCOUNT RESET]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="user_account[]" value="ADMIN">
-                        <label>ADMIN</label>
-                        <input type="text" name="user_account_details[ADMIN]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="user_account[]" value="FILE SHARING / FILE SERVER">
-                        <label>FILE SHARING / FILE SERVER</label>
-                        <input type="text" name="user_account_details[FILE SHARING / FILE SERVER]" placeholder="Details">
-                    </div>
-                    <div>
-                        <input type="checkbox" name="user_account[]" value="FOLDER CREATION">
-                        <label>FOLDER CREATION</label>
-                        <input type="text" name="user_account_details[FOLDER CREATION]" placeholder="Office/Folder Name">
-                    </div>
-                    <div class="inline-group">
-                        <div class="inline-header">
-                            <input type="checkbox" name="user_account[]" value="FOLDER ACCESS">
-                            <label>FOLDER ACCESS</label>
-                            <input type="text" name="user_account_details[FOLDER ACCESS]" placeholder="Folder Name">
+            <!-- Control No Section -->
+            <div class="modal-form-section">
+                <label for="control_no">Control No:</label>
+                <input type="text" id="EndorsementControlNo" name="control_no" class="modal-input-box" readonly>
+            </div>
+
+            <!-- Department Section -->
+            <div class="modal-form-section">
+                <label for="department">Department/Office/Unit:</label>
+                <input type="text" id="EndorsementDepartment" name="department" class="modal-input-box" readonly>
+            </div>
+
+            <!-- Concern Section -->
+            <div class="modal-form-section">
+                <h3>Concern</h3>
+                <div class="modal-two-column">
+
+                    <!-- Left Column -->
+                    <div class="modal-column">
+                        <h4>Internet/System/Void</h4>
+                        <div class="modal-checkbox-group">
+                            <div>
+                                <input type="checkbox" name="network[]" value="IP ADDRESS">
+                                <label>IP ADDRESS</label>
+                                <input type="text" name="network_details[IP ADDRESS]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="network[]" value="MAC ADDRESS">
+                                <label>MAC ADDRESS</label>
+                                <input type="text" name="network_details[MAC ADDRESS]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="network[]" value="PING TEST">
+                                <label>PING TEST</label>
+                                <input type="text" name="network_details[PING TEST]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="network[]" value="TRACET">
+                                <label>TRACET</label>
+                                <input type="text" name="network_details[TRACET]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="network[]" value="NETWORK CABLE TEST">
+                                <label>NETWORK CABLE TEST</label>
+                                <input type="text" name="network_details[NETWORK CABLE TEST]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="network[]" value="WEBSITE ACCESS">
+                                <label>WEBSITE ACCESS</label>
+                                <input type="text" name="network_details[WEBSITE ACCESS]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="network[]" value="ROUTER / ACCESS POINT">
+                                <label>ROUTER / ACCESS POINT</label>
+                                <input type="text" name="network_details[ROUTER / ACCESS POINT]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="network[]" value="VOID">
+                                <label>VOID</label>
+                                <input type="text" name="network_details[VOID]" placeholder="Details" style="display: none;">
+                            </div>
                         </div>
-                            <input type="text" name="user_account_details[FOLDER ACCESS_USER]" placeholder="User Full Name" class="full-width">
                     </div>
 
+                    <div class="modal-column">
+                        <h4>User Account</h4>
+                        <div class="modal-checkbox-group">
+                            <div>
+                                <input type="checkbox" name="user_account[]" value="NEW DOMAIN ACCOUNT CREATION">
+                                <label>NEW DOMAIN ACCOUNT CREATION</label>
+                                <input type="text" name="user_account_details[NEW DOMAIN ACCOUNT CREATION]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="user_account[]" value="WINDOWS ACCOUNT RESET">
+                                <label>WINDOWS ACCOUNT RESET</label>
+                                <input type="text" name="user_account_details[WINDOWS ACCOUNT RESET]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="user_account[]" value="ADMIN">
+                                <label>ADMIN</label>
+                                <input type="text" name="user_account_details[ADMIN]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="user_account[]" value="FILE SHARING / FILE SERVER">
+                                <label>FILE SHARING / FILE SERVER</label>
+                                <input type="text" name="user_account_details[FILE SHARING / FILE SERVER]" placeholder="Details" style="display: none;">
+                            </div>
+                            <div>
+                                <input type="checkbox" name="user_account[]" value="FOLDER CREATION">
+                                <label>FOLDER CREATION</label>
+                                <input type="text" name="user_account_details[FOLDER CREATION]" placeholder="Office/Folder Name" style="display: none;">
+                            </div>
+                            <div class="inline-group">
+                                <div class="inline-header">
+                                    <input type="checkbox" name="user_account[]" value="FOLDER ACCESS">
+                                    <label>FOLDER ACCESS</label>
+                                    <input type="text" name="user_account_details[FOLDER ACCESS]" placeholder="Folder Name" style="display: none;">
+                                </div>
+                                <input type="text" name="user_account_details[FOLDER ACCESS_USER]" placeholder="User Full Name" class="full-width" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    
-        <!-- Endorsed To Section -->
-        <div class="modal-footer">
-            <h3>Endorsed To</h3>
-            <div class="modal-form-section">
-                <label for="endorsed_to">Endorsed To:</label>
-                <input type="text" id="endorsed_to" name="endorsed_to" class="modal-input-box" placeholder="Enter Name">
-            </div>
-            <div class="modal-stacked-date-time">
-                <div>
-                    <label for="endorsed_to_date">Date:</label>
-                    <input type="date" name="endorsed_to_date" id="endorsed_to_date" class="modal-input-box-date" value="{{ date('Y-m-d') }}" readonly>
+        
+            <!-- Endorsed To Section -->
+            <div class="modal-footer">
+                <h3>Endorsed To</h3>
+                <div class="modal-form-section">
+                    <label for="endorsed_to">Endorsed To:</label>
+                    <input type="text" id="endorsed_to" name="endorsed_to" class="modal-input-box" placeholder="Enter Name">
                 </div>
-                <div>
-                    <label for="endorsed_to_time">Time:</label>
-                    <input type="time" name="endorsed_to_time" id="endorsed_to_time" class="modal-input-box-date" value="{{ date('H:i') }}" readonly>
+                <div class="modal-stacked-date-time">
+                    <div>
+                        <label for="endorsed_to_date">Date:</label>
+                        <input type="date" name="endorsed_to_date" id="endorsed_to_date" class="modal-input-box-date" value="{{ date('Y-m-d') }}" readonly>
+                    </div>
+                    <div>
+                        <label for="endorsed_to_time">Time:</label>
+                        <input type="time" name="endorsed_to_time" id="endorsed_to_time" class="modal-input-box-date" value="{{ date('H:i') }}" readonly>
+                    </div>
+                </div>
+                <div class="modal-form-section">
+                    <label for="endorsed_to_remarks">Remarks:</label>
+                    <input type="text" id="endorsed_to_remarks" name="endorsed_to_remarks" class="modal-input-box" placeholder="Enter Remarks">
                 </div>
             </div>
-            <div class="modal-form-section">
-                <label for="endorsed_to_remarks">Remarks:</label>
-                <input type="text" id="endorsed_to_remarks" name="endorsed_to_remarks" class="modal-input-box" placeholder="Enter Remarks">
-            </div>
-        </div>
 
-        <!-- Endorsed By Section -->
-        <div class="modal-footer">
-            <h3>Endorsed By</h3>
-            <div class="modal-form-section">
-            <label for="technical_division">Technical Division:</label>
-            <input type="text" id="technical_division" name="technical_division" class="modal-input-box"  readonly>
-            </div>
-            <div class="modal-stacked-date-time">
-                <div>
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" name="endorsed_by_date" class="modal-input-box-date" value="{{ date('Y-m-d') }}" readonly>
+            <!-- Endorsed By Section -->
+            <div class="modal-footer">
+                <h3>Endorsed By</h3>
+                <div class="modal-form-section">
+                <label for="technical_division">Technical Division:</label>
+                <input type="text" id="technical_Support_division" name="endorsed_by" class="modal-input-box"  readonly>
                 </div>
-                <div>
-                    <label for="time">Time:</label>
-                    <input type="time" id="time" name="endorsed_by_time" class="modal-input-box-date" value="{{ date('H:i') }}" readonly>
+                <div class="modal-stacked-date-time">
+                    <div>
+                        <label for="date">Date:</label>
+                        <input type="date" id="endorsed_by_date" name="endorsed_by_date" class="modal-input-box-date" value="{{ date('Y-m-d') }}" readonly>
+                    </div>
+                    <div>
+                        <label for="time">Time:</label>
+                        <input type="time" id="endorsed_by_time" name="endorsed_by_time" class="modal-input-box-date" value="{{ date('H:i') }}" readonly>
+                    </div>
+                </div>
+                <div class="modal-form-section">
+                    <label for="remarks">Remarks:</label>
+                    <input id="remarkstechnical" name="endorsed_by_remarks" class="modal-input-box"  readonly>
                 </div>
             </div>
-            <div class="modal-form-section">
-                <label for="remarks">Remarks:</label>
-                <input id="remarks" name="remarks" class="modal-input-box"  readonly>
-            </div>
+            <button type="submit" class="endorsementsave">Save</button>
         </div>
-        <button type="submit" class="endorsementsave">Save</button>
     </div>
-</div>
 </form>
 <script>
+document.addEventListener('change', function(event) {
+    if (event.target.type === 'checkbox') {
+        // Special case for "FOLDER ACCESS"
+        if (event.target.value === 'FOLDER ACCESS') {
+            var parentElement = event.target.closest('.inline-group');
+            if (parentElement) {
+                var folderNameInput = parentElement.querySelector('input[name="user_account_details[FOLDER ACCESS]"]');
+                var userNameInput = parentElement.querySelector('input[name="user_account_details[FOLDER ACCESS_USER]"]');
+
+                if (event.target.checked) {
+                    folderNameInput.style.display = 'block';
+                    userNameInput.style.display = 'block';
+                } else {
+                    folderNameInput.style.display = 'none';
+                    folderNameInput.value = ''; // Clear input
+                    userNameInput.style.display = 'none';
+                    userNameInput.value = ''; // Clear input
+                }
+            }
+        } else {
+            // Default behavior for all other checkboxes (one input field per checkbox)
+            var inputField = event.target.parentElement.querySelector('input[type="text"]');
+            if (inputField) {
+                if (event.target.checked) {
+                    inputField.style.display = 'block';
+                } else {
+                    inputField.style.display = 'none';
+                    inputField.value = ''; // Clear input when unchecked
+                }
+            }
+        }
+    }
+});
+
 document.getElementById('endorsementForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent default form submission
 
+    console.log('Submitting form with ticket_id:', document.getElementById('ticket_id').value);
+
     let formData = new FormData(this);
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value); // Log all form data
-    }
+    
+    // Log all form data before sending
+    console.log('Form Data before submission:');
+    formData.forEach((value, key) => {
+        console.log(key, value);
+    });
 
     fetch(this.action, {
         method: 'POST',
@@ -377,4 +414,5 @@ document.getElementById('endorsementForm').addEventListener('submit', function (
     })
     .catch(error => console.error('Error:', error));
 });
+
 </script>

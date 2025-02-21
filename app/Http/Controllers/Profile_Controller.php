@@ -36,8 +36,8 @@ class Profile_Controller extends Controller
         $request->validate([
             'first-name' => 'required|string|max:255',
             'last-name' => 'required|string|max:255',
-            'employee-id' => 'required|numeric|digits:7|unique:users,employee_id',
             'department' => 'required|string|max:255',
+            'phone-number' => 'required|string|max:255',
         ]);
 
         // Get the authenticated user
@@ -53,10 +53,13 @@ class Profile_Controller extends Controller
             'first_name' => $request->input('first-name'),
             'last_name' => $request->input('last-name'),
             'department' => $request->input('department'),
-            'employee_id' => $request->input('employee-id'),
+            'phone_number' => $request->input('phone-number'),
             'account_type' => $accountType,
             'is_first_login' => false, // Mark profile as complete
         ]);
+
+        // Logout the user and redirect to login
+        Auth::logout();
 
         // Fallback redirect if no condition is met
         return redirect()->route('login')->with('success', 'Successful Finish profile, please log in again.');

@@ -23,7 +23,6 @@ class CreateUsersTable extends Migration
             $table->string('password'); // Password
             $table->string('department')->nullable(); // Department
             $table->string('phone_number')->nullable(); // Phone number
-            $table->string('username')->unique(); // Username
             $table->enum('account_type', ['administrator', 'technical_support', 'end_user']); // Account type
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->rememberToken(); // Remember token

@@ -68,7 +68,9 @@ class EndUserController extends Controller
         ->where('employee_id', '!=', $user->employee_id)
         ->get();
 
-    return view('employee.ticket', compact('tickets', 'technicalAssistSupports', 'technicalSupports', 'formattedControlNo', 'nextFormNo'));
+    $inProgressCount = Ticket::where('status', 'in-progress')->count();
+
+    return view('employee.ticket', compact('tickets', 'technicalAssistSupports', 'technicalSupports', 'formattedControlNo', 'nextFormNo', 'inProgressCount'));
 }
 
 public function filterEmployeeTickets(Request $request)
@@ -139,5 +141,18 @@ public function filterEmployeeTickets(Request $request)
     return view('components.employee.ticket-list', compact('tickets', 'technicalSupports', 'technicalAssistSupports', 'nextFormNo'))->render();
 }
 
+public function trackDeviceStatus($ticket_id)
+    {
+        $serviceRequest = ServiceRequest::where('ticket_id', $ticket_id)->first();
 
+        if ($serviceRequest) {
+            return response()->json([
+                'status' => $serviceRequest->status,  // in-repairs or repaired
+                'service_type' => $serviceRequest->service_type // pull_out or others
+            ]);
+        }
+
+        // If not found, return a proper JSON error
+        return response()->json(['error' => 'Service request not found.'], 404);
+    }
 }

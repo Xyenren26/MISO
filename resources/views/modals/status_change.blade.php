@@ -3,7 +3,7 @@
 
 <style>
     /* Modal background */
-    .modal {
+    .modal-update-status {
         position: fixed;
         top: 0;
         left: 0;
@@ -16,7 +16,7 @@
     }
 
     /* Modal content */
-    .modal-content {
+    .modal-content-update-status {
         background: white;
         padding: 20px;
         width: 50%;
@@ -78,8 +78,8 @@
 </style>
 
 <!-- Confirmation Modal -->
-<div id="confirmationModal" class="modal" style="display: none;">
-    <div class="modal-content">
+<div id="confirmationModal" class="modal-update-status" style="display: none;">
+    <div class="modal-content-update-status">
         <h2>Confirm Status Change</h2>
         <p class="triangle-text">
             I acknowledge that the device(s) listed under Form No. 

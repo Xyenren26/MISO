@@ -29,6 +29,11 @@ class ServiceRequest extends Model
         return $this->belongsTo(User::class, 'technical_support_id');
     }
 
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class, 'ticket_id', 'control_no');
+    }
+
     // 🔹 Model Events for Audit Logging
     protected static function boot()
     {

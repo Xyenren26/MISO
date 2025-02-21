@@ -42,11 +42,6 @@
                 <li class="{{ Request::is('ticket') ? 'active' : '' }}">
                     <a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
                 </li>
-                <li class="{{ Request::is('device_management') ? 'active' : '' }}">
-                    <a href="{{ route('device_management') }}">
-                        <i class="fas fa-cogs"></i><span class="menu-label">Device Management</span>
-                    </a>
-                </li>
             @endif
         </ul>
 

@@ -22,6 +22,9 @@
                 </button>
                 <button class="tab-button" data-status="in-progress" onclick="filterTickets('in-progress', event)">
                     <i class="fas fa-tools"></i> In-Progress
+                    @if($inProgressCount > 0)
+                        <span class="notifcounter">{{ $inProgressCount }}</span>
+                    @endif
                 </button>
                 <button class="tab-button" data-status="completed" onclick="filterTickets('completed', event)">
                     <i class="fas fa-check-circle"></i> Solved

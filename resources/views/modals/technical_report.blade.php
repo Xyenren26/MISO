@@ -145,12 +145,6 @@
                     <label for="inspected-date">Date and Time</label>
                     <input type="datetime-local" id="inspected-date" name="inspected_date">
                 </div>
-                <div class="signature">
-                    <label for="noted">Noted By</label>
-                    <input type="text" id="noted" name="noted_by" required>
-                    <label for="noted-date">Date and Time</label>
-                    <input type="datetime-local" id="noted-date" name="noted_date">
-                </div>
             </div>
             <button type="submit">Save Report</button>
         </form>

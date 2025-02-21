@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Collection;
+use App\Models\Approval;
 use App\Models\User;
 use App\Models\ServiceRequest;
 use App\Models\Deployment;
@@ -29,7 +30,7 @@ class Device_Management_Controller extends Controller
         // Check the filter type
         if ($filter === 'new-deployment') {
             // Fetch from the Deployments table
-            $query = Deployment::query();
+            $query = Deployment::query()->orderBy('created_at', 'desc');
 
             // Apply status filter for New Deployment
             if ($statusFilter && in_array($statusFilter, ['new', 'used'])) {
@@ -51,7 +52,8 @@ class Device_Management_Controller extends Controller
             $deployments = $query->paginate(3);
         } else {
             // Otherwise, fetch from ServiceRequests
-            $query = ServiceRequest::with('equipmentDescriptions', 'technicalSupport');
+            $query = ServiceRequest::with('equipmentDescriptions', 'technicalSupport')
+            ->orderBy('created_at', 'desc');
 
             if ($filter === 'in-repairs') {
                 $query->where('status', 'in-repairs');
@@ -91,89 +93,10 @@ class Device_Management_Controller extends Controller
         // Fetch all technical support personnel
         $technicalSupports = User::where('account_type', 'technical_support')->get();
 
-        return view('Device_Management', compact('serviceRequests', 'deployments', 'filter', 'nextFormNo', 'conditionFilter', 'technicalSupports', 'technicalSupportFilter', 'statusFilter'));
+        $inRepairsCount = ServiceRequest::where('status', 'in-repairs')->count();
+
+        return view('Device_Management', compact('serviceRequests', 'deployments', 'filter', 'nextFormNo', 'conditionFilter', 'technicalSupports', 'technicalSupportFilter', 'statusFilter', 'inRepairsCount'));
     }
-
-
-    public function getServiceRequest($form_no)
-    {
-        // Fetch the service request along with its related data
-        $serviceRequest = ServiceRequest::with(['equipmentDescriptions.equipmentParts', 'technicalSupport'])
-            ->where('form_no', $form_no)
-            ->firstOrFail();
-
-        // Check if $serviceRequest is actually found
-        if (!$serviceRequest) {
-            // If no service request is found, handle the error (optional)
-            return response()->json(['error' => 'Service request not found.'], 404);
-        }
-
-        // Prepare the technical support information, ensuring it's handled correctly
-        $technicalSupportName = $serviceRequest->technicalSupport 
-            ? $serviceRequest->technicalSupport->first_name . ' ' . $serviceRequest->technicalSupport->last_name
-            : 'Unassigned';
-
-        // Return the response as JSON with all the necessary data
-        return response()->json([
-            'form_no' => $serviceRequest->form_no,
-            'service_type' => $serviceRequest->service_type ?? 'N/A', // Default to 'N/A' if service_type is not available
-            'name' => $serviceRequest->name,
-            'employee_id' => $serviceRequest->employee_id,
-            'department' => $serviceRequest->department,
-            'condition' => $serviceRequest->condition ?? 'N/A',
-            'technical_support' => $technicalSupportName,
-            'equipment_descriptions' => $serviceRequest->equipmentDescriptions->map(function ($equipment) {
-                // Get the parts that are present (where `is_present` is true), even if the parts array is empty
-                $parts = $equipment->equipmentParts->where('is_present', true)->pluck('part_name')->toArray();
-                return [
-                    'brand' => $equipment->brand,
-                    'equipment_type' => $equipment->equipment_type,
-                    'remarks' => $equipment->remarks,
-                    'equipment_parts' => $parts, // Return as array of parts that are present, even if empty
-                ];
-            }),
-        ]);
-    }
-
-
-
-    public function showDeployment($id)
-    {
-        $deployment = Deployment::with('equipmentItems')->findOrFail($id);
-    
-        if (is_string($deployment->components)) {
-            $deployment->components = json_decode($deployment->components, true);
-        }
-        if (is_string($deployment->software)) {
-            $deployment->software = json_decode($deployment->software, true);
-        }
-    
-        $responseData = [
-            'purpose' => $deployment->purpose,
-            'control_number' => $deployment->control_number,
-            'status' => $deployment->status,
-            'components' => $deployment->components, 
-            'software' => $deployment->software, 
-            'equipment_items' => $deployment->equipmentItems->map(function ($item) {
-                return [
-                    'description' => $item->description,
-                    'serial_number' => $item->serial_number,
-                    'quantity' => $item->quantity,
-                ];
-            }),
-            'brand_name' => $deployment->brand_name,
-            'specification' => $deployment->specification,
-            'received_by' => $deployment->received_by,
-            'issued_by' => $deployment->issued_by,
-            'noted_by' => $deployment->noted_by,
-            'received_date' => $deployment->received_date,
-            'issued_date' => $deployment->issued_date,
-            'noted_date' => $deployment->noted_date,
-        ];
-    
-        return response()->json($responseData);
-    }
-
 
     public function getFilteredRecords(Request $request)
     {

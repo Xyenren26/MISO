@@ -199,3 +199,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }  
 });
+
+document.getElementById("employee-id").addEventListener("input", function () {
+  let input = this.value;
+  let errorMessage = document.getElementById("error-message");
+  let submitBtn = document.getElementById("submit-btn");
+
+  // Remove any non-numeric characters
+  this.value = input.replace(/\D/g, '');
+
+  // Show error if the length is not exactly 7 digits
+  if (this.value.length !== 7) {
+      errorMessage.style.display = "block";
+      submitBtn.disabled = true; // Disable button
+  } else {
+      errorMessage.style.display = "none";
+      submitBtn.disabled = false; // Enable button
+  }
+});
