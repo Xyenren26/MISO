@@ -168,7 +168,7 @@ body {
     width: 0;
     height: 0;
     border: 8px solid transparent;
-    border-left-color: white;
+
 }
 
 /* Received by them */
@@ -188,7 +188,6 @@ body {
     width: 0;
     height: 0;
     border: 8px solid transparent;
-    border-right-color: white;
 }
 
 /* Scroll bar styling */
@@ -437,11 +436,38 @@ body {
 #scrollButton i {
     margin: 0;
 }
+/* ✅ FOR CHAT RESTRICTION */
+
+/* Dim the restricted user and prevent interaction */
+.user.disabled {
+    opacity: 0.5;  /* ✅ Dim the appearance */
+}
+
+/* Red status indicator for completed tickets */
+.user .ticket-status {
+    color: red;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+/* Disabled chat input when a ticket is marked as complete */
+.chat-input:disabled,
+#chat-input:disabled {
+    background-color: #ddd; /* ✅ Greyed-out input */
+    color: #666; /* ✅ Dimmed text */
+    cursor: not-allowed; /* ✅ Show not-allowed cursor */
+}
+
+/* Disabled send message button */
+#send-message:disabled {
+    background-color: #aaa; /* ✅ Dimmed button */
+    cursor: not-allowed;
+}
 
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
-    #chat-container {
+    #chat-container { 
         flex-direction: column;
     }
 

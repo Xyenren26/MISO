@@ -60,6 +60,8 @@
             </div>
         </div>
     </div>
+    @include('email_verification')
+
 
     <script>
         // Function to toggle dropdown visibility

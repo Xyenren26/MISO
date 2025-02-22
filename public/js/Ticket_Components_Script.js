@@ -15,17 +15,31 @@ window.onclick = function(event) {
     }
 };
 
-
+//binago ko hanggang line 41 - rogelio
 // Show Modal
 function showAssistModal(ticketControlNo) {
-  document.getElementById('assistModal').style.display = 'block';
-  document.getElementById('ticketControlNo').value = ticketControlNo;
+    document.getElementById('ticketControlNo').value = ticketControlNo;
+    document.getElementById('assistModal').style.display = 'block';
 }
 
 // Close Modal
 function closeAssistModal() {
-  document.getElementById('assistModal').style.display = 'none';
+    document.getElementById('assistModal').style.display = 'none';
 }
+
+//function for reassignment of chat to another user
+window.Echo.channel('chat-reassignment')
+    .listen('.ChatReassignmentEvent', (event) => {
+        if (event.employeeId === CURRENT_USER_ID) {  // Replace with logged-in user's ID
+            alert('Your assigned technical support has changed.');
+            updateChatPartner(event.newTechnicalSupportId);
+        }
+    });
+
+function updateChatPartner(newTechSupportId) {
+    document.getElementById('chat-btn-' + CURRENT_TICKET_ID).setAttribute('data-tech-support', newTechSupportId);
+}
+
 
 // Function to open the Remarks modal and set the control number
 function openRemarksModal(controlNo) {

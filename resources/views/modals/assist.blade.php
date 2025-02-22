@@ -8,7 +8,7 @@
 
             <div class="form-group">
                 <label for="technicalSupport">Choose Technical Support:</label>
-                <select id="technicalSupport" name="new_technical_support" required>
+                <select id="technicalSupportAssist" name="new_technical_support" required>
                     <option value="" disabled selected>Select Assist Technical Support</option>
                     @foreach($technicalAssistSupports as $tech)
                         <option value="{{ $tech->employee_id }}">
@@ -51,7 +51,7 @@
     }
     async function submitAssist() {
         const ticketControlNo = document.getElementById('ticketControlNo').value;
-        const technicalSupport = document.getElementById('technicalSupport').value;
+        const technicalSupport = document.getElementById('technicalSupportAssist').value;
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         if (!ticketControlNo || !technicalSupport) {

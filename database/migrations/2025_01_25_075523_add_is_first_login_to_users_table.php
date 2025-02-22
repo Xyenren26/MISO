@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up()
 {
-    if (!Schema::hasTable('users')) {
+
     Schema::table('users', function (Blueprint $table) {
         $table->boolean('is_first_login')->default(true);
     });
-}
 }
 
 

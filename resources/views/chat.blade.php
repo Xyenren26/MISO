@@ -43,12 +43,23 @@
                             @if ($assignedTechUsers->isNotEmpty())
                                 <p style="color: green;">✅ Assigned Technical Support Found</p>
                                 @foreach ($assignedTechUsers as $techUser)
-                                    <li class="user" data-user-id="{{ $techUser->employee_id }}">
+                                    @php
+                                        $ticket = \App\Models\Ticket::where('employee_id', Auth::user()->employee_id)
+                                            ->where('technical_support_id', $techUser->employee_id)
+                                            ->latest()
+                                            ->first();
+                                        $isDisabled = $ticket && $ticket->status === 'completed';
+                                    @endphp
+                                    <li class="user {{ $isDisabled ? 'disabled' : '' }}" data-user-id="{{ $techUser->employee_id }}">
                                         <span>{{ $techUser->first_name }} {{ $techUser->last_name }}</span>
                                         <div class="user-status offline" id="status-{{ $techUser->employee_id }}"></div>
                                         <span class="notification-badge" id="badge-{{ $techUser->employee_id }}" style="display: none;"></span>
+                                        @if($isDisabled)
+                                            <span class="ticket-status" style="color: red;"> ❌</span>
+                                        @endif
                                     </li>
                                 @endforeach
+
                             @else
                                 <p style="color: red;">❌ No Assigned Technical Support Found</p>
                             @endif
@@ -63,13 +74,24 @@
                     <h4>Employees</h4>
                     <ul id="employee-accordion">
                         @if ($assignedEndUsers->isNotEmpty())
-                            @foreach ($assignedEndUsers as $endUser)
-                                <li class="user" data-user-id="{{ $endUser->employee_id }}">
-                                    <span>{{ $endUser->first_name }} {{ $endUser->last_name }}</span>
-                                    <div class="user-status offline" id="status-{{ $endUser->employee_id }}"></div>
-                                    <span class="notification-badge" id="badge-{{ $endUser->employee_id }}" style="display: none;"></span>
-                                </li>
-                            @endforeach
+                        @foreach ($assignedEndUsers as $endUser)
+                            @php
+                                $ticket = \App\Models\Ticket::where('employee_id', $endUser->employee_id)
+                                    ->where('technical_support_id', Auth::user()->employee_id)
+                                    ->latest()
+                                    ->first();
+                                $isDisabled = $ticket && $ticket->status === 'completed';
+                            @endphp
+                            <li class="user {{ $isDisabled ? 'disabled' : '' }}" data-user-id="{{ $endUser->employee_id }}">
+                                <span>{{ $endUser->first_name }} {{ $endUser->last_name }}</span>
+                                <div class="user-status offline" id="status-{{ $endUser->employee_id }}"></div>
+                                <span class="notification-badge" id="badge-{{ $endUser->employee_id }}" style="display: none;"></span>
+                                @if($isDisabled)
+                                    <span class="ticket-status" style="color: red;"> ❌</span>
+                                @endif
+                            </li>
+                        @endforeach
+
                         @else
                             <p style="color: red;">❌ No Assigned Employees Found</p>
                         @endif

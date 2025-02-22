@@ -249,32 +249,32 @@ class Ticket_Controller extends Controller
     {
         $ticketControlNo = $request->input('ticket_control_no');
         $newTechnicalSupport = $request->input('new_technical_support');
-
+    
         $ticket = Ticket::where('control_no', $ticketControlNo)->first();
-
-        if ($ticket) {
-            // Check if the ticket has already been passed before
-            $alreadyPassed = $ticket->history()->exists();
-
-            if ($alreadyPassed) {
-                return redirect()->route('ticket')->with('error', 'This ticket has already been passed once and cannot be reassigned.');
-            }
-
-            // If not passed yet, proceed with creating history and updating the ticket
-            $ticket->history()->create([
-                'previous_technical_support' => $ticket->technical_support_id,
-                'new_technical_support' => $newTechnicalSupport,
-                'ticket_id' => $ticket->id,
-            ]);
-
-            $ticket->technical_support_id = $newTechnicalSupport;
-            $ticket->save();
-
-            return redirect()->route('ticket')->with('success', 'Pass Ticket created successfully!');
+    
+        if (!$ticket) {
+            return response()->json(['error' => 'Ticket not found.'], 404);
         }
-
-        return redirect()->route('ticket')->with('error', 'Ticket not found.');
-    }    
+    
+        // Check if the ticket has already been passed before
+        $alreadyPassed = $ticket->history()->exists();
+    
+        if ($alreadyPassed) {
+            return response()->json(['error' => 'This ticket has already been passed once and cannot be reassigned.'], 400);
+        }
+    
+        // Proceed with creating history and updating the ticket
+        $ticket->history()->create([
+            'previous_technical_support' => $ticket->technical_support_id,
+            'new_technical_support' => $newTechnicalSupport,
+            'ticket_id' => $ticket->id,
+        ]);
+    
+        $ticket->technical_support_id = $newTechnicalSupport;
+        $ticket->save();
+    
+        return response()->json(['success' => 'Pass Ticket created successfully!'], 200);
+    }
 
     public function updateRemarks(Request $request)
     {

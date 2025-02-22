@@ -9,29 +9,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let pollInterval;
     const visibleTimestamps = new Set();
 
-    
-
     // Accordion functionality
-    document.querySelectorAll('.accordion h4').forEach(accordion => {
-        accordion.addEventListener('click', () => {
-            const list = accordion.nextElementSibling;
-            list.style.display = list.style.display === 'none' ? 'block' : 'none';
-            accordion.classList.toggle('active');
-        });
-        accordion.nextElementSibling.style.display = 'none';
-    });
+// Open both accordions by default
+document.querySelectorAll('.accordion h4').forEach((accordion, index) => {
+    const list = accordion.nextElementSibling;
+    list.style.display = 'block';  // Make sure both accordions are open
+    accordion.classList.add('active');
+});
+
 
     // Event listener for selecting users
-    usersList.forEach(user => {
-        user.addEventListener('click', () => {
-            selectedUserId = user.dataset.userId;
-            selectedUserName = user.querySelector('span').textContent;
-            chatHeader.textContent = `Chatting with ${selectedUserName}`;
-            clearInterval(pollInterval);
-            loadMessages(selectedUserId);
-            pollInterval = setInterval(() => loadMessages(selectedUserId), 2000);
-        });
+usersList.forEach(user => {
+    user.addEventListener('click', async () => {
+        const userId = user.dataset.userId;
+
+        // Fetch ticket status before allowing selection
+        const isRestricted = await checkTicketStatus(userId);
+        if (isRestricted) {
+            alert(`❌ You cannot select ${user.querySelector('span').textContent}, the ticket is marked as "Complete".`);
+            return;
+        }
+
+        selectedUserId = userId;
+        selectedUserName = user.querySelector('span').textContent;
+        chatHeader.textContent = `Chatting with ${selectedUserName}`;
+
+        clearInterval(pollInterval);
+        loadMessages(selectedUserId);
+        pollInterval = setInterval(() => loadMessages(selectedUserId), 2000);
     });
+});
+
 
     // Send message event
     sendMessageButton.addEventListener('click', sendMessage);
@@ -42,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // FOR RESTRICTION OF SENDING MESSAGE IN TECHNICAL VIEW. IF THE PROBLEM SUBMITTED BY END USER IS RESOLVED
     function sendMessage() {
         const message = chatInput.value.trim();
         if (message && selectedUserId) {
@@ -53,7 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ message, receiver_id: selectedUserId })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 403) {  
+                    // ❌ Conversation expired - show alert and disable only this user's chat input
+                    alert(`❌ You cannot message ${selectedUserName}, this conversation has expired.`);
+                    
+                    // Disable only for this user
+                    document.querySelector(`.user[data-user-id="${selectedUserId}"]`).classList.add('disabled');
+                    
+                    // Stop further execution
+                    return Promise.reject("Conversation expired");
+                }
+                return response.json();
+            })
             .then(() => {
                 chatInput.value = '';
                 loadMessages(selectedUserId);
@@ -61,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(console.error);
         }
     }
-
+    
+    
     function loadMessages(receiverId) {
         fetch(`/chat/fetch-messages/${receiverId}`)
             .then(response => response.json())
@@ -170,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(users => {
                 const activeUsersList = document.querySelector('#active-users-list');
-                activeUsersList.innerHTML = users.map(user => `<li>${user.name} (${user.email})</li>`).join('');
+                activeUsersList.innerHTML = users.map(user => `<li>${user.first_name} ${user.last_name} (${user.email})</li>`).join('');
             })
             .catch(console.error);
     }
@@ -179,20 +201,127 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchActiveUsers();
 
     function updateUserStatuses() {
-        fetch('/get-user-status')
+        fetch('/chat/active-users')
             .then(response => response.json())
-            .then(data => {
+            .then(users => {
                 document.querySelectorAll('.user-status').forEach(statusElement => {
                     const userId = statusElement.id.replace('status-', '');
-                    statusElement.classList.toggle('online', data.onlineUsers.includes(parseInt(userId)));
-                    statusElement.classList.toggle('offline', !data.onlineUsers.includes(parseInt(userId)));
+                    const user = users.find(u => u.employee_id === parseInt(userId));
+                    statusElement.classList.toggle('online', user);
+                    statusElement.classList.toggle('offline', !user);
                 });
             })
             .catch(console.error);
     }
 
-    setInterval(updateUserStatuses, 10000);
+    setInterval(updateUserStatuses, 5000);
     updateUserStatuses();
-    
+
+        //if the ticket are complete the chat area between tech and end user wil be restricted - bagong lagay ni rogelio
+        document.addEventListener('DOMContentLoaded', () => {
+            applyStoredRestrictions();  // ✅ Apply restrictions from localStorage on page load
+            updateUserRestrictions();   // ✅ Update restrictions immediately
+        
+            // ✅ Keep updating restrictions every 10 seconds
+            setInterval(updateUserRestrictions, 10000);
+        });
+        
+        async function checkTicketStatus(userId) {
+            try {
+                const response = await fetch(`/chat/ticket-status/${userId}`);
+                const data = await response.json();
+                const userElement = document.querySelector(`.user[data-user-id="${userId}"]`);
+                if (!userElement) return false;
+        
+                const indicator = userElement.querySelector('.ticket-status') || document.createElement('span');
+                indicator.classList.add('ticket-status');
+        
+                if (data.status === "Complete") {
+                    userElement.classList.add('disabled');
+                    indicator.textContent = " ❌";
+                    indicator.style.color = "red";
+                    userElement.appendChild(indicator);
+                    saveRestriction(userId);
+                    toggleChatAccess(true);  // 🔴 Disable chat input
+                    return true;
+                } else {
+                    userElement.classList.remove('disabled');
+                    indicator.textContent = "";
+                    removeRestriction(userId);
+                    toggleChatAccess(false);  // 🟢 Enable chat input
+                    return false;
+                }
+            } catch (error) {
+                console.error("Error fetching ticket status:", error);
+                return false;
+            }
+        }
+        
+        
+        async function updateUserRestrictions() {
+            const users = document.querySelectorAll('.user');
+            for (const user of users) {
+                const userId = user.dataset.userId;
+                await checkTicketStatus(userId);
+            }
+        }
+        
+        // ✅ Save restricted users to localStorage
+        function saveRestriction(userId) {
+            let restrictedUsers = JSON.parse(localStorage.getItem('restrictedUsers')) || [];
+            if (!restrictedUsers.includes(userId)) {
+                restrictedUsers.push(userId);
+            }
+            localStorage.setItem('restrictedUsers', JSON.stringify(restrictedUsers));
+        }
+        
+        // ✅ Remove restriction when ticket is reopened
+        function removeRestriction(userId) {
+            let restrictedUsers = JSON.parse(localStorage.getItem('restrictedUsers')) || [];
+            restrictedUsers = restrictedUsers.filter(id => id !== userId);
+            localStorage.setItem('restrictedUsers', JSON.stringify(restrictedUsers));
+        }
+        
+        // ✅ Apply restrictions from localStorage on page load
+// ✅ Apply restrictions from localStorage on page load
+function applyStoredRestrictions() {
+    let restrictedUsers = JSON.parse(localStorage.getItem('restrictedUsers')) || [];
+    restrictedUsers.forEach(userId => {
+        const userElement = document.querySelector(`.user[data-user-id="${userId}"]`);
+        if (userElement) {
+            userElement.classList.add('disabled');
+            userElement.style.pointerEvents = "none"; 
+            userElement.style.opacity = "0.5"; 
+
+            let indicator = userElement.querySelector('.ticket-status');
+            if (!indicator) {
+                indicator = document.createElement('span');
+                indicator.classList.add('ticket-status');
+                indicator.textContent = " ❌";
+                indicator.style.color = "red";
+                userElement.appendChild(indicator);
+            }
+
+            // 🔴 Disable chat if the selected user is restricted
+            if (selectedUserId === userId) {
+                toggleChatAccess(true);
+            }
+        }
+    });
+}
+
+
+        // Run every 10 seconds to check updates
+        setInterval(updateUserRestrictions, 10000);
+        updateUserRestrictions();
+
+        function toggleChatAccess(isRestricted) {
+            chatInput.disabled = isRestricted;
+            sendMessageButton.disabled = isRestricted;
+            chatInput.style.backgroundColor = isRestricted ? '#ddd' : ''; // Grey out input
+            chatInput.placeholder = isRestricted ? "❌ Ticket is complete. You cannot send messages." : "Type a message...";
+        }
+        
+        
     
 });

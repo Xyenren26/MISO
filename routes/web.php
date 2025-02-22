@@ -149,7 +149,11 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
         return response()->json(['onlineUsers' => $onlineUsers]);
     });
 
-    
 
+    //pass the ticket to another technical support using assist on ticket list - bagong lagay ni rogelio
+    Route::post('/pass-ticket', [ChatController::class, 'passTicket']);
     
+    //ROUTE FROM TICKET LIST COMMENT ICON TO CHAT
+    Route::get('/chat/{ticket}', [ChatController::class, 'index'])->name('chat');
+
 });

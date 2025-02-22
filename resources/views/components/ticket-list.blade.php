@@ -94,15 +94,19 @@
                             @endif
 
                             @if (!$ticket->isRemarksDone)
-                                <button class="action-button" id="chat-btn-{{ $ticket->control_no }}">
-                                    <i class="fas fa-comments"></i> 
-                                </button>
+                            <button class="action-button" id="chat-btn-{{ $ticket->control_no }}"
+                                onclick="window.location.href='{{ route('chat', ['ticket' => $ticket->control_no]) }}'">
+                                <i class="fas fa-comments"></i> 
+                            </button>
+
 
                                 @if (!$ticket->isAssistDone)
-                                    <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
-                                            id="assist-btn-{{ $ticket->control_no }}">
-                                        <i class="fas fa-handshake"></i> 
-                                    </button>
+                                <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
+                                        id="assist-btn-{{ $ticket->control_no }}"
+                                        data-tech-support="{{ $ticket->technical_support_id }}">
+                                    <i class="fas fa-handshake"></i> 
+                                </button>
+
                                 @endif
                             @endif
                         </div>
