@@ -87,6 +87,29 @@
     transition: 0.3s;
 }
 
+.rating-container {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background: #f8f9fa; /* Light background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rating-label {
+    margin-right: 5px;
+}
+
+.rating-value {
+    color: #ffcc00; /* Yellow for rating */
+    font-size: 18px;
+}
+
+
 </style>
 <div id="viewFormPopup" class="form-popup-container" style="display: none;">
     <div class="form-popup-content-view">
@@ -94,20 +117,24 @@
         <div class="form-popup-form-container">
             <header class="form-popup-header">
 
+            <div class="rating-container" id="rating-containerPullOut">
+                    <label class="form-popup-label">Rating:</label>
+                    <div id="starRatingPullOut"></div>
+                </div>
+                
             <div id="waitingForApprovalService" class="waiting-approval" style="display: none;">
                 <p>🚨 Waiting for admin approval...</p>
             </div>
-            @if (!empty($ticket->serviceRequest) && strtolower($ticket->serviceRequest->status) === 'repaired')
+            
+            
                 <div id="qrCodeContainer"  onclick="printQRCode()">
                     <img id="qrCodeImage" class="qr-code" src="" alt="QR Code">
                 </div>
-                <div class="status-container">
+
+            <div class="status-container">
                     <label class="form-popup-label">Status:</label>
                     <input type="text" id="viewStatusService" class="form-input-no" readonly>
                 </div>
-            @endif
-
-
 
                 <div class="form-popup-logo">
                     <img src="images/systemlogo.png" alt="Logo">

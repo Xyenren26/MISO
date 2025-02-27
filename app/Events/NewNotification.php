@@ -18,17 +18,15 @@ class NewNotification implements ShouldBroadcastNow
      * Create a new event instance.
      */
     public $notification;
-    public $channelName;
 
 
     public function __construct($notification, $channelName = 'notifications') {
         $this->notification = $notification;
-        $this->channelName = $channelName;
     }
 
     public function broadcastOn()
     {
-        return new Channel($this->channelName); // Broadcast to the specified channel
+        return new Channel('notifications'); // Broadcast to the specified channel
     }
     
 

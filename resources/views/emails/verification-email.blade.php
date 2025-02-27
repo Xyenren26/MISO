@@ -77,7 +77,7 @@
                 <a class="button expired">Expired</a>
             @else
                 <a href="{{ $verificationUrl }}" class="button">Verify Email</a>
-                <p style="font-size: 14px; color: gray;">This link will expire in {{ $expiresAt->diffInMinutes(now()) }} minutes.</p>
+                <p style="font-size: 14px; color: gray;">This link will expire in 60 minutes.</p>
             @endif
         </div>
 

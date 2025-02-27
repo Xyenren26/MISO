@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const email = document.getElementById("email");
   const password = document.getElementById("password");
   const passwordConfirmation = document.getElementById("password_confirmation");
+  const submitBtn = document.getElementById("submit-btn");
 
   if (!form || !email || !password || !passwordConfirmation) {
     console.error("Required form elements not found!");
@@ -23,8 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
   passwordConfirmation.addEventListener("input", () => {
     if (password.value !== passwordConfirmation.value) {
       displayErrorPassword(passwordConfirmation, "Passwords do not match");
+      submitBtn.disabled = true; // Disable button else {
     } else {
       clearError(passwordConfirmation);
+      submitBtn.disabled = false;
     }
   });
 

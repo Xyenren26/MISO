@@ -24,12 +24,38 @@
         margin: 0;
         padding: 0;
     }
+    .rating-container {
+        position: absolute;
+        top: 50px;
+        right: 20px;
+        background: #f8f9fa; /* Light background */
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .rating-label {
+        margin-right: 5px;
+    }
+
+    .rating-value {
+        color: #ffcc00; /* Yellow for rating */
+        font-size: 18px;
+    }
     </style>
     
 <div id="technicalReportViewModal" class="modal" style="display: none;">
     <div class="modal-content-technical-report">
         <span class="close" onclick="closeTechnicalReportViewModal()">&times;</span>
         <input type="hidden" id="viewTechnicalReportControlNo" name="viewTechnicalReportControlNo">
+
+        <div class="rating-container" id="rating-containerTechnical">
+            <label class="form-popup-label">Rating:</label>
+            <div id="starRatingTechnical"></div>
+        </div>
         <div id="waitingForApprovalTechnical" class="waiting-approval" style="display: none;">
             <p>🚨 Waiting for admin approval...</p>
         </div>

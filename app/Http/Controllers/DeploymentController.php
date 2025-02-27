@@ -7,6 +7,7 @@ use App\Models\EquipmentItem;
 use App\Models\User;
 use App\Models\EquipmentDescription;
 use Illuminate\Http\Request;
+use App\Models\Rating;
 use App\Models\Approval;
 use App\Notifications\SystemNotification;
 use App\Events\NewNotification;
@@ -97,8 +98,12 @@ class DeploymentController extends Controller
         }
         // Fetch approval details
         $approval = Approval::where('ticket_id', $control_no)->first();
+
+        // Fetch rating based on control_no
+        $rating = Rating::where('control_no', $deployment->control_number)->first();
     
         $responseData = [
+            'rating' => $rating ? $rating->rating : null, 
             'purpose' => $deployment->purpose,
             'control_number' => $deployment->control_number,
             'status' => $deployment->status,

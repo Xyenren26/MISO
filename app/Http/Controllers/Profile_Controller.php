@@ -50,6 +50,8 @@ class Profile_Controller extends Controller
 
         // Update the user profile
         $user->update([
+            'id' => $user->employee_id, // Keep employee_id
+            'name' => $request->input('first-name') . ' ' . $request->input('last-name'), // Combine first and last name
             'first_name' => $request->input('first-name'),
             'last_name' => $request->input('last-name'),
             'department' => $request->input('department'),
@@ -61,9 +63,9 @@ class Profile_Controller extends Controller
         // Logout the user and redirect to login
         Auth::logout();
 
-        // Fallback redirect if no condition is met
         return redirect()->route('login')->with('success', 'Successful Finish profile, please log in again.');
     }
+
 
     public function index()
     {
@@ -105,6 +107,7 @@ class Profile_Controller extends Controller
         $user->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
+            'name' => $request->input('first-name') . ' ' . $request->input('last-name'),
             'department' => $request->department,
             'phone_number' => $request->phone_number,
         ]);

@@ -61,6 +61,28 @@
     width: auto;
 }
 
+#rating-container {
+    position: absolute;
+    top: 4px;
+    right: 760px;
+    background: #f8f9fa; /* Light background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rating-label {
+    margin-right: 5px;
+}
+
+.rating-value {
+    color: #ffcc00; /* Yellow for rating */
+    font-size: 18px;
+}
+
 </style>
 <!-- View Deployment Modal -->
 <div id="deploymentview" class="deploymentmodal" style="display: none;">
@@ -74,6 +96,11 @@
                 <div class="title">
                     <h1>IT EQUIPMENT / SOFTWARE / I.S. ACKNOWLEDGEMENT RECEIPT FORM</h1>
                     <p>Management Information System Office</p>
+                </div>
+
+                <div class="rating-container" id="rating-container">
+                    <label class="form-popup-label">Rating:</label>
+                    <div id="starRatingDeployment"></div>
                 </div>
                 <div id="waitingForApprovalDeployment" class="waiting-approval" style="display: none;">
                     <p>🚨 Waiting for admin approval...</p>

@@ -80,6 +80,18 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        .technicalsavebutton{
+            margin-top: 20px;
+            width: 100%;
+            padding: 8px;
+            background: #007BFF;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
     </style>
 </head>
 <body>
@@ -137,16 +149,16 @@
                     <label for="reported">Reported By</label>
                     <input type="text" id="reported" name="reported_by" required>
                     <label for="reported-date">Date and Time</label>
-                    <input type="datetime-local" id="reported-date" name="reported_date">
+                    <input type="datetime-local" id="reported-date" name="reported_date" required readonly>
                 </div>
                 <div class="signature">
                     <label for="inspected">Inspected By</label>
                     <input type="text" id="inspected" name="inspected_by" required>
                     <label for="inspected-date">Date and Time</label>
-                    <input type="datetime-local" id="inspected-date" name="inspected_date">
+                    <input type="datetime-local" id="inspected-date" name="inspected_date" required readonly>
                 </div>
             </div>
-            <button type="submit">Save Report</button>
+            <button type="submit" class="technicalsavebutton">Save Report</button>
         </form>
     </div>
 </div>

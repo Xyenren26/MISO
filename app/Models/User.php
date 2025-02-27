@@ -22,6 +22,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $primaryKey = 'employee_id';
     protected $fillable = [
         'employee_id',
+        'id',
+        'name',
         'first_name',
         'last_name',
         'email',
@@ -29,7 +31,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'department',
         'phone_number',
-        'username',
         'account_type',
         'status',
         'is_first_login',

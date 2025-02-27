@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ServiceRequest;
+use App\Models\Approval;
 use App\Models\EquipmentDescription;
 use App\Models\EquipmentPart;
 use App\Models\User;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use App\Notifications\SystemNotification;
 use App\Mail\ServiceRequestUpdated;
@@ -222,9 +224,12 @@ class ServiceRequestController extends Controller
 
         // Fetch approval details
         $approval = Approval::where('ticket_id', $ticketId)->first();
+        // Fetch rating based on control_no
+        $rating = Rating::where('control_no', $serviceRequest->form_no)->first();
 
         // Return the response as JSON
         return response()->json([
+            'rating' => $rating ? $rating->rating : null, 
             'form_no' => $serviceRequest->form_no,
             'service_type' => $serviceRequest->service_type ?? 'N/A',
             'name' => $serviceRequest->name,

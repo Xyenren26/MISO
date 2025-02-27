@@ -60,6 +60,12 @@ class Ticket extends Model
         return $this->hasOne(Deployment::class, 'control_number', 'control_no');
     }
 
+    public function ratings()
+    {
+        return $this->hasOne(Rating::class, 'control_no', 'control_no');
+    }
+
+
     // 🔹 Model Events for Audit Logging
     protected static function boot()
     {

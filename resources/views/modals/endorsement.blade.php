@@ -385,8 +385,6 @@ document.addEventListener('change', function(event) {
 document.getElementById('endorsementForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent default form submission
 
-    console.log('Submitting form with ticket_id:', document.getElementById('ticket_id').value);
-
     let formData = new FormData(this);
     
     // Log all form data before sending

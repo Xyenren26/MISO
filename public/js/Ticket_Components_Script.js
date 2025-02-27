@@ -1,4 +1,3 @@
-
 // You can also close the modal by clicking anywhere outside the modal content
 window.onclick = function(event) {
     var modal = document.getElementById('ticketModal');
@@ -123,8 +122,7 @@ function closeEndorsementModal() {
 }
 
 function openViewEndorsementModal(ticket_id) {
-    console.log('Ticket ID:', ticket_id);
-    document.getElementById('ticket_id').value = ticket_id;
+  
 
     fetch('/endorsement/details/' + ticket_id)
         .then(response => response.json())
@@ -149,6 +147,13 @@ function openViewEndorsementModal(ticket_id) {
             document.getElementById("endorsed_by_date").value = formatDate(data.endorsed_by_date);
             document.getElementById("endorsed_by_time").value = data.endorsed_by_time || "";
             document.getElementById("endorsed_by_remarks").value = data.endorsed_by_remarks || "";
+             // Display rating (if exists)
+            if (data.rating) {
+                document.getElementById('starRatingEndorsement').value = data.rating; // Numeric display
+                displayStars(data.rating); // Star display
+            } else {
+                document.getElementById('starRatingEndorsement').innerHTML = "";
+            }
 
             // Populate network checkboxes
             document.querySelectorAll('input[name="network[]"]').forEach(input => {
@@ -176,10 +181,13 @@ function openViewEndorsementModal(ticket_id) {
             if (data.approval.name === "Not Available" || data.approval.approve_date === "Not Available") {
                 document.getElementById("waitingForApproval").style.display = "block";
                 document.querySelector("button[onclick='downloadModalAsPDF()']").style.display = "none"; // Hide Download button
+                document.getElementById("rating-containerEndorsement").style.display = "none";
             } else {
                 document.getElementById("waitingForApproval").style.display = "none";
                 document.querySelector("button[onclick='downloadModalAsPDF()']").style.display = "block"; // Show Download button
+                document.getElementById("rating-containerEndorsement").style.display = "block";
             }
+
 
 
 
@@ -207,9 +215,18 @@ function checkTechnicalReport(controlNo) {
             if (data.approval.name === "Not Available" || data.approval.approve_date === "Not Available") {
                 document.getElementById("waitingForApprovalTechnical").style.display = "block";
                 document.getElementById("ButtonDownloadTechnical").style.display = "none"; // Hide Download button
+                document.getElementById("rating-containerTechnical").style.display = "none";
             } else {
                 document.getElementById("waitingForApproval").style.display = "none";
                 document.getElementById("ButtonDownloadTechnical").style.display = "block"; // Show Download button
+                document.getElementById("rating-containerTechnical").style.display = "block";
+            }
+             // Display rating (if exists)
+            if (data.rating) {
+                document.getElementById('starRatingTechnical').value = data.rating; // Numeric display
+                displayStars(data.rating); // Star display
+            } else {
+                document.getElementById('starRatingTechnical').innerHTML = "";
             }
               openTechnicalReportViewModal(data.report);
           } else {
@@ -258,6 +275,8 @@ function openTechnicalReportModal(controlNo) {
   let now = new Date();
   let formattedDate = now.toISOString().slice(0, 16);
   document.getElementById('date-time').value = formattedDate;
+  document.getElementById('reported-date').value = formattedDate;
+  document.getElementById('inspected-date').value = formattedDate;
 
   // Fetch department and end user from the tickets table
   fetch(`/get-ticket-details/${controlNo}`)
@@ -289,20 +308,34 @@ function checkAndOpenPopup(ticketId) {
 }
 
 function openViewModal(formNo) {
-  fetch(`/service-request/${formNo}`)
-      .then(response => response.json())
-      .then(data => {
-          console.log(data); // Debugging: Log data to check the response
-          console.log("Form No:", data ? data.form_no : 'No Service Request');
+    fetch(`/service-request/${formNo}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Debugging: Log data to check the response
+            console.log("Form No:", data ? data.form_no : 'No Service Request');
 
-          // Populate general information
-          document.getElementById('viewFormNoService').value = data.form_no;
-          document.getElementById('viewDepartment').value = data.department;
-          document.getElementById('viewName').value = data.name;
-          document.getElementById('viewEmployee_ID').value = data.employee_id;
-          document.getElementById('viewStatusService').value = data.status;
-          document.getElementById("qrCodeImage").src = `/generate-qr/${data.form_no}`;
-          
+            // Populate general information
+            document.getElementById('viewFormNoService').value = data.form_no;
+            document.getElementById('viewDepartment').value = data.department;
+            document.getElementById('viewName').value = data.name;
+            document.getElementById('viewEmployee_ID').value = data.employee_id;
+            document.getElementById('viewStatusService').value = data.status;
+
+            // Display rating (if exists)
+            if (data.rating) {
+                document.getElementById('starRatingPullOut').value = data.rating; // Numeric display
+                displayStars(data.rating); // Star display
+            } else {
+                document.getElementById('starRatingPullOut').innerHTML = "";
+            }
+
+            // Only set QR code image if status is 'repaired'
+            if (data.status.toLowerCase() === "repaired") {
+                document.getElementById("qrCodeImage").src = `/generate-qr/${data.form_no}`;
+                document.getElementById("qrCodeContainer").style.display = "block"; // Show QR code container
+            } else{
+                document.getElementById("qrCodeContainer").style.display = "none";
+            }
 
           // Handle condition
           const condition = Array.isArray(data.condition) ? data.condition.join(', ') : data.condition || 'N/A';
@@ -400,9 +433,11 @@ function openViewModal(formNo) {
           if (data.approval.name === "Not Available" || data.approval.approve_date === "Not Available") {
               document.getElementById("waitingForApprovalService").style.display = "block";
               document.getElementById("ButtonService").style.display = "none"; // Hide Download button
+              document.getElementById("rating-containerPullOut").style.display = "none";
           } else {
               document.getElementById("waitingForApproval").style.display = "none";
               document.getElementById("ButtonService").style.display = "block"; // Show Download button
+              document.getElementById("rating-containerPullOut").style.display = "black";
           }                      
           
 
@@ -563,15 +598,25 @@ function openDeploymentView(control_no) {
                 if (data.approval.name === "Not Available" || data.approval.approve_date === "Not Available") {
                     document.getElementById("waitingForApprovalDeployment").style.display = "block";
                     document.getElementById("ButtonDeployment").style.display = "none"; // Hide Download button
+                    document.getElementById("rating-container").style.display = "none";
                 } else {
                     document.getElementById("waitingForApproval").style.display = "none";
                     document.getElementById("ButtonDeployment").style.display = "block"; // Show Download button
+                    document.getElementById("rating-container").style.display = "block";
                 } 
             if (data) {
                 // Populate basic fields
                 document.getElementById('purpose').value = data.purpose || '';
                 document.getElementById('control_number').value = data.control_number || '';    
-                document.getElementById("qrCodeImageDeployment").src = `/generate-qr-deployment/${data.control_number}`;  
+                document.getElementById("qrCodeImageDeployment").src = `/generate-qr-deployment/${data.control_number}`; 
+                
+                // Display rating (if exists)
+                if (data.rating) {
+                    document.getElementById('starRatingDeployment').value = data.rating; // Numeric display
+                    displayStars(data.rating); // Star display
+                } else {
+                    document.getElementById('starRatingDeployment').innerHTML = "";
+                }
 
                 // Set the correct status radio button
                 if (data.status === 'new') {
@@ -632,4 +677,16 @@ function openDeploymentView(control_no) {
 
 function closeDeploymentview() {
     document.getElementById("deploymentview").style.display = "none";
+}
+
+// Function to display stars
+function displayStars(rating) {
+    let starHtml = "";
+    for (let i = 1; i <= 5; i++) {
+        starHtml += i <= rating ? "⭐" : "☆"; // Filled star or empty star
+    }
+    document.getElementById('starRatingEndorsement').innerHTML = starHtml;
+    document.getElementById('starRatingPullOut').innerHTML = starHtml;
+    document.getElementById('starRatingDeployment').innerHTML = starHtml;
+    document.getElementById('starRatingTechnical').innerHTML = starHtml;
 }

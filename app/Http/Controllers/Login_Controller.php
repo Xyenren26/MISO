@@ -75,6 +75,7 @@ class Login_Controller extends Controller
                 $user->remember_token = Str::random(60);
                 $user->session_id = $currentSessionId; // Store the new session ID
                 $user->last_activity = now();
+                $user->active_status =true;
                 $user->save();
 
                 session(['user_id' => $user->id, 'last_activity' => now()]);

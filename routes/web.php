@@ -17,14 +17,15 @@ use App\Http\Controllers\Profile_Controller;
 use App\Http\Controllers\User_Management_Controller;
 use App\Http\Controllers\Audit_logs_Controller;
 use App\Http\Controllers\Report_Controller;
-
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ApprovalController;
-use App\Http\Controllers\ChatController;
+use App\Http\Controllers\OtherMessagesController;
+
 
 
 use App\Http\Controllers\PDFController;
@@ -112,6 +113,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/technical-reports/check/{control_no}', [Ticket_Controller::class, 'checkTechnicalReport']);
     Route::get('/get-ticket-details/{control_no}', [Ticket_Controller::class, 'getTechnicalReportDetails']);
     Route::get('/get-deployment-names/{control_no}', [Ticket_Controller::class, 'getDeploymentNames']);
+    Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
     Route::get('/get-qr-code/{form_no}', [ServiceRequestController::class, 'getQrCode']);
 
     Route::post('/technical-reports/store', [Ticket_Controller::class, 'storeTechnicalReport'])->name('technical-reports.store');
@@ -151,35 +153,8 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/approve-ticket', [ApprovalController::class, 'approveTicket'])->name('approve.ticket');
     Route::get('/get-approval-details', [ApprovalController::class, 'getApprovalDetails']);
 
-
-    //For messaging
-
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/chat/send-message', [ChatController::class, 'sendMessage'])->name('chat.send');
-    Route::get('/chat/fetch-messages/{receiverId}', [ChatController::class, 'fetchMessages'])->name('chat.fetch');
-
-    //Chat functionality 
-    Route::get('/api/unread-messages', [ChatController::class, 'getUnreadMessages']);
-    Route::get('/chat/unread-count', [ChatController::class, 'getUnreadMessageCount']);
-    Route::post('/chat/mark-as-read/{senderId}', [ChatController::class, 'markMessagesAsRead']);
-    Route::post('/chat/mark-read/{receiverId}', [ChatController::class, 'markAsRead']);
-    Route::get('/chat/active-users', [ChatController::class, 'getActiveUsers']);
-
-//for status update if online of offline
-    Route::get('/get-user-status', function (Request $request) {
-        $users = DB::table('users')->select('employee_id', 'last_activity')->get();
-
-        $onlineUsers = [];
-        foreach ($users as $user) {
-            if ($user->last_activity && Carbon::parse($user->last_activity)->diffInMinutes(now()) < 5) {
-                $onlineUsers[] = $user->employee_id; // Online if active within 5 minutes
-            }
-        }
-
-        return response()->json(['onlineUsers' => $onlineUsers]);
-    });
-
-    
-
-    
+    Route::post('/send-message/{ticketId}', [EndUserController::class, 'sendMessageToTechnicalSupport']);
+    Route::post('/send-message-technical/{ticketId}', [Ticket_Controller::class, 'sendMessageToEndUser']);
+    Route::get('/message/{id}', [OtherMessagesController::class, 'index'])->name('chatify');
+    Route::get('/unseen-messages', [OtherMessagesController::class, 'getUnseenMessages']);
 });

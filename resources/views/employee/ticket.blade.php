@@ -13,6 +13,7 @@
     @include('components.sidebar')
     <div class="main-content">
         @include('components.navbar')
+
         <!-- Header Section -->
         <div class="header">
             <!-- Tabs Section -->
@@ -26,80 +27,86 @@
                         <span class="notifcounter">{{ $inProgressCount }}</span>
                     @endif
                 </button>
-                <button class="tab-button" data-status="completed" onclick="filterTickets('completed', event)">
-                    <i class="fas fa-check-circle"></i> Solved
+                
+                <!-- Processing Tickets -->
+                <button class="tab-button" data-status="processing" onclick="filterTickets('processing', event)">
+                    <i class="fas fa-spinner"></i> Processing
                 </button>
-                <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
-                    <i class="fas fa-arrow-right"></i> Endorsed
-                </button>
-                <button class="tab-button" data-status="technical-report" onclick="filterTickets('technical-report', event)">
-                    <i class="fas fa-times-circle"></i> Technical-Report
-                </button>
-                <button class="tab-button" data-status="pull-out" onclick="filterTickets('pull-out', event)">
-                    <i class="fas fa-times-circle"></i> Pull-Out
+
+                <!-- Closed Tickets -->
+                <button class="tab-button" data-status="closed" onclick="filterTickets('closed', event)">
+                    <i class="fas fa-check-circle"></i> Closed Ticket
                 </button>
             </div>
         </div>
 
-<!-- Filter and Add New Ticket Section (Below Tabs) -->
-<div class="actions">
-    <!-- Search Container -->
-    <div class="search-container">
-        <input type="text" id="ticketSearch" placeholder="Search..." class="search-input">
-        <button type="button" class="search-button">
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
+        <!-- Filter and Add New Ticket Section (Below Tabs) -->
+        <div class="actions">
+            <!-- Search Container -->
+            <div class="search-container">
+                <input type="text" id="ticketSearch" placeholder="Search..." class="search-input">
+                <button type="button" class="search-button" onclick="applyFilters()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+
+            <!-- Space Between Search and Filter/Add New Buttons -->
+            <div class="spacer"></div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="dropdown">
+                    <button class="dropdown-button">
+                        <i class="fas fa-filter"></i> Filter Record <span class="arrow">&#x25BC;</span>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="javascript:void(0);" onclick="filterByPriority(null)">All Priorities</a>
+                        <a href="javascript:void(0);" onclick="filterByPriority('urgent')">Urgent</a>
+                        <a href="javascript:void(0);" onclick="filterByPriority('semi-urgent')">Semi-Urgent</a>
+                        <a href="javascript:void(0);" onclick="filterByPriority('non-urgent')">Non-Urgent</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="date-filter-container">
+                <label for="fromDate">From:</label>
+                <input type="date" id="fromDate" class="date-filter">
+
+                <label for="toDate">To:</label>
+                <input type="date" id="toDate" class="date-filter">
+            </div>
 
 
+            <!-- Add New Ticket Button -->
+            <div class="add-ticket-section">
+                <button class="add-ticket" onclick="openTicketFormModal()">
+                    <span class="icon">➕</span> Request Support
+                </button>
+            </div>
+        </div>
 
-    <!-- Space Between Search and Filter/Add New Buttons -->
-    <div class="spacer"></div>
+        <!-- Modal for Creating a New Ticket -->
+        <div id="ticketFormModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                @include('components.ticket-form', ['technicalSupports' => $technicalSupports, 'formattedControlNo' => $formattedControlNo])
+            </div>
+        </div>
 
-   <!-- Filter and Add New Ticket Section (Right side) -->
-    <div class="filter-section">
-        <div class="dropdown">
-            <button class="dropdown-button">
-                <i class="fas fa-filter"></i> Filter Record <span class="arrow">&#x25BC;</span>
-            </button>
-            <div class="dropdown-content">
-                <a href="javascript:void(0);" onclick="filterByPriority(null)">All Priorities</a>
-                <a href="javascript:void(0);" onclick="filterByPriority('urgent')">Urgent</a>
-                <a href="javascript:void(0);" onclick="filterByPriority('semi-urgent')">Semi-Urgent</a>
-                <a href="javascript:void(0);" onclick="filterByPriority('non-urgent')">Non-Urgent</a>
+        <div class="content">
+            <div class="table-container">
+                @if ($tickets->count() > 0)
+                    <div id="ticket-list" class="table-container">
+                        @include('components.employee.ticket-list', ['tickets' => $tickets, 'technicalSupports' => $technicalSupports])
+                    </div>
+                @else
+                    <div class="no-records">NO RECORDS FOUND</div>
+                @endif
             </div>
         </div>
     </div>
-
-    <!-- Add New Ticket Button -->
-    <div class="add-ticket-section">
-        <button class="add-ticket" onclick="openTicketFormModal()">
-            <span class="icon">➕</span> Request Support
-        </button>
-    </div>
 </div>
 
-<!-- Modal for Creating a New Ticket -->
-<div id="ticketFormModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <!-- Ensure data is passed to the component correctly -->
-        @include('components.ticket-form', ['technicalSupports' => $technicalSupports, 'formattedControlNo' => $formattedControlNo])
-
-    </div>
-</div>
-
-<div class="content">
-    <div class="table-container">
-        @if ($tickets->count() > 0)
-            <div id="ticket-list" class="table-container">
-                @include('components.employee.ticket-list', ['tickets' => $tickets, 'technicalSupports' => $technicalSupports])
-            </div>
-        @else
-            <div class="no-records">NO RECORDS FOUND</div>
-        @endif
-    </div>
-</div>
-
-<script src="{{ asset('js/employee/Ticket_Script.js') }}"></script>
+<script src="{{ asset('js/Ticket_Employee_Script.js') }}"></script>
 </body>
 </html>

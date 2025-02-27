@@ -140,7 +140,31 @@
     border-radius: 4px;
     cursor: pointer;
     margin-left: 20px;
+    margin-right: 20px;
     transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.date-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between elements */
+}
+
+.date-filter-container label {
+    font-weight: bold;
+    color: #003067;
+}
+
+.date-filter {
+    padding: 8px;
+    border: 2px solid #003067;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.date-filter:focus {
+    border-color: #0056b3;
 }
 
 /* Hover Effects */
@@ -204,6 +228,7 @@
 
 .tickets-table td {
     background-color: #f9f9f9;
+    font-size: 15px;
 }
 
 .tickets-table td button {

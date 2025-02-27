@@ -15,8 +15,6 @@
 
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script>
-        // Enable pusher logging - don't include this in production
-    Pusher.logToConsole = true;
 
     var pusher = new Pusher('4b1c31f00282eebeb356', {
     cluster: 'mt1'
@@ -29,7 +27,7 @@
     channel.bind("new-notification", function (data) {
         console.log("New notification received:", data); // Debugging log
         
-        let message = `A new Ticket with Control Number: ${data.control_number} has been assigned to you.`;
+        let message = `Check Your Notification a Ticket has been Assigned to you.`;
         
         toastr.options = {
             "closeButton": true,
@@ -42,7 +40,6 @@
         
         fetchNotifications(); // Update notifications in real-time
     });
-
     </script>
 </head>
 <body>
@@ -70,7 +67,8 @@
                 </div>
             </div>
 
-            <a href="{{ url('/chat') }}" title="View Messages">
+            <a href="/message" title="View Messages">
+            <span class="message-badge" id="unseen-count" style="display: none;">0</span>
                 <i class="fas fa-envelope navbar-icon"></i>
             </a>
             <div class="user-dropdown">
@@ -122,6 +120,7 @@
     // Fetch notifications on page load
     document.addEventListener("DOMContentLoaded", function () {
         fetchNotifications();
+        fetchMessageNotifications();
     });
 
     // Fetch Notifications
@@ -140,7 +139,7 @@
                     // Use backticks for template literals
                     notificationList.innerHTML = data.map(notification => `
                         <div class="notification-item" onclick="markAsRead('${notification.id}')">
-                            <img src="${notification.data.image || '/default-avatar.png'}" alt="User">
+
                             <div class="notification-text">
                                 <a href="${notification.data.link || '#'}">${notification.data.message}</a>
                                 <div class="notification-time">${timeAgo(notification.created_at)}</div>
@@ -154,6 +153,34 @@
             })
             .catch(error => console.error("Error fetching notifications:", error));
     }
+
+    // Fetch Unseen Messages Count
+    function fetchMessageNotifications() {
+        fetch('/unseen-messages')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Update the unseen message count in the UI
+                const unseenCount = data.unseenCount;
+                const unseenCountElement = document.getElementById('unseen-count');
+
+                if (unseenCount > 0) {
+                    unseenCountElement.textContent = unseenCount;
+                    unseenCountElement.style.display = 'inline'; // Show the badge
+                } else {
+                    unseenCountElement.style.display = 'none'; // Hide the badge if no unseen messages
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching unseen messages:', error);
+            });
+    }
+
+    setInterval(fetchMessageNotifications, 5000);
 
     // Mark Notification as Read
     function markAsRead(id) {

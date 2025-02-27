@@ -15,9 +15,11 @@ class CreateUsersTable extends Migration
     {
         if (!Schema::hasTable('users')) {
         Schema::create('users', function (Blueprint $table) {
-            $table->integer('employee_id')->nullable(); // Fixed the column definition
+            $table->integer('employee_id')->primary(); // Fixed the column definition
+            $table->integer('id')->nullable();
             $table->string('first_name')->nullable(); // First name
             $table->string('last_name')->nullable(); // Last name
+            $table->string('name')->nullable();
             $table->string('email')->unique(); // Email
             $table->timestamp('email_verified_at')->nullable(); // Email verification timestamp
             $table->string('password'); // Password

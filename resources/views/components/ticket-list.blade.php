@@ -59,6 +59,20 @@
                     <td class="{{ getStatusClass($ticket->status) }}">
                         @if ($ticket->isRemarksDone && !$ticket->isApproved && $ticket->existsInModels)
                             <span style="color: red; font-weight: bold; font-size:15px;">Waiting for Admin Approval</span>
+                        @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress'&& $ticket->status !== 'endorsed')  && $ticket->isRemarksDone && !$ticket->isApproved && !$ticket->formfillup)
+                            <span style="color: red; font-weight: bold; font-size:15px;">Form is Required to fill up</span>
+                        @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress')  && $ticket->isRemarksDone && !$ticket->isApproved && $ticket->formfillup)
+                            <span style="color: red; font-weight: bold; font-size:15px;">Form is Required to fill up</span>
+                        @elseif (
+                                ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status !== 'pull-out') 
+                                || 
+                                ($ticket->isRemarksDone && $ticket->status === 'completed' && !$ticket->isRated)
+                                ||
+                                ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && $ticket->isRepaired) 
+                            )
+                            <span style="color: orange; font-weight: bold; font-size:15px;">User is rating your service</span>
+                        @elseif ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired) 
+                            <span style="color: red; font-weight: bold; font-size:15px;">Mark it as repaired</span>
                         @else
                             {{ $ticket->status === 'pull-out' ? 'Equipment Handover' : ucfirst($ticket->status) }}
                         @endif
@@ -87,7 +101,7 @@
                                     </button>
                                 @else
                                     <button class="action-button" onclick="openEndorsementModal('{{ $ticket->control_no }}')">
-                                        <i class="fas fa-folder-open"></i>
+                                        <i class="fas fa-file-alt"></i>
                                     </button>
                                 @endif
                             @elseif ($ticket->status == 'pull-out')
@@ -108,30 +122,31 @@
                             @endif
 
                             @if (!$ticket->isRemarksDone)
-                                <button class="action-button" id="chat-btn-{{ $ticket->control_no }}">
-                                    <i class="fas fa-comments"></i> 
+                                <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" onclick="sendMessageTechnical('{{ $ticket->control_no }}')">
+                                        <i class="fas fa-comments"></i> 
                                 </button>
 
-                                @if (!$ticket->isAssistDone)
-                                    <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
-                                            id="assist-btn-{{ $ticket->control_no }}">
-                                        <i class="fas fa-handshake"></i> 
-                                    </button>
-                                @endif
+                                    @if (!$ticket->isAssistDone)
+                                        <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
+                                                id="assist-btn-{{ $ticket->control_no }}">
+                                            <i class="fas fa-handshake"></i> 
+                                        </button>
+                                    @endif
                             @endif
                             @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
                                 <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
                                     <i class="fas fa-check-circle"></i>
                                 </button>
                             @endif
-
-                            @if ($ticket->status == 'pull-out' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->serviceRequest)
+                            
+                            @if ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired)
                                 <button class="status-button" 
                                     onclick="openConfirmationModal('{{ $ticket->serviceRequest->form_no ?? '' }}')"
                                     @if(optional($ticket->serviceRequest)->status === 'repaired') disabled @endif>
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
                             @endif
+                          
 
                         </div>
                     </td>
@@ -160,31 +175,33 @@
                     @if ($tickets->onFirstPage())
                         <span>&lsaquo;</span>
                     @else
-                        <a href="{{ $tickets->previousPageUrl() }}" data-page="{{ $tickets->currentPage() - 1 }}">&lsaquo; </a>
+                        <a href="{{ $tickets->previousPageUrl() }}" data-page="{{ $tickets->currentPage() - 1 }}">&lsaquo;</a>
                     @endif
                 </li>
 
-                {{-- Page Numbers --}}
-                @foreach ($tickets->links()->elements as $element)
-                    @if (is_array($element))
-                        @foreach ($element as $page => $url)
-                            <li class="{{ $page == $tickets->currentPage() ? 'active' : '' }}">
-                                @if ($page == $tickets->currentPage())
-                                    <span>{{ $page }}</span>
-                                @else
-                                    <a href="{{ $url }}" data-page="{{ $page }}">{{ $page }}</a>
-                                @endif
-                            </li>
-                        @endforeach
-                    @endif
-                @endforeach
+                {{-- Page Numbers (show current page, one before, one after) --}}
+                @for ($i = max(1, $tickets->currentPage() - 1); $i <= min($tickets->lastPage(), $tickets->currentPage() + 1); $i++)
+                    <li class="{{ $i == $tickets->currentPage() ? 'active' : '' }}">
+                        @if ($i == $tickets->currentPage())
+                            <span>{{ $i }}</span>
+                        @else
+                            <a href="{{ $tickets->url($i) }}" data-page="{{ $i }}">{{ $i }}</a>
+                        @endif
+                    </li>
+                @endfor
+
+                {{-- Ellipsis for large page numbers --}}
+                @if ($tickets->currentPage() < $tickets->lastPage() - 2)
+                    <li><span>...</span></li>
+                    <li><a href="{{ $tickets->url($tickets->lastPage()) }}" data-page="{{ $tickets->lastPage() }}">{{ $tickets->lastPage() }}</a></li>
+                @endif
 
                 {{-- Next Page Link --}}
                 <li class="{{ $tickets->hasMorePages() ? '' : 'disabled' }}">
                     @if ($tickets->hasMorePages())
-                        <a href="{{ $tickets->nextPageUrl() }}" data-page="{{ $tickets->currentPage() + 1 }}"> &rsaquo;</a>
+                        <a href="{{ $tickets->nextPageUrl() }}" data-page="{{ $tickets->currentPage() + 1 }}">&rsaquo;</a>
                     @else
-                        <span> &rsaquo;</span>
+                        <span>&rsaquo;</span>
                     @endif
                 </li>
             </ul>
@@ -206,5 +223,37 @@
 @include('modals.endorsement')
 
 <script src="{{ asset('js/Ticket_Components_Script.js') }}" defer></script>
+<script>
+    function sendMessageTechnical(ticketId) {
+    console.log('Ticket ID:', ticketId); // Debugging: Check the ticketId value
 
+    fetch(`/send-message-technical/${ticketId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Check the console for details.');
+    });
+}
+</script>
 

@@ -140,7 +140,6 @@
                                     <option value="{{ $tech->employee_id }}">{{ $tech->first_name }} {{ $tech->last_name }}</option>
                                 @endforeach
                             </select>
-
                         </div>
                     </div>
                 </fieldset>
@@ -287,6 +286,12 @@ document.querySelectorAll('.sub-dropdown select').forEach(select => {
 // Add Event Listener to "Other Concern" Input Field
 document.getElementById('otherConcern').addEventListener('input', updateSelectedConcerns);
 
+document.addEventListener("DOMContentLoaded", function () {
+        let techSelect = document.getElementById("technicalSupport");
+        if (techSelect.options.length > 1) {
+            techSelect.selectedIndex = 1; // Auto-pick first available option
+        }
+    });
 // Form Validation
 function validateForm() {
     const firstName = document.getElementById('first-name').value;

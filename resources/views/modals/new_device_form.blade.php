@@ -181,9 +181,9 @@
                     </div>
                     <div class="form-popup-checkbox-group">
                         <label class="form-popup-label">Condition of Equipment:</label>
-                        <label><input type="checkbox" name="condition[]" value="working"> Working</label>
-                        <label><input type="checkbox" name="condition[]" value="not-working"> Not Working</label>
-                        <label><input type="checkbox" name="condition[]" value="needs-repair"> Needs Repair</label>
+                        <label><input type="radio" name="condition[]" value="working"> Working</label>
+                        <label><input type="radio" name="condition[]" value="not-working"> Not Working</label>
+                        <label><input type="radio" name="condition[]" value="needs-repair"> Needs Repair</label>
                     </div>
                 </section>
 

@@ -21,25 +21,45 @@ class Report_Controller extends Controller
 
         [$year, $month] = explode('-', $selectedDate);
 
-        // Fetch all technical support users before passing them to functions
         $technicians = User::where('account_type', 'technical_support')->get();
 
         return view('Report', [
-            'pendingTickets' => Ticket::where('status', 'in-progress')->count(),
-            'solvedTickets' => Ticket::where('status', 'completed')->count(),
-            'endorsedTickets' => Ticket::where('status', 'endorsed')->count(),
-            'technicalReports' => Ticket::where('status', 'technical-report')->count(),
-            'devicesInRepair' => ServiceRequest::where('status', 'in-repairs')->count(),
-            'repairedDevices' => ServiceRequest::where('status', 'repaired')->count(),
-            'technicians' => $this->getTechnicianData($technicians),
+            'pendingTickets' => Ticket::where('status', 'in-progress')
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count(),
+            'solvedTickets' => Ticket::where('status', 'completed')
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count(),
+            'endorsedTickets' => Ticket::where('status', 'endorsed')
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count(),
+            'technicalReports' => Ticket::where('status', 'technical-report')
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count(),
+            'devicesInRepair' => ServiceRequest::where('status', 'in-repairs')
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count(),
+            'repairedDevices' => ServiceRequest::where('status', 'repaired')
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count(),
+            'technicians' => $this->getTechnicianData($technicians, $year, $month),
             'technicianChartData' => $this->getTechnicianChartData($technicians, $year, $month),
             'selectedDate' => $selectedDate,
         ]);
     }
 
-    private function getTechnicianData($technicians)
+    private function getTechnicianData($technicians, $year, $month)
     {
-        $ticketData = Ticket::whereIn('technical_support_id', $technicians->pluck('employee_id'))->get();
+        $ticketData = Ticket::whereIn('technical_support_id', $technicians->pluck('employee_id'))
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get();
 
         return $technicians->map(function ($tech) use ($ticketData) {
             $techTickets = $ticketData->where('technical_support_id', $tech->employee_id);
@@ -64,7 +84,7 @@ class Report_Controller extends Controller
     private function getTechnicianChartData($technicians, $year, $month)
     {
         $chartData = [];
-        $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth; // ✅ Get exact number of days in selected month
+        $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth;
 
         foreach ($technicians as $tech) {
             $dailyTickets = Ticket::selectRaw('DAY(created_at) as day, COUNT(*) as count')
@@ -75,7 +95,6 @@ class Report_Controller extends Controller
                 ->pluck('count', 'day')
                 ->toArray();
 
-            // Initialize array with correct number of days
             $ticketsPerDay = array_fill(1, $daysInMonth, 0);
             foreach ($dailyTickets as $day => $count) {
                 $ticketsPerDay[$day] = $count;

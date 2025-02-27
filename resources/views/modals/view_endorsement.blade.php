@@ -1,5 +1,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
 <style>
       #endorsementViewModal{
         position: fixed;
@@ -33,6 +35,28 @@
         cursor: pointer;
         transition: 0.3s;
     }
+    .rating-container {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background: #f8f9fa; /* Light background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rating-label {
+    margin-right: 5px;
+}
+
+.rating-value {
+    color: #ffcc00; /* Yellow for rating */
+    font-size: 18px;
+}
+
 </style>
 <div id="endorsementViewModal" class="modal" style="display: none;">
     <div class="endorsed-modal-content">
@@ -42,6 +66,10 @@
             <p>🚨 Waiting for admin approval...</p>
         </div>
 
+        <div class="rating-container" id="rating-containerEndorsement">
+            <label class="form-popup-label">Rating:</label>
+            <div id="starRatingEndorsement"></div>
+        </div>
 
         <!-- Header Section -->
         <div class="modal-header">

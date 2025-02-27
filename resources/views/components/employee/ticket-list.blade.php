@@ -15,11 +15,11 @@
     function getStatusClass($status) {
         switch (strtolower($status)) {
             case 'endorsed':
-                return 'status-endorsed';
+                return 'status-completed';
             case 'completed':
                 return 'status-completed';
             case 'pull-out':
-                return 'status-pull-out';     
+                return 'status-completed';     
 
             case 'in-progress':
                 return 'status-in-progress';
@@ -55,31 +55,65 @@
                         <td>{{ ucwords(strtolower($ticket->department)) }}</td>
                         <td>{{ ucwords(strtolower($ticket->concern)) }}</td>
                         <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
-                        <td class="{{ getStatusClass($ticket->status) }}">{{ ucfirst($ticket->status) }}</td>
+                        <td class="{{ getStatusClass($ticket->status) }}">
+                        @if ($ticket->isRemarksDone && !$ticket->isApproved && $ticket->existsInModels)
+                            <span style="color: red; font-weight: bold; font-size:15px;">Processing</span>
+                        @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress'&& $ticket->status !== 'endorsed')  && $ticket->isRemarksDone && !$ticket->isApproved && !$ticket->formfillup)
+                            <span style="color: red; font-weight: bold; font-size:15px;">Processing</span>
+                        @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress')  && $ticket->isRemarksDone && !$ticket->isApproved && $ticket->formfillup)
+                            <span style="color: red; font-weight: bold; font-size:15px;">Processing</span>
+                        @elseif (
+                                ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status !== 'pull-out') 
+                                || 
+                                ($ticket->isRemarksDone && $ticket->status === 'completed' && !$ticket->isRated)
+                                ||
+                                ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && $ticket->isRepaired) 
+                            )
+                            <span style="color: orange; font-weight: bold; font-size:15px;">Please Rate Technical Service</span>
+                        @elseif ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired) 
+                            <span style="color: red; font-weight: bold; font-size:15px;">Processing</span>
+                        @else
+                            Closed
+                        @endif
+                    </td>
                         <td>
                             <div class="button-container">
                                 <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                @if ($ticket->status == 'pull-out' && \App\Models\ServiceRequest::where('ticket_id', $ticket->control_no)->exists())
-                                    <button class="action-button" onclick="trackDevice('{{ $ticket->control_no }}')">
-                                        <i class="fas fa-map-marker-alt"></i> <!-- Track Icon -->
+                            @if ($ticket->status == 'technical-report' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)
+                                <button class="action-button" onclick="openTechnicalReportViewModal('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-file-alt"></i>
+                                </button>
+                            @elseif ($ticket->status == 'endorsed' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)
+                                    <button class="action-button" onclick="openViewEndorsementModal('{{ $ticket->control_no }}')">
+                                        <i class="fas fa-book"></i>
+                                    </button>
+                            @elseif ($ticket->status == 'pull-out' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated) 
+                                <button class="action-button" onclick="openViewModal('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-laptop"></i>
+                                </button>
+                            @elseif ($ticket->status == 'deployment' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)               
+                                <button class="action-button" onclick="openDeploymentView('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-laptop"></i>
+                                </button>
+                            @endif
+
+
+                                @if (!$ticket->isRated)
+                                    <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" onclick="sendMessage('{{ $ticket->control_no }}')">
+                                            <i class="fas fa-comments"></i> 
                                     </button>
                                 @endif
-
-
-                               <!-- Tracking Status Modal -->
-                                <div id="trackModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);">
-                                    <h3>Device Tracking</h3>
-                                    <p id="trackingStatus">Fetching status...</p>
-                                    <button class="Trackbutton" onclick="closeTrackModal()">Close</button>
-                                </div>
-
-
-                                
-                                @if (!$ticket->isRemarksDone)
-                                    <button class="action-button" id="chat-btn-{{ $ticket->control_no }}">
-                                        <i class="fas fa-comments"></i> 
+                                @if (
+                                ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status !== 'pull-out') 
+                                || 
+                                ($ticket->isRemarksDone && $ticket->status === 'completed' && !$ticket->isRated)
+                                ||
+                                ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && $ticket->isRepaired) 
+                            )
+                                    <button class="status-button btn btn-primary" onclick="showRating('{{ $ticket->control_no }}', '{{ $ticket->technical_support_id }}', '{{ $ticket->technical_support_name }}')">
+                                        <i class="fas fa-star"></i> 
                                     </button>
                                 @endif
                             </div>
@@ -111,31 +145,33 @@
                     @if ($tickets->onFirstPage())
                         <span>&lsaquo;</span>
                     @else
-                        <a href="{{ $tickets->previousPageUrl() }}" data-page="{{ $tickets->currentPage() - 1 }}">&lsaquo; </a>
+                        <a href="{{ $tickets->previousPageUrl() }}" data-page="{{ $tickets->currentPage() - 1 }}">&lsaquo;</a>
                     @endif
                 </li>
 
-                {{-- Page Numbers --}}
-                @foreach ($tickets->links()->elements as $element)
-                    @if (is_array($element))
-                        @foreach ($element as $page => $url)
-                            <li class="{{ $page == $tickets->currentPage() ? 'active' : '' }}">
-                                @if ($page == $tickets->currentPage())
-                                    <span>{{ $page }}</span>
-                                @else
-                                    <a href="{{ $url }}" data-page="{{ $page }}">{{ $page }}</a>
-                                @endif
-                            </li>
-                        @endforeach
-                    @endif
-                @endforeach
+                {{-- Page Numbers (show current page, one before, one after) --}}
+                @for ($i = max(1, $tickets->currentPage() - 1); $i <= min($tickets->lastPage(), $tickets->currentPage() + 1); $i++)
+                    <li class="{{ $i == $tickets->currentPage() ? 'active' : '' }}">
+                        @if ($i == $tickets->currentPage())
+                            <span>{{ $i }}</span>
+                        @else
+                            <a href="{{ $tickets->url($i) }}" data-page="{{ $i }}">{{ $i }}</a>
+                        @endif
+                    </li>
+                @endfor
+
+                {{-- Ellipsis for large page numbers --}}
+                @if ($tickets->currentPage() < $tickets->lastPage() - 2)
+                    <li><span>...</span></li>
+                    <li><a href="{{ $tickets->url($tickets->lastPage()) }}" data-page="{{ $tickets->lastPage() }}">{{ $tickets->lastPage() }}</a></li>
+                @endif
 
                 {{-- Next Page Link --}}
                 <li class="{{ $tickets->hasMorePages() ? '' : 'disabled' }}">
                     @if ($tickets->hasMorePages())
-                        <a href="{{ $tickets->nextPageUrl() }}" data-page="{{ $tickets->currentPage() + 1 }}"> &rsaquo;</a>
+                        <a href="{{ $tickets->nextPageUrl() }}" data-page="{{ $tickets->currentPage() + 1 }}">&rsaquo;</a>
                     @else
-                        <span> &rsaquo;</span>
+                        <span>&rsaquo;</span>
                     @endif
                 </li>
             </ul>
@@ -144,36 +180,74 @@
 </div>
 
 @include('modals.view')
+@include('modals.assist')
+@include('modals.remarks')
+@include('modals.status_change')
+@include('modals.new_device_deployment')
+@include('modals.view_deployment')
+@include('modals.technical_report')
+@include('modals.view_endorsement')
+@include('modals.view_device')
+@include('modals.technical_report_view')
+@include('modals.new_device_form')
+@include('modals.endorsement')
 
 <script src="{{ asset('js/Ticket_Components_Script.js') }}" defer></script>
 <script>
-function trackDevice(ticketId) {
-    fetch(`/track-device-status/${ticketId}`)
-        .then(response => response.json()) // Ensure JSON response
-        .then(data => {
-            if (data.service_type === 'pull_out') {
-                let statusText = data.status === 'in-repairs' 
-                    ? '🛠 Your device is currently in repairs.' 
-                    : '✅ Your device has been repaired.';
-                
-                document.getElementById('trackingStatus').textContent = statusText;
-                document.getElementById('trackModal').style.display = 'block';
-            } else {
-                alert('The devices is currently processing.');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching status:', error);
-            alert('Something went wrong. Please check the console for details.');
-        });
+ // Show modal function
+ function showRating(controlNo, techId, techName) {
+        // Set the ticket and technical support details
+        document.getElementById("ticketControlNo").textContent = controlNo;
+        document.getElementById("technicalSupportName").textContent = techName;
+        document.getElementById("technicalSupportName").setAttribute("data-tech-id", techId);
+
+        // Reset the star rating
+        resetStars();
+
+        // Show the modal
+        document.getElementById("modalOverlay").style.display = "block";
+        document.getElementById("ratingModal").style.display = "block";
+
+        // Initialize star rating logic
+        initializeStarRating();
+    }
+
+
+function hideRating(ticketId) {
+    document.getElementById("modalOverlay").style.display = "none";
+    document.getElementById("ratingModal").style.display = "none";
 }
 
+function sendMessage(ticketId) {
+    console.log('Ticket ID:', ticketId); // Debugging: Check the ticketId value
 
-// Close Tracking Modal
-function closeTrackModal() {
-    document.getElementById('trackModal').style.display = 'none';
+    fetch(`/send-message/${ticketId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Message sent successfully!');
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Check the console for details.');
+    });
 }
 </script>
-
-
-

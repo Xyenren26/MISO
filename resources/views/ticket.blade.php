@@ -86,6 +86,15 @@
         </div>
     </div>
 
+    <!-- Date Filter -->
+    <div class="date-filter-container">
+        <label for="fromDate">From:</label>
+        <input type="date" id="fromDate" class="date-filter">
+
+        <label for="toDate">To:</label>
+        <input type="date" id="toDate" class="date-filter">
+    </div>
+
     <!-- Add New Ticket Button -->
     <div class="add-ticket-section">
         <button class="add-ticket" onclick="openTicketFormModal()">
