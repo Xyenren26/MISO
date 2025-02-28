@@ -332,3 +332,113 @@
     color: #6c757d;
     cursor: not-allowed;
 }
+
+@media print {
+    /* Hide everything except the modal */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Ensure only the modal is visible */
+    #ticketModal,
+    #ticketModal * {
+        visibility: visible;
+    }
+
+    /* Remove all page margins */
+    @page {
+        margin: 0;
+    }
+
+    /* Ensure body does not add extra space */
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Move modal to the top */
+    #ticketModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        background: white;
+        padding: 0 !important; /* Ensure no extra padding */
+        margin: 0 !important;
+        box-shadow: none;
+    }
+
+    /* Header Section */
+    .header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    /* Control Number Section */
+    .control-numbers {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        border: 2px solid #003067;
+        margin-bottom: 10px;
+        background-color: #f5f5f5;
+    }
+
+    /* System Logo */
+    .system-logo {
+        width: 70px;
+        height: auto;
+        display: block;
+        margin-right: 15%;
+    }
+
+    /* Control Number */
+    #ticketControlNumber {
+        font-size: 18px;
+        font-weight: bold;
+        background-color: white;
+        display: inline-block;
+    }
+
+    /* Priority */
+    #ticketPriority {
+        color: white;
+        background-color: red;
+
+        border-radius: 5px;
+    }
+
+    /* Hide unnecessary UI elements */
+    .tab-button,
+    .search-container,
+    .search-button,
+    .dropdown-button,
+    .add-ticket,
+    .refresh,
+    .pagination-buttons {
+        display: none !important;
+    }
+
+    .print-modal,
+    .close-modal {
+        color: transparent !important;
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* Remove pagination */
+    .pagination-container,
+    .results-count {
+        display: none;
+    }
+
+    /* Page Breaks */
+    .page-break {
+        page-break-before: always;
+    }
+}

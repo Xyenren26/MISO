@@ -156,4 +156,16 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     //ROUTE FROM TICKET LIST COMMENT ICON TO CHAT
     Route::get('/chat/{ticket}', [ChatController::class, 'index'])->name('chat');
 
+
+
+    // Authentication routes with verification enabled para sa email verification modal
+
+    Route::get('/profile', [Profile_Controller::class, 'index'])->name('profile.index');
+
+    //faq route
+    Route::get('/faq', function () {
+        return view('faq');
+    })->name('faq');
+
+
 });

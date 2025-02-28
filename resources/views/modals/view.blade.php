@@ -71,6 +71,28 @@
     </div>
 </div>
 <script>
+function printModal() {
+    const modal = document.getElementById('ticketModal');
+    
+    // Ensure the modal is visible before printing
+    modal.style.display = 'block';
+
+    // Force reflow to ensure styles apply before printing
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+
+    setTimeout(() => {
+        window.print();
+    }, 100); // Small delay to allow rendering
+
+    // Restore original styles after printing
+    setTimeout(() => {
+        document.body.style.margin = '';
+        document.body.style.padding = '';
+    }, 500);
+}
+
+
     // Function to show ticket details in the modal
 function showTicketDetails(controlNo) {
   console.log('Control Number:', controlNo); // Debugging: Check if the control_no is being passed correctly

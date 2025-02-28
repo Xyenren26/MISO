@@ -49,6 +49,11 @@
                     <a class="dropdown-item" href="{{ route('profile.index') }}">
                         <i class="fas fa-user-circle"></i> My Account
                     </a>
+
+                    <a class="dropdown-item" href="{{ url('/faq') }}">
+                        <i class="fas fa-question-circle"></i> FAQ
+                    </a>
+
                     <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
@@ -60,7 +65,8 @@
             </div>
         </div>
     </div>
-    @include('email_verification')
+<!-- EMAIL VERIFY ALERT MESSAGE -->
+@include('modals.email_verification_alert')
 
 
     <script>
@@ -147,5 +153,6 @@
         }
 
     </script>
+
 </body>
 </html>
