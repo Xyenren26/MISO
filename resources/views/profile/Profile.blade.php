@@ -282,6 +282,10 @@
         <a href="{{ route('home') }}" class="nav-button home-button">
             <i class="fas fa-home"></i> <span>Home</span>
         </a>
+    @elseif(auth()->user()->account_type == 'administrator')
+        <a href="{{ route('home') }}" class="nav-button home-button">
+            <i class="fas fa-home"></i> <span>Home</span>
+        </a>
     @endif
 
 
@@ -303,7 +307,7 @@
                     id="system-logo">
                 <div class="name-section">
                     <h1 id="username">{{ strtoupper($user->first_name) }} {{ strtoupper($user->last_name) }}</h1>
-                    <p id="employee-id">{{ $user->employee_id }}</p>
+                    <p id="employee-id">{{ str_pad($user->employee_id, 7, '0', STR_PAD_LEFT) }}</p>
                 </div>
             </div>
         </div>

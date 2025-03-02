@@ -88,10 +88,57 @@
                 </tbody>
             </table>
 
-            <!-- Pagination -->
-            <div class="pagination flex justify-center mt-4 text-sm">
-                {{ $auditLogs->links() }}
+            <div class="pagination-container">
+                <div class="results-count">
+                    @if ($auditLogs->count() > 0)
+                        Showing {{ $auditLogs->firstItem() }} to {{ $auditLogs->lastItem() }} of {{ $auditLogs->total() }} results
+                    @else
+                        Showing 1 to 0 of 0 results
+                    @endif
+                </div>
+
+                @if ($auditLogs->hasPages()) 
+                    <div class="pagination-buttons">
+                        <ul class="flex space-x-2">
+                            {{-- Previous Page Link --}}
+                            <li class="{{ $auditLogs->onFirstPage() ? 'disabled opacity-50' : '' }}">
+                                @if ($auditLogs->onFirstPage())
+                                    <span class="px-3 py-1">&lsaquo;</span>
+                                @else
+                                    <a href="{{ $auditLogs->previousPageUrl() }}" data-page="{{ $auditLogs->currentPage() - 1 }}" class="px-3 py-1 border rounded">&lsaquo;</a>
+                                @endif
+                            </li>
+
+                            {{-- Page Numbers (show current page, one before, one after) --}}
+                            @for ($i = max(1, $auditLogs->currentPage() - 1); $i <= min($auditLogs->lastPage(), $auditLogs->currentPage() + 1); $i++)
+                                <li class="{{ $i == $auditLogs->currentPage() ? 'active font-bold' : '' }}">
+                                    @if ($i == $auditLogs->currentPage())
+                                        <span class="px-3 py-1 border rounded bg-gray-200">{{ $i }}</span>
+                                    @else
+                                        <a href="{{ $auditLogs->url($i) }}" data-page="{{ $i }}" class="px-3 py-1 border rounded">{{ $i }}</a>
+                                    @endif
+                                </li>
+                            @endfor
+
+                            {{-- Ellipsis for large page numbers --}}
+                            @if ($auditLogs->currentPage() < $auditLogs->lastPage() - 2)
+                                <li><span>...</span></li>
+                                <li><a href="{{ $auditLogs->url($auditLogs->lastPage()) }}" data-page="{{ $auditLogs->lastPage() }}" class="px-3 py-1 border rounded">{{ $auditLogs->lastPage() }}</a></li>
+                            @endif
+
+                            {{-- Next Page Link --}}
+                            <li class="{{ $auditLogs->hasMorePages() ? '' : 'disabled opacity-50' }}">
+                                @if ($auditLogs->hasMorePages())
+                                    <a href="{{ $auditLogs->nextPageUrl() }}" data-page="{{ $auditLogs->currentPage() + 1 }}" class="px-3 py-1 border rounded">&rsaquo;</a>
+                                @else
+                                    <span class="px-3 py-1">&rsaquo;</span>
+                                @endif
+                            </li>
+                        </ul>
+                    </div>
+                @endif
             </div>
+
 
         </section>
     </div>

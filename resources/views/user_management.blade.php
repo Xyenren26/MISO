@@ -71,7 +71,7 @@
                 <tbody id="userTableBody">
                     @forelse ($users as $user)
                         <tr>
-                            <td>{{ $user->employee_id }}</td>
+                            <td>{{ str_pad($user->employee_id, 7, '0', STR_PAD_LEFT) }}</td>
                             <td>{{ $user->first_name . ', ' . $user->last_name }}</td>
                             <td>{{ $user->department }}</td>
                             
@@ -95,12 +95,6 @@
 
                             <td>
                                 <div class="button-container">
-                                    <!-- Edit Button -->
-                                    <button class="action-button settings" 
-                                            title="Edit User" 
-                                            onclick="openEditModal('{{ $user->employee_id }}', '{{ $user->first_name }}', '{{ $user->last_name }}', '{{ $user->account_type }}')">
-                                        <span class="material-icons">settings</span>
-                                    </button>
 
                                     <!-- Change Role Button -->
                                     <button class="action-button role" 
@@ -117,7 +111,7 @@
                                                 title="{{ $user->status === 'active' ? 'Disable User' : 'Enable User' }}" 
                                                 onclick="toggleStatus(event, '{{ $user->employee_id }}', '{{ $user->status }}')">
                                             <span class="material-icons">{{ $user->status === 'active' ? 'do_not_disturb_alt' : 'check_circle' }}</span>
-                                            {{ $user->status === 'active' ? 'Disable User' : 'Enable User' }}
+                                            {{ $user->status === 'active' ? '' : '' }}
                                         </button>
                                     </form>
                                 </div>
@@ -131,10 +125,57 @@
                     @endforelse
                 </tbody>
             </table>
-             <!-- Pagination Links -->
-            <div id="paginationLinks">
-                {{ $users->links() }}
+            <div class="pagination-container">
+            <div class="results-count">
+                @if ($users->count() > 0)
+                    Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} results
+                @else
+                    Showing 1 to 0 of 0 results
+                @endif
             </div>
+
+            @if ($users->hasPages()) 
+                <div class="pagination-buttons">
+                    <ul class="flex space-x-2">
+                        {{-- Previous Page Link --}}
+                        <li class="{{ $users->onFirstPage() ? 'disabled opacity-50' : '' }}">
+                            @if ($users->onFirstPage())
+                                <span class="px-3 py-1">&lsaquo;</span>
+                            @else
+                                <a href="{{ $users->previousPageUrl() }}" data-page="{{ $users->currentPage() - 1 }}" class="px-3 py-1 border rounded">&lsaquo;</a>
+                            @endif
+                        </li>
+
+                        {{-- Page Numbers (show current page, one before, one after) --}}
+                        @for ($i = max(1, $users->currentPage() - 1); $i <= min($users->lastPage(), $users->currentPage() + 1); $i++)
+                            <li class="{{ $i == $users->currentPage() ? 'active font-bold' : '' }}">
+                                @if ($i == $users->currentPage())
+                                    <span class="px-3 py-1 border rounded bg-gray-200">{{ $i }}</span>
+                                @else
+                                    <a href="{{ $users->url($i) }}" data-page="{{ $i }}" class="px-3 py-1 border rounded">{{ $i }}</a>
+                                @endif
+                            </li>
+                        @endfor
+
+                        {{-- Ellipsis for large page numbers --}}
+                        @if ($users->currentPage() < $users->lastPage() - 2)
+                            <li><span>...</span></li>
+                            <li><a href="{{ $users->url($users->lastPage()) }}" data-page="{{ $users->lastPage() }}" class="px-3 py-1 border rounded">{{ $users->lastPage() }}</a></li>
+                        @endif
+
+                        {{-- Next Page Link --}}
+                        <li class="{{ $users->hasMorePages() ? '' : 'disabled opacity-50' }}">
+                            @if ($users->hasMorePages())
+                                <a href="{{ $users->nextPageUrl() }}" data-page="{{ $users->currentPage() + 1 }}" class="px-3 py-1 border rounded">&rsaquo;</a>
+                            @else
+                                <span class="px-3 py-1">&rsaquo;</span>
+                            @endif
+                        </li>
+                    </ul>
+                </div>
+            @endif
+        </div>
+
         </div>
     </div>
 </div>
@@ -205,44 +246,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const filterSelect = document.getElementById("filterSelect");
 
-    function fetchUsers() {
-        const url = "{{ route('user.management') }}";
+    function fetchUsers(url = "{{ route('user.management') }}") {
         const params = new URLSearchParams({
             search: searchInput.value,
             filter: filterSelect.value
         });
 
-        fetch(`${url}?${params}`, {
+        // Append pagination parameter if fetching via pagination
+        if (url.includes("?page=")) {
+            url += `&${params.toString()}`;
+        } else {
+            url += `?${params.toString()}`;
+        }
+
+        fetch(url, {
             headers: {
                 "X-Requested-With": "XMLHttpRequest",
                 "X-CSRF-TOKEN": "{{ csrf_token() }}" // Include CSRF token
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             if (data.html && data.pagination) {
-                // Extract the <tbody> content from the response
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.html, 'text/html');
-                const newTableBody = doc.querySelector("#userTableBody");
-
-                // Replace the existing <tbody> with the new one
-                const currentTableBody = document.getElementById("userTableBody");
-                if (newTableBody && currentTableBody) {
-                    currentTableBody.innerHTML = newTableBody.innerHTML;
-                } else {
-                    console.error("Table body not found in the response");
-                }
-                // Update pagination links
-                const paginationLinks = document.getElementById("paginationLinks");
-                if (paginationLinks) {
-                    paginationLinks.innerHTML = data.pagination;
-                }
+                document.getElementById("userTableBody").innerHTML = data.html;
+                document.getElementById("paginationLinks").innerHTML = data.pagination;
             } else {
                 console.error("No HTML data returned from the server");
             }
@@ -250,17 +277,19 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Error fetching users:", error));
     }
 
-    searchInput.addEventListener("keyup", fetchUsers);
-    filterSelect.addEventListener("change", fetchUsers);
-    // Handle pagination link clicks
-    document.addEventListener('click', function (event) {
-        if (event.target.classList.contains('page-link')) {
+    // Trigger AJAX search & filter
+    searchInput.addEventListener("keyup", () => fetchUsers());
+    filterSelect.addEventListener("change", () => fetchUsers());
+
+    // Handle pagination dynamically (Event Delegation)
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("page-link")) {
             event.preventDefault();
-            const url = event.target.href;
-            fetchUsers(url); // Fetch users for the clicked page
+            fetchUsers(event.target.href); // Fetch users for the clicked page
         }
     });
 });
+
 
 document.addEventListener("DOMContentLoaded", function () {
         // Show Laravel validation errors

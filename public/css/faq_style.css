@@ -1,0 +1,113 @@
+/* FAQ Section */
+/* Main Content Title (h1) */
+.headerfaq{
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    padding: 30px 0; /* Keeps spacing while not affecting navbar */
+    font-size: 32px; /* Increased font size for better visibility */
+    font-weight: bold;
+    text-transform: uppercase; /* Adds emphasis to the title */
+    letter-spacing: 1px; /* Slight space between letters for a more modern feel */
+    background: linear-gradient(90deg, #0056b3, #007bff); /* Gradient background for visual interest */
+    color: transparent; /* Hides default text color */
+    -webkit-background-clip: text; /* Clips the background to the text */
+    background-clip: text; /* Clips the background to the text */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
+    transition: all 0.3s ease-in-out; /* Smooth transition effect */
+}
+
+/* Hover Effect for h1 */
+.headerfaq:hover {
+    background: linear-gradient(90deg, #007bff, #0056b3); /* Reverses the gradient on hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Increases shadow on hover */
+    color: #fff; /* Changes text color on hover */
+}
+
+
+/* FAQ Container */
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* FAQ Item */
+.faq-item {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.faq-item:hover {
+    transform: translateY(-3px);
+}
+
+/* FAQ Question */
+.faq-question {
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    color: #0056b3;
+    margin: 0;
+    padding: 15px;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+}
+
+/* Icon (Optional - for expand/collapse effect) */
+.faq-question::after {
+    content: "▼";
+    font-size: 16px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.faq-question.active::after {
+    transform: rotate(180deg);
+}
+
+/* Hover Effect */
+.faq-question:hover {
+    background: #e9ecef;
+    border-radius: 8px;
+}
+
+/* Active State */
+.faq-question.active {
+    color: #d9534f;
+}
+
+/* FAQ Answer */
+.faq-answer {
+    display: none;
+    padding: 15px;
+    border-left: 4px solid #0056b3;
+    margin-top: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .faq-question {
+        font-size: 18px;
+        padding: 12px;
+    }
+
+    .faq-answer {
+        font-size: 14px;
+        padding: 12px;
+    }
+}

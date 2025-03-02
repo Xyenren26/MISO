@@ -90,12 +90,32 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.performance-details h3 {
+.performance-details h2 {
     text-align: center;
     font-size: 24px;
     color: #003067;
     margin-bottom: 20px;
 }
+
+/* Default button style */
+.performance-details .exportButton {
+    background-color: #003067;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 2px solid #003067;
+    display: inline-block;
+    transition: 0.3s;
+}
+
+/* Hover effect */
+.performance-details .exportButton:hover {
+    background-color: transparent;
+    color: #003067;
+    border: 2px solid #003067; /* Ensure stroke remains */
+}
+
 
 .performance-details table {
     width: 100%;

@@ -22,6 +22,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $primaryKey = 'employee_id';
     protected $fillable = [
         'employee_id',
+        'id',
+        'name',
         'first_name',
         'last_name',
         'email',
@@ -29,7 +31,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'department',
         'phone_number',
-        'username',
         'account_type',
         'status',
         'is_first_login',
@@ -79,6 +80,11 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
         
     }
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'technical_support_id', 'employee_id');
+    }
+
     public function sendEmailVerificationNotification()
     {
         $this->notify(new \Illuminate\Auth\Notifications\VerifyEmail);

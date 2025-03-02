@@ -1,3 +1,7 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
 <style>
       #endorsementViewModal{
         position: fixed;
@@ -9,10 +13,63 @@
         overflow: auto;
         background-color: rgba(0, 0, 0, 0.4);
     }
+    .waiting-approval {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        color: #d9534f; /* Red text */
+        font-weight: bold;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+    }
+    #ButtonEndorsement{
+        margin-top: 20px;
+        width: 100%;
+        padding: 8px;
+        background: #007BFF;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .rating-container {
+    position: absolute;
+    top: 50px;
+    right: 40px;
+    background: #f8f9fa; /* Light background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rating-label {
+    margin-right: 5px;
+}
+
+.rating-value {
+    color: #ffcc00; /* Yellow for rating */
+    font-size: 18px;
+}
+
 </style>
 <div id="endorsementViewModal" class="modal" style="display: none;">
     <div class="endorsed-modal-content">
         <span class="close" onclick="closeEndorsementViewModal()">&times;</span>
+
+        <div id="waitingForApproval" class="waiting-approval" style="display: none;">
+            <p>🚨 Waiting for admin approval...</p>
+        </div>
+
+        <div class="rating-container" id="rating-containerEndorsement">
+            <label class="form-popup-label">Rating:</label>
+            <div id="starRatingEndorsement"></div>
+        </div>
 
         <!-- Header Section -->
         <div class="modal-header">
@@ -44,9 +101,9 @@
                     <div class="modal-checkbox-group">
                         @foreach(['IP ADDRESS', 'MAC ADDRESS', 'PING TEST', 'TRACET', 'NETWORK CABLE TEST', 'WEBSITE ACCESS', 'ROUTER / ACCESS POINT', 'VOID'] as $networkItem)
                             <div>
-                                <input type="checkbox" name="network[]" value="{{ $networkItem }}">
+                                <input type="checkbox" name="network[]" value="{{ $networkItem }}" disabled>
                                 <label>{{ $networkItem }}</label>
-                                <input type="text" name="network_details[{{ $networkItem }}]" placeholder="Details">
+                                <input type="text" name="network_details[{{ $networkItem }}]" placeholder="" readonly>
                             </div>
                         @endforeach
                     </div>
@@ -66,15 +123,15 @@
                         ] as $userAccountItem)
                         <div class="inline-group">
                             <div class="inline-header">
-                                <input type="checkbox" name="user_account[]" value="{{ $userAccountItem }}">
+                                <input type="checkbox" name="user_account[]" value="{{ $userAccountItem }}" disabled>
                                 <label>{{ $userAccountItem }}</label>
                                 <input type="text" name="user_account_details[{{ $userAccountItem }}]" 
-                                    placeholder="{{ $userAccountItem === 'FOLDER ACCESS' ? 'Folder Name' : 'Details' }}">
+                                    placeholder="{{ $userAccountItem === '' ? 'Folder Name' : '' }}" readonly>
                             </div>
 
                             @if($userAccountItem === 'FOLDER ACCESS')
                                 <div class="inline-extra">
-                                    <input type="text" name="user_account_details[FOLDER ACCESS_USER]" placeholder="User Full Name">
+                                    <input type="text" name="user_account_details[FOLDER ACCESS_USER]" placeholder="" readonly>
                                 </div>
                             @endif
                         </div>
@@ -131,8 +188,79 @@
             </div>
         </div>
 
+        <section class="form-popup-section" id="approvalSection">
+            <h3 class="form-popup-title">Approval Details</h3>
 
-        <!-- Save Button -->
-        <button type="submit" class="endorsementsave">Save</button>
+            <div class="form-popup-input-group">
+                <label class="form-popup-label">Noted By:</label>
+                <input class="form-popup-input" id="viewNotedBy" readonly>
+            </div>    
+
+            <div class="form-popup-input-group"> 
+                <label class="form-popup-label">Approval Date:</label>
+                <input class="form-popup-input" id="viewApproveDate" readonly>
+            </div>
+        </section>
+
+
+        <button type="button" id="ButtonEndorsement" onclick="downloadModalAsPDF()">Download PDF</button>
+
     </div>
 </div>
+<script>
+    
+function downloadModalAsPDF() {
+    const { jsPDF } = window.jspdf;
+    const modal = document.getElementById("endorsementViewModal");
+
+    // Ensure modal is visible before capturing
+    const previousDisplay = modal.style.display;
+    modal.style.display = "block"; 
+
+    // Store original background color
+    const originalBg = modal.style.backgroundColor;
+
+    // Change background to white before capturing
+    modal.style.backgroundColor = "white";
+
+    html2canvas(modal, {
+        scale: 3,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        windowWidth: modal.scrollWidth,
+        windowHeight: modal.scrollHeight
+    }).then(canvas => {
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pageWidth = 210; // A4 width in mm
+        const imgWidth = 250; // Set width for the modal in the PDF
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Calculate x position to center the modal
+        const xPosition = (pageWidth - imgWidth) / 2;
+        let yPosition = 10; // Top margin
+
+        pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+
+        // Handle multi-page PDFs if content is long
+        let heightLeft = imgHeight;
+        while (heightLeft > 297) {
+            yPosition -= 297;
+            pdf.addPage();
+            pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+            heightLeft -= 297;
+        }
+
+        // Restore original background color after capturing
+        modal.style.backgroundColor = originalBg;
+
+        // Get control number for filename
+        const controlNo = document.getElementById("ViewEndorsementcontrol_no").value || "Technical_Endorsement";
+        pdf.save(`Technical_Endorsement_${controlNo}.pdf`);
+
+        modal.style.display = previousDisplay;
+    });
+}
+
+
+</script>

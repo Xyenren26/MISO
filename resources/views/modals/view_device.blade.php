@@ -4,12 +4,135 @@
     border: 2px solid #003067;
     padding: 20px;
     border-radius: 10px;
-    margin-top: 300px;
+    margin-top: 30%;
     margin-left: auto;
     margin-right: auto;
     width: 60%;
     position: relative;
 }
+.waiting-approval {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    color: #d9534f; /* Red text */
+    font-weight: bold;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+}
+.form-popup-section-radio {
+    display: flex;
+    gap: 20px; /* Adjust spacing between options */
+    align-items: center; /* Aligns items vertically */
+}
+
+.qr-code {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    color: #d9534f; /* Red text */
+    font-weight: bold;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    width: 100px;
+}
+
+.status-container {
+    position: absolute;
+    top: 102px;
+    left: 15px;
+    display: flex;
+    align-items: center; /* Align label and status text */
+    gap: 5px; /* Space between label and status */
+    margin-top: 10px; /* Add spacing from the QR code */
+}
+
+.status-text {
+    font-weight: bold;
+    color: #333; /* Match label color */
+    font-size: 16px;
+    text-transform: Uppercase;
+}
+
+.form-popup-form-info_no {
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    gap: 8px; /* Adds space between label and input */
+}
+
+.form-label-no {
+    font-weight: 600; /* Makes label bold */
+}
+
+.form-input-no {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: #333; /* Dark gray for visibility */
+    width: auto;
+}
+
+#ButtonService{
+    margin-top: 20px;
+    width: 100%;
+    padding: 8px;
+    background: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#updateButton{
+    margin-top: 20px;
+    width: 100%;
+    padding: 8px;
+    background: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#saveButton{
+    margin-top: 20px;
+    width: 100%;
+    padding: 8px;
+    background: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.rating-container {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background: #f8f9fa; /* Light background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rating-label {
+    margin-right: 5px;
+}
+
+.rating-value {
+    color: #ffcc00; /* Yellow for rating */
+    font-size: 18px;
+}
+
 
 </style>
 <div id="viewFormPopup" class="form-popup-container" style="display: none;">
@@ -17,24 +140,48 @@
         <span class="form-popup-close-btn" onclick="closePopup('viewFormPopup')">×</span>
         <div class="form-popup-form-container">
             <header class="form-popup-header">
+
+            <div class="rating-container" id="rating-containerPullOut">
+                <label class="form-popup-label">Rating:</label>
+                <div id="starRatingPullOut"></div>
+            </div>
+                
+            <div id="waitingForApprovalService" class="waiting-approval" style="display: none;">
+                <p>🚨 Waiting for admin approval...</p>
+            </div>
+            
+            
+                <div id="qrCodeContainer"  onclick="printQRCode()">
+                    <img id="qrCodeImage" class="qr-code" src="" alt="QR Code">
+                </div>
+
+            <div class="status-container">
+                    <label class="form-popup-label">Status:</label>
+                    <input type="text" id="viewStatusService" class="form-input-no" readonly>
+                </div>
+
                 <div class="form-popup-logo">
                     <img src="images/systemlogo.png" alt="Logo">
                 </div>
                 <h1>ICT Equipment Service Request Form</h1>
-                <div class="form-popup-form-info">
-                    <span>Form No.: <span id="viewFormNo"></span></span>
+                <div class="form-popup-form-info_no">
+                    <label for="viewFormNoService" class="form-label-no">Form No.:</label>
+                    <input type="text" id="viewFormNoService" class="form-input-no" readonly>
                 </div>
+
+
+
             </header>
 
            <!-- Service Type (Radio Buttons) -->
-            <section class="form-popup-section">
+            <section class="form-popup-section-radio">
                 <label>
                     <input type="radio" name="service_type" value="walk_in" required 
-                        id="service_type_walk_in"> Walk-In
+                        id="service_type_walk_in" disabled> Walk-In
                 </label>
                 <label>
                     <input type="radio" name="service_type" value="pull_out" required 
-                        id="service_type_pull_out"> Pull-Out
+                        id="service_type_pull_out"disabled> Pull-Out
                 </label>
             </section>
 
@@ -58,7 +205,9 @@
                 </div>
                 <div class="form-popup-checkbox-group">
                     <label class="form-popup-label">Condition of Equipment:</label>
-                    <span id="viewCondition"></span>
+                    <label><input type="radio" name="condition[]" id="condition_working" value="working" disabled> Working</label>
+                    <label><input type="radio" name="condition[]" id="condition_not_working" value="not-working" disabled> Not Working</label>
+                    <label><input type="radio" name="condition[]" id="condition_needs_repair" value="needs-repair" disabled> Needs Repair</label>
                 </div>
             </section>
 
@@ -88,6 +237,27 @@
                 <label class="form-popup-label">Assigned Technical Support:</label>
                 <input class="form-popup-input" id="viewTechnicalSupport" readonly>
             </div>
+
+            <section class="form-popup-section" id="approvalSection">
+                <h3 class="form-popup-title">Approval Details</h3>
+
+                <div class="form-popup-input-group">
+                    <label class="form-popup-label">Noted By:</label>
+                    <input class="form-popup-input" id="viewNotedByService" readonly>
+                </div>    
+
+                <div class="form-popup-input-group"> 
+                    <label class="form-popup-label">Approval Date:</label>
+                    <input class="form-popup-input" id="viewApproveDateService" readonly>
+                </div>
+            </section>
+
+
+            <button type="button" id="ButtonService"onclick="downloadModalAsPDFService()">Download PDF</button>
+            @if(in_array(auth()->user()->account_type, ['technical_support', 'administrator']))
+                <button type="button" id="updateButton" onclick="toggleEditMode()">Update</button>
+                <button type="button" id="saveButton" style="display: none;" onclick="saveChanges()">Save</button>
+            @endif
         </div>
     </div>
 </div>
@@ -97,4 +267,136 @@
     function closePopup(popupId) {
         document.getElementById(popupId).style.display = 'none';
     }
+    
+    function downloadModalAsPDFService() {
+        const { jsPDF } = window.jspdf;
+        const modal = document.getElementById("viewFormPopup");
+
+        // Ensure modal is visible before capturing
+        const previousDisplay = modal.style.display;
+        modal.style.display = "block"; 
+
+        // Store original background color
+        const originalBg = modal.style.backgroundColor;
+
+        // Change background to white before capturing
+        modal.style.backgroundColor = "white";
+
+        html2canvas(modal, {
+            scale: 3,
+            backgroundColor: "#ffffff",
+            useCORS: true,
+            windowWidth: modal.scrollWidth,
+            windowHeight: modal.scrollHeight
+        }).then(canvas => {
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            const pageWidth = 210; // A4 width in mm
+            const imgWidth = 250; // Set width for the modal in the PDF
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            // Calculate x position to center the modal
+            const xPosition = (pageWidth - imgWidth) / 2;
+            let yPosition = 10; // Top margin
+
+            pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+
+            // Handle multi-page PDFs if content is long
+            let heightLeft = imgHeight;
+            while (heightLeft > 297) {
+                yPosition -= 297;
+                pdf.addPage();
+                pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+                heightLeft -= 297;
+            }
+
+            // Restore original background color after capturing
+            modal.style.backgroundColor = originalBg;
+
+            // Get control number for filename
+            const controlNo = document.getElementById("viewFormNoService").value || "Pullout";
+            pdf.save(`PullOut_Device_${controlNo}.pdf`);
+
+            modal.style.display = previousDisplay;
+        });
+    }
+
+    function printQRCode() {
+    var qrCodeDiv = document.querySelector('.qr-code');
+    var printWindow = window.open('', '_blank', 'width=600,height=400');
+    printWindow.document.write('<html><head><title>Print QR Code</title></head><body>');
+    printWindow.document.write(qrCodeDiv.outerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+}
+
+function toggleEditMode() {
+    const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
+    const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
+    const updateButton = document.getElementById('updateButton');
+    const saveButton = document.getElementById('saveButton');
+
+    // Toggle readonly and disabled attributes
+    inputs.forEach(input => {
+        input.readOnly = !input.readOnly;
+    });
+
+    radios.forEach(radio => {
+        radio.disabled = !radio.disabled;
+    });
+
+    // Toggle button visibility
+    updateButton.style.display = 'none';
+    saveButton.style.display = 'block';
+}
+
+function saveChanges() {
+    const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
+    const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
+    const updateButton = document.getElementById('updateButton');
+    const saveButton = document.getElementById('saveButton');
+
+    // Disable inputs and radios
+    inputs.forEach(input => {
+        input.readOnly = true;
+    });
+
+    radios.forEach(radio => {
+        radio.disabled = true;
+    });
+
+    // Toggle button visibility
+    updateButton.style.display = 'block';
+    saveButton.style.display = 'none';
+
+    // Save changes to the backend
+    const formData = new FormData();
+    inputs.forEach(input => {
+        formData.append(input.id, input.value);
+    });
+    radios.forEach(radio => {
+        if (radio.checked) {
+            formData.append(radio.name, radio.value);
+        }
+    });
+
+    fetch('/update-service-request', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Changes saved successfully!');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save changes.');
+    });
+}
+
+
 </script>

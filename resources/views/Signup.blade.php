@@ -25,8 +25,9 @@
         @csrf
 
         <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder="Username" value="{{ old('username') }}" required>
+          <label for="employee-id">Employee ID</label>
+          <input type="text" id="employee-id" name="employee-id" placeholder="Employee ID" value="{{ old('employee-id') }}" maxlength="7" required>      
+          <span id="error-message" style="color: red; display: none;">Please enter a valid 7-digit Employee ID. Only numbers are allowed.</span>
         </div>
 
         <!-- Email -->
@@ -63,7 +64,7 @@
         </div>
 
         <!-- Sign Up Button -->
-        <button type="submit" class="sign-up-btn">Sign Up</button>
+        <button type="submit" id="submit-btn" class="sign-up-btn">Sign Up</button>
 
         <!-- Existing Account -->
         <div class="existing-account">

@@ -624,3 +624,55 @@ background-color: #00214e;
     color: #6c757d;
     cursor: not-allowed;
 }
+.Trackbutton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 50%; /* Makes it circular */
+    transition: color 0.3s, background 0.3s;
+}
+
+.Trackbutton:hover {
+    color: #007bff; /* Change to desired hover color */
+    background: rgba(0, 123, 255, 0.1); /* Light blue hover effect */
+}
+
+.alert-box {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  
+  .alert-box.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+  }
+  
+  .alert-box.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+  }
+  .alert-box.message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+  }
+  
+  .alert-box button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    cursor: pointer;
+  }

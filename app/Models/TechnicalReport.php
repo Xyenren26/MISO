@@ -29,14 +29,11 @@ class TechnicalReport extends Model
         'reported_date',
         'inspected_by',
         'inspected_date',
-        'noted_by',
-        'noted_date',
     ];
     protected $casts = [
         'date_time' => 'datetime',
         'reported_date' => 'datetime',
         'inspected_date' => 'datetime',
-        'noted_date' => 'datetime',
     ];
     /**
      * Relationship to the Ticket model

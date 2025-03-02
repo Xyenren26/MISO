@@ -14,11 +14,51 @@
         justify-content: center;
         align-items: center;
     }
+    .waiting-approval {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        color: #d9534f; /* Red text */
+        font-weight: bold;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+    }
+    .rating-container {
+        position: absolute;
+        top: 50px;
+        right: 20px;
+        background: #f8f9fa; /* Light background */
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .rating-label {
+        margin-right: 5px;
+    }
+
+    .rating-value {
+        color: #ffcc00; /* Yellow for rating */
+        font-size: 18px;
+    }
     </style>
     
 <div id="technicalReportViewModal" class="modal" style="display: none;">
     <div class="modal-content-technical-report">
         <span class="close" onclick="closeTechnicalReportViewModal()">&times;</span>
+        <input type="hidden" id="viewTechnicalReportControlNo" name="viewTechnicalReportControlNo">
+
+        <div class="rating-container" id="rating-containerTechnical">
+            <label class="form-popup-label">Rating:</label>
+            <div id="starRatingTechnical"></div>
+        </div>
+        <div id="waitingForApprovalTechnical" class="waiting-approval" style="display: none;">
+            <p>🚨 Waiting for admin approval...</p>
+        </div>
         <div class="form-header">Technical Report Details</div>
 
         <div class="form-group">
@@ -75,12 +115,80 @@
                 <label>Inspected Date</label>
                 <input type="datetime-local" id="view-inspected-date" readonly>
             </div>
-            <div class="signature">
-                <label>Noted By</label>
-                <input type="text" id="view-noted-by" readonly>
-                <label>Noted Date</label>
-                <input type="datetime-local" id="view-noted-date" readonly>
-            </div>
         </div>
+        <section class="form-popup-section" id="approvalSection">
+            <h3 class="form-popup-title">Approval Details</h3>
+
+            <div class="form-popup-input-group">
+                <label class="form-popup-label">Noted By:</label>
+                <input class="form-popup-input" id="viewNotedByTechnical" readonly>
+            </div>    
+
+            <div class="form-popup-input-group"> 
+                <label class="form-popup-label">Approval Date:</label>
+                <input class="form-popup-input" id="viewApproveDateTechnical" readonly>
+            </div>
+        </section>
+
+
+        <button type="button" id="ButtonDownloadTechnical" onclick="downloadModalAsPDFTechnical()">Download PDF</button>
+
     </div>
 </div>
+<script>
+    
+function downloadModalAsPDFTechnical() {
+    const { jsPDF } = window.jspdf;
+    const modal = document.getElementById("technicalReportViewModal");
+
+    // Ensure modal is visible before capturing
+    const previousDisplay = modal.style.display;
+    modal.style.display = "block"; 
+
+    // Store original background color
+    const originalBg = modal.style.backgroundColor;
+
+    // Change background to white before capturing
+    modal.style.backgroundColor = "white";
+
+    html2canvas(modal, {
+        scale: 3,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        windowWidth: modal.scrollWidth,
+        windowHeight: modal.scrollHeight
+    }).then(canvas => {
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pageWidth = 210; // A4 width in mm
+        const imgWidth = 250; // Set width for the modal in the PDF
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Calculate x position to center the modal
+        const xPosition = (pageWidth - imgWidth) / 2;
+        let yPosition = 10; // Top margin
+
+        pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+
+        // Handle multi-page PDFs if content is long
+        let heightLeft = imgHeight;
+        while (heightLeft > 297) {
+            yPosition -= 297;
+            pdf.addPage();
+            pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+            heightLeft -= 297;
+        }
+
+        // Restore original background color after capturing
+        modal.style.backgroundColor = originalBg;
+
+        // Get control number for filename
+        const controlNo = document.getElementById("viewTechnicalReportControlNo").value || "Technical_Endorsement";
+        pdf.save(`Technical_Report_${controlNo}.pdf`);
+
+        modal.style.display = previousDisplay;
+    });
+}
+
+
+</script>

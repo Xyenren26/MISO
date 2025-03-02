@@ -21,8 +21,6 @@ return new class extends Migration {
             $table->date('received_date')->nullable();
             $table->string('issued_by');
             $table->date('issued_date')->nullable();
-            $table->string('noted_by');
-            $table->date('noted_date')->nullable();
             $table->timestamps();
         });
     }}

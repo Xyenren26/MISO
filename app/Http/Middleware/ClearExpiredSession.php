@@ -12,13 +12,13 @@ class ClearExpiredSession
 {
     public function handle($request, Closure $next)
     {
-        $username = $request->input('username');
+        $employee_id = $request->input('employee_id');
         $sessionLifetime = config('session.lifetime');
 
-        if ($username) {
+        if ($employee_id) {
             // Retrieve the user's session data from the database
             $user = DB::table('users')
-                ->where('username', $username)
+                ->where('employee_id', $employee_id)
                 ->first(['employee_id', 'last_activity']);
 
                 if ($user && $user->last_activity) {

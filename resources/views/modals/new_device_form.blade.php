@@ -60,6 +60,13 @@
     margin-bottom: 20px;
 }
 
+.form-popup-section-radio {
+    display: flex;
+    gap: 20px; /* Adjust spacing between options */
+    align-items: center; /* Aligns items vertically */
+}
+
+
 .form-popup-row {
     display: flex;
     gap: 15px; /* Adjust spacing */
@@ -149,9 +156,9 @@
             <form action="{{ route('service.request.store') }}" method="POST">
                 @csrf
                 <input type="hidden" id="ticket_id" name="ticket_id">
-                <section class="form-popup-section">
+                <section class="form-popup-section-radio">
                     <label><input type="radio" name="service_type" value="walk_in" required> Walk-In</label>
-                    <label><input type="radio" name="service_type" value="pull_out" required> Pull-Out</label>
+                    <label><input type="radio" name="service_type" value="pull_out" required id="pullOut"> Pull-Out</label>
                 </section>
 
                 <!-- General Information Section -->
@@ -174,9 +181,9 @@
                     </div>
                     <div class="form-popup-checkbox-group">
                         <label class="form-popup-label">Condition of Equipment:</label>
-                        <label><input type="checkbox" name="condition[]" value="working"> Working</label>
-                        <label><input type="checkbox" name="condition[]" value="not-working"> Not Working</label>
-                        <label><input type="checkbox" name="condition[]" value="needs-repair"> Needs Repair</label>
+                        <label><input type="radio" name="condition[]" value="working"> Working</label>
+                        <label><input type="radio" name="condition[]" value="not-working"> Not Working</label>
+                        <label><input type="radio" name="condition[]" value="needs-repair"> Needs Repair</label>
                     </div>
                 </section>
 

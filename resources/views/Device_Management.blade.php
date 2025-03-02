@@ -24,6 +24,9 @@
         </button>
         <button class="tab-button {{ request('filter') == 'in-repairs' ? 'active' : '' }}" onclick="filterDevices('in-repairs')">
             <i class="fas fa-tools"></i> In Repairs
+            @if($inRepairsCount > 0)
+                <span class="notifcounter">{{ $inRepairsCount }}</span>
+            @endif
         </button>
         <button class="tab-button {{ request('filter') == 'repaired' ? 'active' : '' }}" onclick="filterDevices('repaired')">
             <i class="fas fa-check-circle"></i> Repaired

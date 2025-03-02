@@ -23,12 +23,23 @@
         <div class="key-metrics-summary">
             <h2>Key Metrics Summary (KPIs)</h2>
             <div class="metrics-cards">
-                <div class="metric-card"><i class="fas fa-ticket-alt"></i><h3>Pending Tickets</h3><p>{{ $pendingTickets }}</p></div>
-                <div class="metric-card"><i class="fas fa-check-circle"></i><h3>Solved Tickets</h3><p>{{ $solvedTickets }}</p></div>
-                <div class="metric-card"><i class="fas fa-share"></i><h3>Endorsed Tickets</h3><p>{{ $endorsedTickets }}</p></div>
-                <div class="metric-card"><i class="fas fa-file-alt"></i><h3>Technical Reports</h3><p>{{ $technicalReports }}</p></div>
-                <div class="metric-card"><i class="fas fa-tools"></i><h3>Devices in Repair</h3><p>{{ $devicesInRepair }}</p></div>
-                <div class="metric-card"><i class="fas fa-cogs"></i><h3>Repaired Devices</h3><p>{{ $repairedDevices }}</p></div>
+                @php
+                    $metrics = [
+                        ['icon' => 'fas fa-ticket-alt', 'title' => 'Pending Tickets', 'count' => $pendingTickets],
+                        ['icon' => 'fas fa-check-circle', 'title' => 'Solved Tickets', 'count' => $solvedTickets],
+                        ['icon' => 'fas fa-share', 'title' => 'Endorsed Tickets', 'count' => $endorsedTickets],
+                        ['icon' => 'fas fa-file-alt', 'title' => 'Technical Reports', 'count' => $technicalReports],
+                        ['icon' => 'fas fa-tools', 'title' => 'Devices in Repair', 'count' => $devicesInRepair],
+                        ['icon' => 'fas fa-cogs', 'title' => 'Repaired Devices', 'count' => $repairedDevices],
+                    ];
+                @endphp
+                @foreach ($metrics as $metric)
+                    <div class="metric-card">
+                        <i class="{{ $metric['icon'] }}"></i>
+                        <h3>{{ $metric['title'] }}</h3>
+                        <p>{{ $metric['count'] ?? 0 }}</p>
+                    </div>
+                @endforeach
             </div>
         </div>
 
@@ -46,17 +57,23 @@
 
         <!-- Performance Details (Team Analytics) Section -->
         <div class="performance-details">
-            <h2>Performance Details (Team Analytics)</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; 
+                background-color: #f5f5f5; padding: 10px 20px; border-radius: 5px;">
+                <h2>Performance Details (Team Analytics)</h2>
+                <a href="{{ url('/export-technician-performance?month=' . $selectedDate) }}" class="exportButton">Export CSV</a>
+            </div>
+
             <table class="team-analytics-table">
                 <thead>
                     <tr>
                         <th>Technician Name / ID</th>
                         <th>Tickets Assigned</th>
                         <th>Tickets Solved</th>
-                        <th>Average Resolution Time</th>
+                        <th>Avg Resolution Time</th>
                         <th>Endorsed Tickets</th>
                         <th>Pull Out Device</th>
-                        <th>Technical Reports Submitted</th>
+                        <th>Technical Reports</th>
+                        <th>Rating</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,6 +86,7 @@
                             <td>{{ $technician->endorsed_tickets ?? 'None' }}</td>
                             <td>{{ $technician->pull_out ?? 'None' }}</td>
                             <td>{{ $technician->technical_reports ?? 'None' }}</td>
+                            <td>{{ $technician->rating ?? 'No Rating' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -76,7 +94,9 @@
         </div>
     </div>
 </div>
+
 <script>
+// Handle Date Picker Change
 document.getElementById('datePicker').addEventListener('change', function() {
     const selectedDate = this.value;
     const url = new URL(window.location.href);
@@ -84,50 +104,34 @@ document.getElementById('datePicker').addEventListener('change', function() {
     window.location.href = url.toString();
 });
 
-//  Donut Chart Data
-const donutData = {
-    labels: ['Pending', 'Solved', 'Endorsed', 'Reports', 'In Repair', 'Repaired'],
-    datasets: [{
-        data: [{{ $pendingTickets }}, {{ $solvedTickets }}, {{ $endorsedTickets }}, {{ $technicalReports }}, {{ $devicesInRepair }}, {{ $repairedDevices }}],
-        backgroundColor: ['#003067', '#0073e6', '#28a745', '#ffc107', '#dc3545', '#6f42c1'],
-        hoverOffset: 20
-    }]
-};
-
-const donutOptions = {
-    responsive: true,
-    plugins: {
-        legend: { position: 'right', labels: { usePointStyle: true, font: { size: 14 } } },
-        tooltip: { callbacks: { label: (tooltipItem) => `${tooltipItem.label}: ${tooltipItem.raw}` } }
-    },
-    cutout: '65%'
-};
-
-//  Donut Chart Initialization
+// Donut Chart
 new Chart(document.getElementById('combinedMetricsChart').getContext('2d'), { 
     type: 'doughnut', 
-    data: donutData, 
-    options: donutOptions 
+    data: {
+        labels: ['Pending', 'Solved', 'Endorsed', 'Reports', 'In Repair', 'Repaired'],
+        datasets: [{
+            data: [{{ $pendingTickets }}, {{ $solvedTickets }}, {{ $endorsedTickets }}, {{ $technicalReports }}, {{ $devicesInRepair }}, {{ $repairedDevices }}],
+            backgroundColor: ['#003067', '#0073e6', '#28a745', '#ffc107', '#dc3545', '#6f42c1'],
+            hoverOffset: 20
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'right' } },
+        cutout: '65%'
+    }
 });
 
-//  Technician Performance Chart
-const daysInMonth = [...Array(31).keys()].map(i => i + 1); // Generate days 1-31
-
+// Technician Performance Chart
 const ctx = document.getElementById('technicalSupportChart');
 
 if (ctx) {
-    let techData = @json($technicianChartData);
+    let techData = @json($technicianChartData) || [];
 
-    // Ensure it's an array
-    if (!Array.isArray(techData) || techData.length === 0) {
-        console.warn("Invalid or empty techData. Resetting to empty array.");
-        techData = [];
-    }
-
-
+    // Ensure data format is correct
     techData = techData.map(dataset => ({
         label: dataset.label || "Unknown Technician",
-        data: Array.isArray(dataset.data) ? dataset.data.slice(0, new Date().getDate()) : Array(31).fill(0),
+        data: dataset.data || Array(31).fill(0),
         borderColor: dataset.borderColor || "#000000",
         backgroundColor: dataset.backgroundColor || "rgba(0,0,0,0.2)",
         fill: true
@@ -135,13 +139,10 @@ if (ctx) {
 
     console.log("Processed Tech Data:", techData);
 
-
-    // Check if dataset is empty or all values are zero
-    const hasNoData = techData.length === 0 || techData.every(dataset => dataset.data.every(v => v === 0));
-
-    if (hasNoData) {
+    // Handle no data case
+    if (techData.length === 0 || techData.every(d => d.data.every(v => v === 0))) {
         techData = [{
-            label: "Report: 231 No data available for technician performance chart.",
+            label: "No data available for technician performance chart.",
             data: Array(31).fill(0),
             borderColor: "#cccccc",
             backgroundColor: "rgba(200,200,200,0.5)",
@@ -152,7 +153,7 @@ if (ctx) {
 
     new Chart(ctx.getContext('2d'), {
         type: 'line',
-        data: { labels: daysInMonth, datasets: techData },
+        data: { labels: Array.from({length: 31}, (_, i) => i + 1), datasets: techData },
         options: {
             responsive: true,
             plugins: { legend: { position: 'top' } },

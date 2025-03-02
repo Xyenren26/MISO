@@ -129,6 +129,21 @@
     .form-container td {
         border: 1px solid #ccc;
     }
+    .submit-btn-deployment {
+        padding: 10px 20px;
+        margin-top:20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+        transition: background-color 0.3s;
+        background-color: #007bff;
+    }
+    #otherInputDeployment {
+        display: none;
+        margin-top: 10px;
+    }
    </style>
 </head>
 <body>
@@ -145,7 +160,8 @@
                     <p>Management Information System Office</p>
                 </div>
             </header>
-            <form id="deploymentForm">
+            <form id="deploymentForm" action="{{ route('deployments.store') }}" method="POST">
+                @csrf <!-- CSRF token for security -->
                 <table>
                     <tr>
                         <th colspan="4">Purpose</th>
@@ -155,10 +171,10 @@
                     </tr>                
                     <tr>
                         <th>Control Number:</th>
-                        <td colspan="3"><input type="text" name="control_number" placeholder="Enter Control Number"></td>
+                        <td colspan="3"><input type="text" name="control_number" id="deploymentControlNo" placeholder="Enter Control Number"></td>
                         <th>Status:</th>
-                        <td><input type="checkbox" name="status" value="new"> New</td>
-                        <td><input type="checkbox" name="status" value="used"> Used</td>
+                        <td><input type="radio" name="status" value="new"> New</td>
+                        <td><input type="radio" name="status" value="used"> Used</td>
                     </tr>
                     <tr>
                         <th>Components:</th>
@@ -175,7 +191,12 @@
                         <td colspan="6">
                             <input type="checkbox" name="software[]" value="Google Workspace"> Google Workspace
                             <input type="checkbox" name="software[]" value="MS Office"> MS Office
-                            <input type="checkbox" name="software[]" value="Others"> Others
+                            <label>
+                                <input type="checkbox" name="software[]" value="Others" id="othersCheckbox"> Others
+                            </label>
+                            <div id="otherInputDeployment">
+                                <input type="text" id="otherValue" name="software[]" placeholder="Please specify">
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -190,14 +211,13 @@
                                 <th>Quantity</th>
                             </tr>
                             <tr>
-                                <td><input type="text" name="description" placeholder="Enter description" style="width: 100%;"></td>
-                                <td><input type="text" name="serial_number" placeholder="Enter serial number" style="width: 100%;"></td>
-                                <td><input type="number" name="quantity" placeholder="Enter quantity" style="width: 100%;"></td>
+                                <td><input type="text" name="equipment_items[0][description]" placeholder="Enter description" style="width: 100%;"></td>
+                                <td><input type="text" name="equipment_items[0][serial_number]" placeholder="Enter serial number" style="width: 100%;"></td>
+                                <td><input type="number" name="equipment_items[0][quantity]" placeholder="Enter quantity" style="width: 100%;"></td>
                             </tr>
                         </table>
                     </div>
                 </div>
-
 
                 <table>
                     <tr>
@@ -210,25 +230,19 @@
                     </tr>
                     <tr>
                         <th>Received By</th>
-                        <td><input type="text" name="received_by" placeholder="Enter Name"></td>
+                        <td><input type="text" id="received_by" name="received_by" placeholder="Enter Name"></td>
                         <th>Issued By</th>
-                        <td><input type="text" name="issued_by" placeholder="Enter Name"></td>
-                        <th>Noted By</th>
-                        <td><input type="text" name="noted_by" placeholder="Enter Name"></td>
+                        <td><input type="text" id="issued_by" name="issued_by" placeholder="Enter Name"></td>
                     </tr>
                     <tr>
                         <th>Date</th>
                         <td><input type="date" name="received_date"></td>
                         <th>Date</th>
                         <td><input type="date" name="issued_date"></td>
-                        <th>Date</th>
-                        <td><input type="date" name="noted_date"></td>
                     </tr>
                 </table>
 
-                <div class="submit-btn">
-                    <button type="submit">Submit</button>
-                </div>
+                <button type="submit" class="submit-btn-deployment">Submit</button>
             </form>
         </div>
     </div>
@@ -243,66 +257,26 @@
         document.getElementById("deploymentModal").style.display = "none";
     }
 
-    document.getElementById('deploymentForm').addEventListener('submit', function(event) {
-        event.preventDefault();  // Prevent form submission
-
-        // Initialize the form data object
-        const formData = new FormData(event.target);
-        const data = {
-            control_number: formData.get('control_number'),
-            purpose: formData.get('purpose'),
-            status: formData.get('status') === 'on' ? 'new' : 'used', // Handle status checkbox
-            components: formData.getAll('components[]'),  // Store as array
-            software: formData.getAll('software[]'),  // Store as array
-            brand_name: formData.get('brand_name'),
-            specification: formData.get('specification'),
-            received_by: formData.get('received_by'),
-            received_date: formData.get('received_date'),
-            issued_by: formData.get('issued_by'),
-            issued_date: formData.get('issued_date'),
-            noted_by: formData.get('noted_by'),
-            noted_date: formData.get('noted_date'),
-            equipment_items: []  // Initialize empty array for equipment items
-        };
-
-        // Collect equipment items dynamically
-        const equipmentItems = document.querySelectorAll('.equipment-item');
-        equipmentItems.forEach(item => {
-            const description = item.querySelector('input[name="description"]').value;
-            const serial_number = item.querySelector('input[name="serial_number"]').value;
-            const quantity = item.querySelector('input[name="quantity"]').value;
-
-            // Only add if the fields are filled out
-            if (description && serial_number && quantity) {
-                data.equipment_items.push({
-                    description: description,
-                    serial_number: serial_number,
-                    quantity: quantity
-                });
+    document.addEventListener('change', function(event) {
+        if (event.target && event.target.id === 'othersCheckbox') {
+            console.log('Checkbox state changed'); // Debugging line
+            var otherInput = document.getElementById('otherInputDeployment');
+            if (event.target.checked) {
+                otherInput.style.display = 'block';
+            } else {
+                otherInput.style.display = 'none';
+                document.getElementById('otherValue').value = ''; // Clear the input field
+                event.target.value = 'Others'; // Reset the checkbox value
             }
-        });
+        }
+    });
 
-        // Debugging: Check form data before sending
-        console.log("Form Data:", data);
-
-        // Sending data via Fetch API (AJAX)
-        fetch('/deployments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);  // Show success message from the response
-            closeDeploymentModal();  // Close the modal
-            event.target.reset();  // Optionally reset the form
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    // Add an input event listener to update the checkbox value dynamically
+    document.getElementById('otherValue').addEventListener('input', function() {
+        var othersCheckbox = document.getElementById('othersCheckbox');
+        if (othersCheckbox.checked) {
+            othersCheckbox.value = this.value.trim() !== '' ? this.value : 'Others';
+        }
     });
 </script>
 

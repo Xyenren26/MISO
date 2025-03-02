@@ -18,6 +18,7 @@
                 <option value="endorsed">Endorsed Ticket</option>
                 <option value="technical-report">Write Ticket as Technical Report</option>
                 <option value="pull-out">Pull Out Device</option>
+                <option value="deployment">Deployment Device</option>
             </select>
         </div>
 

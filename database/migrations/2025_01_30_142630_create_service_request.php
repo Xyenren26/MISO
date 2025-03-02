@@ -25,7 +25,7 @@ return new class extends Migration
                 $table->enum('condition', ['working', 'not-working', 'needs-repair']);
                 $table->enum('status', ['in-repairs', 'repaired']);
 
-                $table->unsignedBigInteger('technical_support_id')->nullable();
+                $table->integer('technical_support_id')->nullable();
                 $table->foreign('technical_support_id')
                     ->references('employee_id') // Ensure employee_id in users is also an unsignedBigInteger
                     ->on('users');

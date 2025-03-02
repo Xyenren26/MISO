@@ -169,12 +169,12 @@
         
         <div class="form-group">
             <label for="first-name">First Name</label>
-            <input type="text" id="first-name" name="first-name" placeholder="First Name" value="{{ old('first-name') }}" required>
+            <input type="text" id="first-name" name="first-name" placeholder="First Name" value="{{ old('first-name') }}" required oninput="this.value = this.value.replace(/\b\w/g, function(char) { return char.toUpperCase(); });">
         </div>
 
         <div class="form-group">
             <label for="last-name">Last Name</label>
-            <input type="text" id="last-name" name="last-name" placeholder="Last Name" value="{{ old('last-name') }}" required>
+            <input type="text" id="last-name" name="last-name" placeholder="Last Name" value="{{ old('last-name') }}" required oninput="this.value = this.value.replace(/\b\w/g, function(char) { return char.toUpperCase(); });">
         </div>
 
         <div class="form-group">
@@ -185,33 +185,31 @@
         </div>
 
         <div class="form-group">
-            <label for="employee-id">Employee ID</label>
-            <input type="text" id="employee-id" name="employee-id" placeholder="Employee ID" value="{{ old('employee-id') }}" maxlength="7" required>      
-            <span id="error-message" style="color: red; display: none;">Please enter a valid 7-digit Employee ID. Only numbers are allowed.</span>
+            <label for="phone-number">Phone Number</label>
+            <input type="text" id="phone-number" name="phone-number" placeholder="Enter phone number" 
+                value="{{ old('phone-number') }}" required oninput="validatePhoneNumber(this)">
+            <small id="phone-error" style="color: red; display: none;">Invalid phone number</small>
         </div>
+        
 
-        <button type="submit" id="submit-btn" disabled>Complete Profile</button>
+        <button type="submit" id="submit-btn">Complete Profile</button>
     </form>
 </div>
 
 <script>
-    document.getElementById("employee-id").addEventListener("input", function () {
-        let input = this.value;
-        let errorMessage = document.getElementById("error-message");
-        let submitBtn = document.getElementById("submit-btn");
 
-        // Remove any non-numeric characters
-        this.value = input.replace(/\D/g, '');
+function validatePhoneNumber(input) {
+    let phoneError = document.getElementById('phone-error');
+    let phoneRegex = /^[0-9\s\-()]{10,15}$/; // Allows digits, spaces, dashes, and parentheses
 
-        // Show error if the length is not exactly 7 digits
-        if (this.value.length !== 7) {
-            errorMessage.style.display = "block";
-            submitBtn.disabled = true; // Disable button
-        } else {
-            errorMessage.style.display = "none";
-            submitBtn.disabled = false; // Enable button
-        }
-    });
+    if (phoneRegex.test(input.value)) {
+        phoneError.style.display = 'none';
+        input.setCustomValidity('');
+    } else {
+        phoneError.style.display = 'block';
+        input.setCustomValidity('Invalid phone number');
+    }
+}
 
     document.addEventListener("DOMContentLoaded", function () {
         // Show Laravel validation errors

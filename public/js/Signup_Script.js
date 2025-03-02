@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const email = document.getElementById("email");
   const password = document.getElementById("password");
   const passwordConfirmation = document.getElementById("password_confirmation");
+  const submitBtn = document.getElementById("submit-btn");
 
   if (!form || !email || !password || !passwordConfirmation) {
     console.error("Required form elements not found!");
@@ -23,8 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
   passwordConfirmation.addEventListener("input", () => {
     if (password.value !== passwordConfirmation.value) {
       displayErrorPassword(passwordConfirmation, "Passwords do not match");
+      submitBtn.disabled = true; // Disable button else {
     } else {
       clearError(passwordConfirmation);
+      submitBtn.disabled = false;
     }
   });
 
@@ -198,4 +201,22 @@ document.addEventListener("DOMContentLoaded", function () {
       errorElement.remove();
     }
   }  
+});
+
+document.getElementById("employee-id").addEventListener("input", function () {
+  let input = this.value;
+  let errorMessage = document.getElementById("error-message");
+  let submitBtn = document.getElementById("submit-btn");
+
+  // Remove any non-numeric characters
+  this.value = input.replace(/\D/g, '');
+
+  // Show error if the length is not exactly 7 digits
+  if (this.value.length !== 7) {
+      errorMessage.style.display = "block";
+      submitBtn.disabled = true; // Disable button
+  } else {
+      errorMessage.style.display = "none";
+      submitBtn.disabled = false; // Enable button
+  }
 });

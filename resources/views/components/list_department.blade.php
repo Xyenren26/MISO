@@ -1,6 +1,9 @@
-            <option value="" disabled {{ !Auth::user()->department ? 'selected' : '' }}>Select Department</option>
-
-            <!-- Office of the City Mayor -->
+ 
+          <option value="{{ Auth::user()->account_type === 'end_user' ? Auth::user()->department : '' }}">
+              {{ Auth::user()->account_type === 'end_user' ? Auth::user()->department : 'Select Department' }}
+          </option>
+             
+           <!-- Office of the City Mayor -->
             <optgroup label="OFFICE OF THE CITY MAYOR">
               <option value="Office of the City Mayor (OCM)">Office of the City Mayor (OCM)</option>
               <option value="Chief of Staff">Chief of Staff</option>

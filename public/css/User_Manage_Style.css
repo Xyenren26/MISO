@@ -73,11 +73,7 @@
 }
 
 /* Filter Dropdown */
-/* Dropdown styles */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
+
 
 .dropdown-button {
     background-color: #003067;
@@ -487,4 +483,57 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+.pagination-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+/* Style the pagination links */
+.pagination-buttons ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination-buttons ul li {
+    margin: 0 5px;
+}
+
+/* Default pagination button style */
+.pagination-buttons ul li a,
+.pagination-buttons ul li span {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hover effect for active links */
+.pagination-buttons ul li a:hover {
+    background: #007bff;
+    color: #fff;
+}
+
+/* Style active page number */
+.pagination-buttons ul li.active span {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+/* Disable previous/next when not clickable */
+.pagination-buttons ul li.disabled span {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
 }

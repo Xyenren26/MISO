@@ -37,7 +37,7 @@ class Audit_logs_Controller extends Controller
             });
         }
     
-        $auditLogs = $query->orderBy('date_time', 'desc')->paginate(10);
+        $auditLogs = $query->orderBy('date_time', 'desc')->paginate(10)->onEachSide(1);
     
         return view('audit_logs', compact('auditLogs'));
     }

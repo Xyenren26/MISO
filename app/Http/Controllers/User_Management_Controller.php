@@ -24,7 +24,8 @@ class User_Management_Controller extends Controller
                 $query->where('account_type', $request->filter);
             })
             ->orderBy('first_name')
-            ->paginate(10); // Paginate with 10 items per page
+            ->paginate(6)
+            ->onEachSide(1); // Paginate with 10 items per page
     
         if ($request->ajax()) {
             // Return only the table body content for AJAX requests

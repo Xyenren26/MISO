@@ -17,17 +17,35 @@ use App\Http\Controllers\Profile_Controller;
 use App\Http\Controllers\User_Management_Controller;
 use App\Http\Controllers\Audit_logs_Controller;
 use App\Http\Controllers\Report_Controller;
-
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ApprovalController;
+use App\Http\Controllers\OtherMessagesController;
 
-use App\Http\Controllers\ChatController;
 
 
 use App\Http\Controllers\PDFController;
+
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
+use Illuminate\Support\Facades\Broadcast;
+
+Broadcast::routes();
+
+
+Route::get('/generate-qr/{form_no}', function ($form_no) {
+    return response(QrCode::size(200)->generate(route('generate.pdf', $form_no)))
+        ->header('Content-Type', 'image/svg+xml');
+});
+
+Route::get('/generate-qr-deployment/{control_number}', function ($control_number) {
+    return response(QrCode::size(200)->generate(route('generate.deployment.pdf', $control_number)))
+        ->header('Content-Type', 'image/svg+xml');
+});
 
 Route::get('/generate-pdf/{form_no}', [PDFController::class, 'generatePDF'])->name('generate.pdf');
 Route::get('/generate-deployment-pdf/{control_number}', [PDFController::class, 'generateDeploymentPDF'])->name('generate.deployment.pdf');
@@ -72,10 +90,12 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     // Routes that require authentication
     Route::get('/notifications', [NotificationController::class, 'fetchNotifications']);
     Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
 
     Route::get('/employee/home', [EndUserController::class, 'index'])->name('employee.home');
     Route::get('/employee/ticket', [EndUserController::class, 'showEmployeeTicket'])->name('employee.tickets');
     Route::get('/employee/filter', [EndUserController::class, 'filterEmployeeTickets']);
+    Route::get('/track-device-status/{ticket_id}', [EndUserController::class, 'trackDeviceStatus']);
 
     Route::get('/home', [Home_Controller::class, 'showHome'])->middleware('CustomAuthenticate')->name('home');
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
@@ -92,18 +112,24 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/endorsement/details/{ticketId}', [Ticket_Controller::class, 'getTicketDetails']);
     Route::get('/technical-reports/check/{control_no}', [Ticket_Controller::class, 'checkTechnicalReport']);
     Route::get('/get-ticket-details/{control_no}', [Ticket_Controller::class, 'getTechnicalReportDetails']);
+    Route::get('/get-deployment-names/{control_no}', [Ticket_Controller::class, 'getDeploymentNames']);
+    Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
+    Route::get('/get-qr-code/{form_no}', [ServiceRequestController::class, 'getQrCode']);
+
     Route::post('/technical-reports/store', [Ticket_Controller::class, 'storeTechnicalReport'])->name('technical-reports.store');
     Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
     Route::get('/fetch/records', [Device_Management_Controller::class, 'getFilteredRecords'])->name('fetch.records');
 
-    Route::get('/service-request/{form_no}', [Device_Management_Controller::class, 'getServiceRequest']);
+    Route::get('/service-request/{form_no}', [ServiceRequestController::class, 'getServiceRequest']);
 
     // In web.php
     Route::get('/check-service-request/{ticketId}', [ServiceRequestController::class, 'checkServiceRequest']);
     Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service.request.store');
     Route::post('/update-status/{form_no}', [ServiceRequestController::class, 'updateStatus']);
+    Route::post('/update-service-request', [ServiceRequestController::class, 'update']);
     Route::post('/deployments', [DeploymentController::class, 'store'])->name('deployments.store');
-    Route::get('/deployment/view/{id}', [Device_Management_Controller::class, 'showDeployment']);
+    Route::get('/check-deployment/{control_no}', [DeploymentController::class, 'checkDeployment']);
+    Route::get('/deployment/view/{control_no}', [DeploymentController::class, 'showDeployment']);
 
     Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
     Route::post('/profile/complete', [Profile_Controller::class, 'completeProfile'])->name('profile.complete');
@@ -114,42 +140,28 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/account/security/change-password', [AccountSecurityController::class, 'changePassword'])->name('account.changePassword');
     Route::post('/account/security/change-email', [AccountSecurityController::class, 'changeEmail'])->name('account.changeEmail');
     Route::post('/account/verify-password', [AccountSecurityController::class, 'verifyPassword'])->name('account.verifyPassword');
-    Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
-    Route::get('/user/management', [User_Management_Controller::class, 'showUser_Management'])->name('user.management');
-    Route::post('/user/update/{employee_id}', [User_Management_Controller::class, 'update'])->name('user.update');
-    Route::post('/user/change-role/{employee_id}', [User_Management_Controller::class, 'changeRole'])->name('user.changeRole');
-    Route::patch('/user/toggle-status/{employee_id}', [User_Management_Controller::class, 'toggleStatus'])->name('user.toggleStatus');
-    Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
+    
+    Route::middleware(['auth', 'CheckAdmin'])->group(function () {
+        Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
+        Route::get('/user/management', [User_Management_Controller::class, 'showUser_Management'])->name('user.management');
+        Route::post('/user/update/{employee_id}', [User_Management_Controller::class, 'update'])->name('user.update');
+        Route::post('/user/change-role/{employee_id}', [User_Management_Controller::class, 'changeRole'])->name('user.changeRole');
+        Route::patch('/user/toggle-status/{employee_id}', [User_Management_Controller::class, 'toggleStatus'])->name('user.toggleStatus');
+        Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
+        Route::get('/export-technician-performance', [Report_Controller::class, 'exportTechnicianPerformance']);
+    });
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');
 
-    //For messaging
+    Route::post('/approve-ticket', [ApprovalController::class, 'approveTicket'])->name('approve.ticket');
+    Route::get('/get-approval-details', [ApprovalController::class, 'getApprovalDetails']);
 
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/chat/send-message', [ChatController::class, 'sendMessage'])->name('chat.send');
-    Route::get('/chat/fetch-messages/{receiverId}', [ChatController::class, 'fetchMessages'])->name('chat.fetch');
+    Route::post('/send-message/{ticketId}', [EndUserController::class, 'sendMessageToTechnicalSupport']);
+    Route::post('/send-message-technical/{ticketId}', [Ticket_Controller::class, 'sendMessageToEndUser']);
+    Route::get('/message/{id}', [OtherMessagesController::class, 'index'])->name('chatify');
+    Route::get('/unseen-messages', [OtherMessagesController::class, 'getUnseenMessages']);
 
-    //Chat functionality 
-    Route::get('/api/unread-messages', [ChatController::class, 'getUnreadMessages']);
-    Route::get('/chat/unread-count', [ChatController::class, 'getUnreadMessageCount']);
-    Route::post('/chat/mark-as-read/{senderId}', [ChatController::class, 'markMessagesAsRead']);
-    Route::post('/chat/mark-read/{receiverId}', [ChatController::class, 'markAsRead']);
-    Route::get('/chat/active-users', [ChatController::class, 'getActiveUsers']);
-
-//for status update if online of offline
-    Route::get('/get-user-status', function (Request $request) {
-        $users = DB::table('users')->select('employee_id', 'last_activity')->get();
-
-        $onlineUsers = [];
-        foreach ($users as $user) {
-            if ($user->last_activity && Carbon::parse($user->last_activity)->diffInMinutes(now()) < 5) {
-                $onlineUsers[] = $user->employee_id; // Online if active within 5 minutes
-            }
-        }
-
-        return response()->json(['onlineUsers' => $onlineUsers]);
-    });
-
-    
-
-    
+    //faq route
+     Route::get('/faq', function () {
+         return view('faq');
+     })->name('faq');
 });
