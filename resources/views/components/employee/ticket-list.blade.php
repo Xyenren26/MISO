@@ -15,11 +15,13 @@
     function getStatusClass($status) {
         switch (strtolower($status)) {
             case 'endorsed':
-                return 'status-completed';
+                return 'status-endorsed';
             case 'completed':
                 return 'status-completed';
             case 'pull-out':
-                return 'status-completed';     
+                return 'status-pull-out';
+            case 'deployment':
+                return 'status-pull-out';        
 
             case 'in-progress':
                 return 'status-in-progress';
@@ -72,9 +74,18 @@
                             <span style="color: orange; font-weight: bold; font-size:15px;">Please Rate Technical Service</span>
                         @elseif ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired) 
                             <span style="color: red; font-weight: bold; font-size:15px;">Processing</span>
-                        @else
-                            Closed
-                        @endif
+                            @else
+                                @switch($ticket->status)
+                                    @case('pull-out')
+                                    @case('deployment')
+                                    @case('endorsed')
+                                    @case('technical-report')
+                                        Closed
+                                        @break
+                                    @default
+                                        {{ ucfirst($ticket->status) }}
+                                @endswitch
+                            @endif
                     </td>
                         <td>
                             <div class="button-container">
@@ -90,7 +101,7 @@
                                         <i class="fas fa-book"></i>
                                     </button>
                             @elseif ($ticket->status == 'pull-out' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated) 
-                                <button class="action-button" onclick="openViewModal('{{ $ticket->control_no }}')">
+                                <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
                                     <i class="fas fa-laptop"></i>
                                 </button>
                             @elseif ($ticket->status == 'deployment' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)               
@@ -126,7 +137,6 @@
         <div class="no-records">NO RECORDS FOUND</div>
     @endif
 </div>
-
 
 <div class="pagination-container">
     <div class="results-count">
@@ -179,8 +189,8 @@
     @endif
 </div>
 
+@include('modals.rating')
 @include('modals.view')
-@include('modals.assist')
 @include('modals.remarks')
 @include('modals.status_change')
 @include('modals.new_device_deployment')
@@ -191,6 +201,7 @@
 @include('modals.technical_report_view')
 @include('modals.new_device_form')
 @include('modals.endorsement')
+
 
 <script src="{{ asset('js/Ticket_Components_Script.js') }}" defer></script>
 <script>

@@ -31,6 +31,9 @@
                 <!-- Processing Tickets -->
                 <button class="tab-button" data-status="processing" onclick="filterTickets('processing', event)">
                     <i class="fas fa-spinner"></i> Processing
+                    @if($inProcessingCount > 0)
+                        <span class="notifcounter">{{ $inProcessingCount }}</span>
+                    @endif
                 </button>
 
                 <!-- Closed Tickets -->

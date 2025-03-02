@@ -139,13 +139,23 @@
                                 </button>
                             @endif
                             
-                            @if ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired)
+                            @if (
+                                Auth::user()->employee_id === $ticket->technical_support_id &&  // Only assigned technical support
+                                $ticket->isRemarksDone && 
+                                $ticket->isApproved && 
+                                $ticket->existsInModels && 
+                                $ticket->formfillup && 
+                                !$ticket->isRated && 
+                                $ticket->status === 'pull-out' && 
+                                !$ticket->isRepaired
+                            )
                                 <button class="status-button" 
                                     onclick="openConfirmationModal('{{ $ticket->serviceRequest->form_no ?? '' }}')"
                                     @if(optional($ticket->serviceRequest)->status === 'repaired') disabled @endif>
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
                             @endif
+
                           
 
                         </div>

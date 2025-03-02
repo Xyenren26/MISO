@@ -3,15 +3,49 @@
 <head>
     <title>Deployment PDF</title>
     <style>
+        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .header h2 {
+            margin: 5px 0 0;
+            font-size: 1em;
+            color: #555;
+        }
+
+        /* Title */
+        .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Table Styling */
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         table, th, td {
@@ -23,24 +57,43 @@
             text-align: left;
         }
 
-        .title {
+        /* Section Title */
+        h3.section-title {
             text-align: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
+            margin: 20px 0 10px;
         }
 
-        .section-title {
-            font-weight: bold;
-            margin-top: 10px;
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-top: 1px solid #ddd;
+            margin-top: auto;
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Techtrack: An Electronic Service Monitoring and Management System</h1>
+        <h2>MISO Technical Support Division</h2>
+    </div>
 
+    <!-- Title -->
     <div class="title">
         New Device Deployment Details
     </div>
 
+    <!-- Deployment Details Table -->
     <table>
         <tr>
             <th>Control Number</th>
@@ -95,8 +148,10 @@
             <td>{{ $noted_date }}</td>
         </tr>
     </table>
-    <h3>Equipment Items</h3>
-    <table border="1">
+
+    <!-- Equipment Items Section -->
+    <h3 class="section-title">Equipment Items</h3>
+    <table>
         <thead>
             <tr>
                 <th>Description</th>
@@ -114,7 +169,10 @@
             @endforeach
         </tbody>
     </table>
-    
 
+    <!-- Footer -->
+    <div class="footer">
+        <p>All Rights Reserved. &copy; Techtrack</p>
+    </div>
 </body>
 </html>

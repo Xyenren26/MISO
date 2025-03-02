@@ -38,7 +38,7 @@
     .rating-container {
     position: absolute;
     top: 50px;
-    right: 20px;
+    right: 40px;
     background: #f8f9fa; /* Light background */
     padding: 5px 10px;
     border-radius: 5px;

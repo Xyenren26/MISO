@@ -80,6 +80,11 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
         
     }
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'technical_support_id', 'employee_id');
+    }
+
     public function sendEmailVerificationNotification()
     {
         $this->notify(new \Illuminate\Auth\Notifications\VerifyEmail);

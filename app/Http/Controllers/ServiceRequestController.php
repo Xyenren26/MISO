@@ -225,7 +225,7 @@ class ServiceRequestController extends Controller
         // Fetch approval details
         $approval = Approval::where('ticket_id', $ticketId)->first();
         // Fetch rating based on control_no
-        $rating = Rating::where('control_no', $serviceRequest->form_no)->first();
+        $rating = Rating::where('control_no', $serviceRequest->ticket_id)->first();
 
         // Return the response as JSON
         return response()->json([
@@ -257,4 +257,40 @@ class ServiceRequestController extends Controller
         ]);
     }
 
+    public function update(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'employee_id' => 'required|integer|min:1',
+                'department' => 'required|string|max:255',
+                'condition' => 'required|array|min:1',
+                'condition.*' => 'string',
+                'technical_support_id' => 'required|exists:users,employee_id',
+                'system_brand' => 'nullable|string|max:255',
+                'monitor_brand' => 'nullable|string|max:255',
+                'laptop_brand' => 'nullable|string|max:255',
+                'printer_brand' => 'nullable|string|max:255',
+                'ups_brand' => 'nullable|string|max:255',
+                'monitor_remarks' => 'nullable|string|max:255',
+                'laptop_remarks' => 'nullable|string|max:255',
+                'printer_remarks' => 'nullable|string|max:255',
+                'ups_remarks' => 'nullable|string|max:255',
+            ]);
+
+            $formNo = $request->input('form_no');
+            $serviceRequest = ServiceRequest::where('form_no', $formNo)->first();
+
+            if ($serviceRequest) {
+                $serviceRequest->update($validated);
+                return response()->json(['message' => 'Service request updated successfully!']);
+            } else {
+                return response()->json(['error' => 'Service request not found.'], 404);
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while updating the service request.'], 500);
+        }
+    }
 }

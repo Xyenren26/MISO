@@ -337,15 +337,20 @@ function openViewModal(formNo) {
                 document.getElementById("qrCodeContainer").style.display = "none";
             }
 
-          // Handle condition
-          const condition = Array.isArray(data.condition) ? data.condition.join(', ') : data.condition || 'N/A';
-          document.getElementById('viewCondition').textContent = condition;
-
           // Populate technical support
           document.getElementById('viewTechnicalSupport').value = data.technical_support;
 
           // Handle service_type and other fields as needed
           document.getElementById(`service_type_${data.service_type}`).checked = true;
+        // Populate condition radio buttons
+        const condition = data.condition; // Assuming data.condition contains the value ("working", "not-working", "needs-repair")
+        if (condition === 'working') {
+            document.getElementById('condition_working').checked = true;
+        } else if (condition === 'not-working') {
+            document.getElementById('condition_not_working').checked = true;
+        } else if (condition === 'needs-repair') {
+            document.getElementById('condition_needs_repair').checked = true;
+        }
 
           // Clear previous table rows
           const equipmentTable = document.getElementById('viewEquipmentTable');

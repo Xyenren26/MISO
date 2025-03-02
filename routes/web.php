@@ -126,6 +126,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/check-service-request/{ticketId}', [ServiceRequestController::class, 'checkServiceRequest']);
     Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service.request.store');
     Route::post('/update-status/{form_no}', [ServiceRequestController::class, 'updateStatus']);
+    Route::post('/update-service-request', [ServiceRequestController::class, 'update']);
     Route::post('/deployments', [DeploymentController::class, 'store'])->name('deployments.store');
     Route::get('/check-deployment/{control_no}', [DeploymentController::class, 'checkDeployment']);
     Route::get('/deployment/view/{control_no}', [DeploymentController::class, 'showDeployment']);
@@ -147,6 +148,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
         Route::post('/user/change-role/{employee_id}', [User_Management_Controller::class, 'changeRole'])->name('user.changeRole');
         Route::patch('/user/toggle-status/{employee_id}', [User_Management_Controller::class, 'toggleStatus'])->name('user.toggleStatus');
         Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
+        Route::get('/export-technician-performance', [Report_Controller::class, 'exportTechnicianPerformance']);
     });
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');
 
@@ -157,4 +159,9 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/send-message-technical/{ticketId}', [Ticket_Controller::class, 'sendMessageToEndUser']);
     Route::get('/message/{id}', [OtherMessagesController::class, 'index'])->name('chatify');
     Route::get('/unseen-messages', [OtherMessagesController::class, 'getUnseenMessages']);
+
+    //faq route
+     Route::get('/faq', function () {
+         return view('faq');
+     })->name('faq');
 });

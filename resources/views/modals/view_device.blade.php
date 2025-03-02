@@ -4,7 +4,7 @@
     border: 2px solid #003067;
     padding: 20px;
     border-radius: 10px;
-    margin-top: 25%;
+    margin-top: 30%;
     margin-left: auto;
     margin-right: auto;
     width: 60%;
@@ -86,6 +86,30 @@
     cursor: pointer;
     transition: 0.3s;
 }
+#updateButton{
+    margin-top: 20px;
+    width: 100%;
+    padding: 8px;
+    background: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+#saveButton{
+    margin-top: 20px;
+    width: 100%;
+    padding: 8px;
+    background: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
 .rating-container {
     position: absolute;
@@ -118,9 +142,9 @@
             <header class="form-popup-header">
 
             <div class="rating-container" id="rating-containerPullOut">
-                    <label class="form-popup-label">Rating:</label>
-                    <div id="starRatingPullOut"></div>
-                </div>
+                <label class="form-popup-label">Rating:</label>
+                <div id="starRatingPullOut"></div>
+            </div>
                 
             <div id="waitingForApprovalService" class="waiting-approval" style="display: none;">
                 <p>🚨 Waiting for admin approval...</p>
@@ -153,11 +177,11 @@
             <section class="form-popup-section-radio">
                 <label>
                     <input type="radio" name="service_type" value="walk_in" required 
-                        id="service_type_walk_in"> Walk-In
+                        id="service_type_walk_in" disabled> Walk-In
                 </label>
                 <label>
                     <input type="radio" name="service_type" value="pull_out" required 
-                        id="service_type_pull_out"> Pull-Out
+                        id="service_type_pull_out"disabled> Pull-Out
                 </label>
             </section>
 
@@ -181,7 +205,9 @@
                 </div>
                 <div class="form-popup-checkbox-group">
                     <label class="form-popup-label">Condition of Equipment:</label>
-                    <span id="viewCondition"></span>
+                    <label><input type="radio" name="condition[]" id="condition_working" value="working" disabled> Working</label>
+                    <label><input type="radio" name="condition[]" id="condition_not_working" value="not-working" disabled> Not Working</label>
+                    <label><input type="radio" name="condition[]" id="condition_needs_repair" value="needs-repair" disabled> Needs Repair</label>
                 </div>
             </section>
 
@@ -227,7 +253,11 @@
             </section>
 
 
-        <button type="button" id="ButtonService"onclick="downloadModalAsPDFService()">Download PDF</button>
+            <button type="button" id="ButtonService"onclick="downloadModalAsPDFService()">Download PDF</button>
+            @if(in_array(auth()->user()->account_type, ['technical_support', 'administrator']))
+                <button type="button" id="updateButton" onclick="toggleEditMode()">Update</button>
+                <button type="button" id="saveButton" style="display: none;" onclick="saveChanges()">Save</button>
+            @endif
         </div>
     </div>
 </div>
@@ -299,6 +329,73 @@
     printWindow.document.write('</body></html>');
     printWindow.document.close();
     printWindow.print();
+}
+
+function toggleEditMode() {
+    const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
+    const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
+    const updateButton = document.getElementById('updateButton');
+    const saveButton = document.getElementById('saveButton');
+
+    // Toggle readonly and disabled attributes
+    inputs.forEach(input => {
+        input.readOnly = !input.readOnly;
+    });
+
+    radios.forEach(radio => {
+        radio.disabled = !radio.disabled;
+    });
+
+    // Toggle button visibility
+    updateButton.style.display = 'none';
+    saveButton.style.display = 'block';
+}
+
+function saveChanges() {
+    const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
+    const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
+    const updateButton = document.getElementById('updateButton');
+    const saveButton = document.getElementById('saveButton');
+
+    // Disable inputs and radios
+    inputs.forEach(input => {
+        input.readOnly = true;
+    });
+
+    radios.forEach(radio => {
+        radio.disabled = true;
+    });
+
+    // Toggle button visibility
+    updateButton.style.display = 'block';
+    saveButton.style.display = 'none';
+
+    // Save changes to the backend
+    const formData = new FormData();
+    inputs.forEach(input => {
+        formData.append(input.id, input.value);
+    });
+    radios.forEach(radio => {
+        if (radio.checked) {
+            formData.append(radio.name, radio.value);
+        }
+    });
+
+    fetch('/update-service-request', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Changes saved successfully!');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save changes.');
+    });
 }
 
 

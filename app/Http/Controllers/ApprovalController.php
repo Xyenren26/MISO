@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketApproved;
 use App\Models\User;
+use Chatify\Facades\ChatifyMessenger as Chatify; 
+use App\Models\ChMessage;
 
 class ApprovalController extends Controller
 {
@@ -39,6 +41,26 @@ class ApprovalController extends Controller
             'noted_by' => auth()->user()->employee_id, // Assuming `noted_by` is the approving admin
         ]);
 
+        // Retrieve the end user ID (assuming ticket has a `user_id` field)
+        $EndUserID = $ticket->employee_id;
+        $SenderID = $ticket->technical_support_id;
+
+        $message = "Hello, {$ticket->name} your ticket with Ticket No:{$ticket->control_no} has been 
+                   Approved by {$approval->name} on {$approval->approve_date}
+                    
+                    If you have any question related to your Ticket Service Request Please fill free to Inquire.
+                    
+                    Thank you by TechTrack Team.";
+
+
+        // Create a new message to notify the end user
+        ChMessage::create([
+            'from_id' => $SenderID, // Sender (could be admin or support staff)
+            'to_id' => $EndUserID, // Recipient (end user)
+            'body' => $message, // The predefined message content
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         // Send email notification
         $emailSent = $this->sendApprovalEmail($ticket);
         

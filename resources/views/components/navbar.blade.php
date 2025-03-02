@@ -59,7 +59,7 @@
                 <div class="dropdown-menu notification-dropdown" id="notificationMenu">
                     <div class="notification-header">
                         <h3>Notifications</h3>
-                        <span class="mark-all" onclick="markAllAsRead()">Mark all as read</span>
+                        <span class="mark-all" onclick="markAllAsRead()">Delete all Notifications</span>
                     </div>
                     <div id="notificationList">
                         <p class="text-muted text-center">No new notifications</p>
@@ -84,6 +84,9 @@
                     <a class="dropdown-item" href="{{ route('profile.index') }}">
                         <i class="fas fa-user-circle"></i> My Account
                     </a>
+                    <a class="dropdown-item" href="{{ url('/faq') }}">
+                        <i class="fas fa-question-circle"></i> FAQ
+                    </a>
                     <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
@@ -95,7 +98,8 @@
             </div>
         </div>
     </div>
-   
+<!-- EMAIL VERIFY ALERT MESSAGE -->
+@include('modals.email_verification_alert')
 <script>
     // Function to toggle user dropdown
     function toggleDropdown() {

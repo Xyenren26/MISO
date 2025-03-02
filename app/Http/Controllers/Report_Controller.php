@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Rating;
 use App\Models\Ticket;
 use App\Models\ServiceRequest;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Response;
+
 
 class Report_Controller extends Controller
 {
@@ -61,8 +64,14 @@ class Report_Controller extends Controller
             ->whereMonth('created_at', $month)
             ->get();
 
-        return $technicians->map(function ($tech) use ($ticketData) {
+        return $technicians->map(function ($tech) use ($ticketData, $year, $month) {
             $techTickets = $ticketData->where('technical_support_id', $tech->employee_id);
+
+            // Fetch ratings and calculate the monthly average rating
+            $averageRating = Rating::where('technical_support_id', $tech->employee_id)
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->avg('rating');
 
             return (object) [
                 'first_name' => $tech->first_name,
@@ -77,38 +86,129 @@ class Report_Controller extends Controller
                     ->whereNotNull('updated_at')
                     ->map(fn($ticket) => $ticket->updated_at->diffInHours($ticket->created_at))
                     ->average() ?: '0',
+                'rating' => $averageRating ? number_format($averageRating, 1) . ' / 5' : 'No Rating'
             ];
         });
     }
 
     private function getTechnicianChartData($technicians, $year, $month)
-    {
-        $chartData = [];
-        $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth;
+{
+    \Log::info("Fetching chart data for Year: $year, Month: $month");
 
-        foreach ($technicians as $tech) {
-            $dailyTickets = Ticket::selectRaw('DAY(created_at) as day, COUNT(*) as count')
-                ->where('technical_support_id', $tech->employee_id)
-                ->whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->groupBy('day')
-                ->pluck('count', 'day')
-                ->toArray();
+    $chartData = [];
+    $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth;
 
-            $ticketsPerDay = array_fill(1, $daysInMonth, 0);
-            foreach ($dailyTickets as $day => $count) {
-                $ticketsPerDay[$day] = $count;
-            }
+    foreach ($technicians as $tech) {
+        // Fetch daily ticket count
+        $dailyTickets = Ticket::selectRaw('DAY(created_at) as day, COUNT(*) as count')
+            ->where('technical_support_id', $tech->employee_id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
 
-            $chartData[] = [
-                'label' => "{$tech->first_name} {$tech->last_name} ({$tech->employee_id})",
-                'data' => array_values($ticketsPerDay),
-                'borderColor' => sprintf("#%06X", mt_rand(0, 0xFFFFFF)),
-                'backgroundColor' => sprintf("rgba(%d,%d,%d,0.2)", rand(0, 255), rand(0, 255), rand(0, 255)),
-                'fill' => true
-            ];
+        \Log::info("Technician {$tech->employee_id} - Daily Tickets: ", $dailyTickets);
+
+        if (empty($dailyTickets)) {
+            \Log::warning("No ticket records found for Technician {$tech->employee_id}");
         }
 
-        return !empty($chartData) ? $chartData : [];
+        $ticketsPerDay = array_fill(1, $daysInMonth, 0);
+        foreach ($dailyTickets as $day => $count) {
+            $ticketsPerDay[$day] = $count;
+        }
+
+        $chartData[] = [
+            'label' => "{$tech->first_name} {$tech->last_name} ({$tech->employee_id})",
+            'data' => array_values($ticketsPerDay),
+            'borderColor' => sprintf("#%06X", mt_rand(0, 0xFFFFFF)),
+            'backgroundColor' => sprintf("rgba(%d,%d,%d,0.2)", rand(0, 255), rand(0, 255), rand(0, 255)),
+            'fill' => true
+        ];
     }
+
+    \Log::info('Final Chart Data:', $chartData);
+
+    return !empty($chartData) ? $chartData : [];
+}
+
+    
+    public function exportTechnicianPerformancePDF(Request $request) {
+        $selectedMonth = $request->query('month', now()->format('Y-m'));
+    
+        $technicians = User::with([
+            'ratings' => function ($query) use ($selectedMonth) {
+                $query->whereMonth('created_at', Carbon::parse($selectedMonth)->month)
+                      ->whereYear('created_at', Carbon::parse($selectedMonth)->year);
+            }
+        ])->get();
+    
+        $pdf = Pdf::loadView('pdf.technician_performance', compact('technicians', 'selectedMonth'));
+    
+        return $pdf->download("TechnicianPerformance_{$selectedMonth}.pdf");
+    }
+    public function exportTechnicianPerformance(Request $request) {
+        $selectedMonth = $request->query('month', now()->format('Y-m')); // Default to current month
+    
+        // Extract year and month
+        [$year, $month] = explode('-', $selectedMonth);
+    
+        // Fetch only technical support users
+        $technicians = User::where('account_type', 'technical_support')
+            ->with([
+                'ratings' => function ($query) use ($year, $month) {
+                    $query->whereYear('created_at', $year)
+                          ->whereMonth('created_at', $month);
+                }
+            ])
+            ->get();
+    
+        // Fetch ticket data for selected month
+        $ticketData = Ticket::whereIn('technical_support_id', $technicians->pluck('employee_id'))
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get();
+    
+        // Define CSV header
+        $csvData = "Technician Name / ID, Tickets Assigned, Tickets Solved, Avg. Resolution Time, Endorsed Tickets, Pull Out Device, Technical Reports Submitted, Rating\n";
+    
+        // Populate the CSV with technician data
+        foreach ($technicians as $technician) {
+            $techTickets = $ticketData->where('technical_support_id', $technician->employee_id);
+    
+            // Calculate performance metrics
+            $ticketsAssigned = $techTickets->count() ?: 'None';
+            $ticketsSolved = $techTickets->where('status', 'completed')->count() ?: 'None';
+            $endorsedTickets = $techTickets->where('status', 'endorsed')->count() ?: 'None';
+            $pullOut = $techTickets->where('status', 'pull-out')->count() ?: 'None';
+            $technicalReports = $techTickets->where('status', 'technical-report')->count() ?: 'None';
+    
+            // Calculate average resolution time
+            $avgResolutionTime = $techTickets->where('status', 'completed')
+                ->whereNotNull('updated_at')
+                ->map(fn($ticket) => $ticket->updated_at->diffInHours($ticket->created_at))
+                ->average() ?: '0';
+            $avgResolutionTime = $avgResolutionTime ? $avgResolutionTime . ' hours' : 'None';
+    
+            // Calculate average rating
+            $averageRating = $technician->ratings->avg('rating') ? number_format($technician->ratings->avg('rating'), 1) . ' / 5' : 'No Rating';
+    
+            // Append row data
+            $csvData .= "{$technician->first_name} {$technician->last_name} / {$technician->employee_id},"
+                . "$ticketsAssigned,"
+                . "$ticketsSolved,"
+                . "$avgResolutionTime,"
+                . "$endorsedTickets,"
+                . "$pullOut,"
+                . "$technicalReports,"
+                . "$averageRating\n";
+        }
+    
+        // Return CSV as a response
+        return response($csvData)
+        ->header('Content-Type', 'text/csv')
+        ->header('Content-Disposition', "attachment; filename=TechnicianPerformance_{$selectedMonth}.csv");
+    }
+    
 }

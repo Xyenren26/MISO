@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* Modal Overlay */
-        .modal-overlay {
+        #modalOverlay {
             display: none;
             position: fixed;
             top: 0;
@@ -19,7 +19,7 @@
         }
 
         /* Modal Container */
-        .modal-container {
+        #ratingModal {
             display: none;
             position: fixed;
             top: 50%;
@@ -34,7 +34,7 @@
             max-width: 90%;
         }
 
-        .modal-header {
+        #modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -43,11 +43,11 @@
             margin-bottom: 15px;
         }
 
-        .modal-header h5 {
+        #modal-header h5 {
             margin: 0;
         }
 
-        .modal-header .btn-minimize {
+        #modal-header .btn-minimize {
             background: none;
             border: none;
             font-size: 20px;
@@ -103,7 +103,7 @@
 
 <!-- Rating Modal -->
 <div class="modal-container" id="ratingModal">
-    <div class="modal-header bg-primary text-white">
+    <div class="modal-header bg-primary text-white" id="modal-header">
         <h5 class="modal-title">Rate Technical Support</h5>
         <div>
             <button type="button" class="btn-minimize" onclick="hideRating()">✖</button>

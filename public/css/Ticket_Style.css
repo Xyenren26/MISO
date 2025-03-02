@@ -269,7 +269,7 @@
 
 /* Status color classes */
 .status-endorsed {
-    color: #007bff; /* Blue for endorsed */
+    color: #28a745; /* Blue for endorsed */
     font-weight: bold;
 }
 
@@ -279,16 +279,16 @@
 }
 
 .status-in-progress {
-    color: #ffc107; /* Yellow for in-progress */
+    color: #ff9900; /* Yellow for in-progress */
     font-weight: bold;
 }
 
 .status-technical-report {
-    color: #ff0000; /* Purple for technical-report */
+    color: #28a745; /* Purple for technical-report */
     font-weight: bold;
 }
 .status-pull-out {
-    color: hsl(318, 55%, 46%); /* Purple for technical-report */
+    color: #28a745; /* Purple for technical-report */
     font-weight: bold;
 }
 

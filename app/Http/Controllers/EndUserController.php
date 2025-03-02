@@ -19,25 +19,45 @@ use Illuminate\Support\Facades\Log;
 
 class EndUserController extends Controller
 {
-    public function index()
-    {
+    public function index(){
         // Fetch all technical support users excluding the current one
         $technicalSupports = User::where('account_type', 'technical_support')
-        ->whereNotNull('session_id')  // Check if 'time_in' is not null
-        ->get();
-
+            ->whereNotNull('session_id')  // Check if 'time_in' is not null
+            ->get();
+    
+        // Count tickets based on status
+        $inProcessingCount = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+                    ->where('employee_id', Auth::user()->employee_id)
+                    ->whereDoesntHave('ratings')
+                    ->count();
+        $inProgressRequests = Ticket::where('status', 'in-progress')->count();
+        $resolvedTickets = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+                                ->where('employee_id', Auth::user()->employee_id)
+                                ->whereHas('ratings')
+                                ->count();
+    
         // Get the current year for control number formatting
         $currentYear = now()->year;
         $lastTicket = Ticket::whereYear('created_at', $currentYear)
             ->orderBy('control_no', 'desc')
             ->first();
-
+    
         // Calculate the next control number
         $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
         $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
-        return view ('employee.home', compact('technicalSupports', 'formattedControlNo'));
-    }
-        
+    
+        // Pass variables to the view
+        return view('employee.home', compact(
+            'technicalSupports', 
+            'formattedControlNo', 
+            'inProcessingCount', 
+            'inProgressRequests', 
+            'resolvedTickets'
+        ));
+
+        $recentTickets = \App\Models\Ticket::latest('time_in')->take(10)->get();
+
+    }      
     
     public function showEmployeeTicket()
     {
@@ -99,7 +119,7 @@ class EndUserController extends Controller
             ->get();
 
             $inProgressCount = Ticket::where('status', 'in-progress')
-            ->where('technical_support_id', Auth::user()->employee_id) // Only count tickets assigned to the logged-in user
+            ->where('employee_id', Auth::user()->employee_id) // Only count tickets assigned to the logged-in user
             ->count();
 
             $endorsedCount = Ticket::where('status', 'endorsed')
@@ -129,6 +149,11 @@ class EndUserController extends Controller
                     $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
                 })
                 ->count();
+            $inProcessingCount = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+                ->where('employee_id', Auth::user()->employee_id)
+                ->whereDoesntHave('ratings')
+                ->count();
+
 
         // Add isApproved and existsInModels check for each ticket
         foreach ($tickets as $ticket) {
@@ -167,7 +192,7 @@ class EndUserController extends Controller
         return view('employee.ticket', compact(
             'tickets', 'technicalAssistSupports', 'technicalSupports', 
             'formattedControlNo', 'nextFormNo', 'inProgressCount', 'endorsedCount' ,
-            'technicalReportCount','pullOutCount', 'deploymentCount'
+            'technicalReportCount','pullOutCount', 'deploymentCount','inProcessingCount'
         ));
     }
 
