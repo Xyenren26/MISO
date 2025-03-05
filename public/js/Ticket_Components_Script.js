@@ -365,70 +365,73 @@ function openViewModal(formNo) {
               { type: 'UPS', parts: [], remarks: 'ups_remarks' }
           ];
 
-          // Loop through each equipment type to generate and populate rows
-          equipmentTypes.forEach((equipmentType) => {
-              // Create a new table row
-              const row = document.createElement('tr');
+            // Loop through each equipment type to generate and populate rows
+            equipmentTypes.forEach((equipmentType) => {
+                const row = document.createElement('tr');
 
-              // Add brand input field
-              const brandCell = document.createElement('td');
-              const brandInput = document.createElement('input');
-              brandInput.classList.add('form-popup-input');
-              brandInput.type = 'text';
-              brandInput.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_brand`;
-              brandInput.placeholder = 'Brand';
-              row.appendChild(brandCell);
-              brandCell.appendChild(brandInput);
+                // Add brand input field
+                const brandCell = document.createElement('td');
+                const brandInput = document.createElement('input');
+                brandInput.classList.add('form-popup-input');
+                brandInput.type = 'text';
+                brandInput.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_brand`;
+                brandInput.placeholder = 'Brand';
+                brandInput.readOnly = true; // Prevent editing
+                row.appendChild(brandCell);
+                brandCell.appendChild(brandInput);
 
-              // Add equipment type description
-              const typeCell = document.createElement('td');
-              typeCell.textContent = equipmentType.type;
-              row.appendChild(typeCell);
+                // Add equipment type description
+                const typeCell = document.createElement('td');
+                typeCell.textContent = equipmentType.type;
+                row.appendChild(typeCell);
 
-              // Add checkbox cells based on parts
-              equipmentType.parts.forEach((part) => {
-                  const partCell = document.createElement('td');
-                  const checkbox = document.createElement('input');
-                  checkbox.type = 'checkbox';
-                  checkbox.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_${part}`;
-                  partCell.appendChild(checkbox);
-                  row.appendChild(partCell);
-              });
+                // Add checkbox cells based on parts
+                equipmentType.parts.forEach((part) => {
+                    const partCell = document.createElement('td');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_${part}`;
+                    checkbox.disabled = true; // Prevent editing
+                    partCell.appendChild(checkbox);
+                    row.appendChild(partCell);
+                });
 
-              // Add remarks field
-              const remarksCell = document.createElement('td');
-              const remarksInput = document.createElement('input');
-              remarksInput.classList.add('form-popup-input');
-              remarksInput.type = 'text';
-              remarksInput.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_remarks`;
-              remarksInput.placeholder = 'Remarks';
-              row.appendChild(remarksCell);
-              remarksCell.appendChild(remarksInput);
+                // Add remarks field
+                const remarksCell = document.createElement('td');
+                const remarksInput = document.createElement('input');
+                remarksInput.classList.add('form-popup-input');
+                remarksInput.type = 'text';
+                remarksInput.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_remarks`;
+                remarksInput.placeholder = 'Remarks';
+                remarksInput.readOnly = true; // Prevent editing
+                row.appendChild(remarksCell);
+                remarksCell.appendChild(remarksInput);
 
-              // Append row to the table
-              equipmentTable.appendChild(row);
+                // Append row to the table
+                equipmentTable.appendChild(row);
 
-              // Fixing colspan for Remarks Column (Monitor, Printer, UPS)
-              if (equipmentType.parts.length === 0) {
-                  remarksCell.colSpan = 4; // Merge Remarks cell instead of Equipment Type
-              }
+                // Fixing colspan for Remarks Column (Monitor, Printer, UPS)
+                if (equipmentType.parts.length === 0) {
+                    remarksCell.colSpan = 4;
+                }
 
-              // Populate data for this equipment type
-              const equipmentDescription = data.equipment_descriptions.find(description => description.equipment_type === equipmentType.type);
-              if (equipmentDescription) {
-                  // Set brand and remarks if available
-                  brandInput.value = equipmentDescription.brand || '';
-                  remarksInput.value = equipmentDescription.remarks || '';
+                // Populate data for this equipment type
+                const equipmentDescription = data.equipment_descriptions.find(description => description.equipment_type === equipmentType.type);
+                if (equipmentDescription) {
+                    // Set brand and remarks if available
+                    brandInput.value = equipmentDescription.brand || '';
+                    remarksInput.value = equipmentDescription.remarks || '';
 
-                  // Handle parts (checkboxes)
-                  equipmentType.parts.forEach((part) => {
-                      const checkbox = row.querySelector(`[name="${equipmentType.type.toLowerCase().replace(' ', '_')}_${part}"]`);
-                      if (checkbox) {
-                          checkbox.checked = equipmentDescription.equipment_parts.some(p => p.toLowerCase() === part);
-                      }
-                  });
-              }
-          });
+                    // Handle parts (checkboxes)
+                    equipmentType.parts.forEach((part) => {
+                        const checkbox = row.querySelector(`[name="${equipmentType.type.toLowerCase().replace(' ', '_')}_${part}"]`);
+                        if (checkbox) {
+                            checkbox.checked = equipmentDescription.equipment_parts.some(p => p.toLowerCase() === part);
+                        }
+                    });
+                }
+            });
+
 
           // Populate approval details
           document.getElementById("viewNotedByService").value = data.approval.name;

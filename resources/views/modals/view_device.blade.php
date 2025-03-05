@@ -49,6 +49,9 @@
 }
 
 .status-text {
+    border: none;
+    background: transparent;
+    outline: none;
     font-weight: bold;
     color: #333; /* Match label color */
     font-size: 16px;
@@ -157,7 +160,7 @@
 
             <div class="status-container">
                     <label class="form-popup-label">Status:</label>
-                    <input type="text" id="viewStatusService" class="form-input-no" readonly>
+                    <input type="text" id="viewStatusService" class="status-text" readonly>
                 </div>
 
                 <div class="form-popup-logo">
@@ -271,47 +274,79 @@
     function downloadModalAsPDFService() {
         const { jsPDF } = window.jspdf;
         const modal = document.getElementById("viewFormPopup");
+        const modalContent = modal.querySelector(".form-popup-content-view");
 
         // Ensure modal is visible before capturing
         const previousDisplay = modal.style.display;
-        modal.style.display = "block"; 
+        modal.style.display = "block";
 
-        // Store original background color
-        const originalBg = modal.style.backgroundColor;
+        // Hide buttons before capturing
+        const elementsToHide = [
+            modal.querySelector(".form-popup-close-btn"),
+            document.getElementById("ButtonService"),
+            document.getElementById("updateButton"),
+            document.getElementById("saveButton")
+        ];
 
-        // Change background to white before capturing
-        modal.style.backgroundColor = "white";
+        elementsToHide.forEach(el => {
+            if (el) el.style.display = "none";
+        });
 
-        html2canvas(modal, {
+        // Store original styles
+        const originalStyles = {
+            background: document.body.style.backgroundColor,
+            width: modalContent.style.width,
+            height: modalContent.style.height,
+            position: modalContent.style.position,
+            padding: modalContent.style.padding,
+            margin: modalContent.style.margin,
+        };
+
+        // Make modal full-page with white background
+        document.body.style.backgroundColor = "white";
+        modalContent.style.width = "100vw";
+        modalContent.style.height = "100vh";
+        modalContent.style.position = "fixed";
+        modalContent.style.padding = "20px";
+        modalContent.style.margin = "0";
+
+        html2canvas(modalContent, {
             scale: 3,
             backgroundColor: "#ffffff",
             useCORS: true,
-            windowWidth: modal.scrollWidth,
-            windowHeight: modal.scrollHeight
+            windowWidth: modalContent.scrollWidth,
+            windowHeight: modalContent.scrollHeight
         }).then(canvas => {
             const pdf = new jsPDF("p", "mm", "a4");
 
-            const pageWidth = 210; // A4 width in mm
-            const imgWidth = 250; // Set width for the modal in the PDF
+            const imgWidth = 210; // A4 width in mm
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            // Calculate x position to center the modal
-            const xPosition = (pageWidth - imgWidth) / 2;
-            let yPosition = 10; // Top margin
-
-            pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+            pdf.addImage(canvas, "PNG", 0, 0, imgWidth, imgHeight);
 
             // Handle multi-page PDFs if content is long
             let heightLeft = imgHeight;
+            let position = 0;
+
             while (heightLeft > 297) {
-                yPosition -= 297;
+                position -= 297;
                 pdf.addPage();
-                pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+                pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
                 heightLeft -= 297;
             }
 
-            // Restore original background color after capturing
-            modal.style.backgroundColor = originalBg;
+            // Restore original styles
+            document.body.style.backgroundColor = originalStyles.background;
+            modalContent.style.width = originalStyles.width;
+            modalContent.style.height = originalStyles.height;
+            modalContent.style.position = originalStyles.position;
+            modalContent.style.padding = originalStyles.padding;
+            modalContent.style.margin = originalStyles.margin;
+
+            // Show hidden buttons again
+            elementsToHide.forEach(el => {
+                if (el) el.style.display = "block";
+            });
 
             // Get control number for filename
             const controlNo = document.getElementById("viewFormNoService").value || "Pullout";
@@ -322,81 +357,81 @@
     }
 
     function printQRCode() {
-    var qrCodeDiv = document.querySelector('.qr-code');
-    var printWindow = window.open('', '_blank', 'width=600,height=400');
-    printWindow.document.write('<html><head><title>Print QR Code</title></head><body>');
-    printWindow.document.write(qrCodeDiv.outerHTML);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
-}
+        var qrCodeDiv = document.querySelector('.qr-code');
+        var printWindow = window.open('', '_blank', 'width=600,height=400');
+        printWindow.document.write('<html><head><title>Print QR Code</title></head><body>');
+        printWindow.document.write(qrCodeDiv.outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
 
-function toggleEditMode() {
-    const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
-    const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
-    const updateButton = document.getElementById('updateButton');
-    const saveButton = document.getElementById('saveButton');
+    function toggleEditMode() {
+        const formPopup = document.getElementById('viewFormPopup');
+        const inputs = formPopup.querySelectorAll('input, textarea, select');
+        const updateButton = document.getElementById('updateButton');
+        const saveButton = document.getElementById('saveButton');
 
-    // Toggle readonly and disabled attributes
-    inputs.forEach(input => {
-        input.readOnly = !input.readOnly;
-    });
+        // Enable all input fields, checkboxes, radios, and selects
+        inputs.forEach(input => {
+            if (input.type !== "button" && input.type !== "submit") {
+                input.removeAttribute("readonly");
+                input.removeAttribute("disabled");
+            }
+        });
 
-    radios.forEach(radio => {
-        radio.disabled = !radio.disabled;
-    });
+        // Toggle button visibility
+        if (updateButton) updateButton.style.display = 'none';
+        if (saveButton) saveButton.style.display = 'block';
+    }
 
-    // Toggle button visibility
-    updateButton.style.display = 'none';
-    saveButton.style.display = 'block';
-}
 
-function saveChanges() {
-    const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
-    const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
-    const updateButton = document.getElementById('updateButton');
-    const saveButton = document.getElementById('saveButton');
+    function saveChanges() {
+        const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
+        const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
+        const updateButton = document.getElementById('updateButton');
+        const saveButton = document.getElementById('saveButton');
 
-    // Disable inputs and radios
-    inputs.forEach(input => {
-        input.readOnly = true;
-    });
+        // Disable inputs and radios
+        inputs.forEach(input => {
+            input.readOnly = true;
+        });
 
-    radios.forEach(radio => {
-        radio.disabled = true;
-    });
+        radios.forEach(radio => {
+            radio.disabled = true;
+        });
 
-    // Toggle button visibility
-    updateButton.style.display = 'block';
-    saveButton.style.display = 'none';
+        // Toggle button visibility
+        updateButton.style.display = 'block';
+        saveButton.style.display = 'none';
 
-    // Save changes to the backend
-    const formData = new FormData();
-    inputs.forEach(input => {
-        formData.append(input.id, input.value);
-    });
-    radios.forEach(radio => {
-        if (radio.checked) {
-            formData.append(radio.name, radio.value);
-        }
-    });
+        // Save changes to the backend
+        const formData = new FormData();
+        inputs.forEach(input => {
+            formData.append(input.id, input.value);
+        });
+        radios.forEach(radio => {
+            if (radio.checked) {
+                formData.append(radio.name, radio.value);
+            }
+        });
 
-    fetch('/update-service-request', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert('Changes saved successfully!');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to save changes.');
-    });
-}
+        fetch('/update-service-request', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Changes saved successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to save changes.');
+        });
+    }
 
 
 </script>

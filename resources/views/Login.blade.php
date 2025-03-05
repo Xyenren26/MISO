@@ -72,19 +72,19 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-content">
-      <p>&copy; 2025 Electronic Service Queuing Management System. All Rights Reserved.</p>
+      <p>&copy; TechTrack: An Electronic Service Monitoring and Management
+      System.</p>
       
       <div class="contact-info">
         <p><i class="fas fa-phone-alt"></i> Phone: +63 912 345 6789</p>
-        <p><i class="fas fa-envelope"></i> Email: <a href="mailto:support@esqms.ph">support@esqms.ph</a></p>
-        <p><i class="fas fa-globe"></i> Website: <a href="https://www.esqms.ph" target="_blank">www.esqms.ph</a></p>
+        <p><i class="fas fa-envelope"></i> Email: <a href="mailto:support@esqms.ph">support@techtrack.com</a></p>
+        <p><i class="fas fa-globe"></i> Website: <a href="https://www.techtrack.com" target="_blank">www.techtrack.com</a></p>
       </div>
 
       <div class="social-icons">
-        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
-        <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+        <a href="https://www.facebook.com/PasigPIO" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://twitter.com/PasigInfo" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com/pasigpio" target="_blank"><i class="fab fa-instagram"></i></a>
       </div>
     </div>
   </footer>

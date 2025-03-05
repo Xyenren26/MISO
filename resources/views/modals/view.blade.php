@@ -58,6 +58,10 @@
                 <label>Concern/Problem:</label>
                 <span id="ticketConcern" class="boxed-span"></span>
             </div>
+            <div class="concern-box">
+                <label>Remarks:</label>
+                <span id="ticketRemarks" class="boxed-span"></span>
+            </div>
 
             <!-- Support Details Box -->
             <div class="support-details-box">
@@ -89,6 +93,7 @@ function showTicketDetails(controlNo) {
           document.getElementById('ticketFirstName').innerText = data.ticket.name;
           document.getElementById('ticketDepartment').innerText = data.ticket.department;
           document.getElementById('ticketConcern').innerText = data.ticket.concern;
+          document.getElementById('ticketRemarks').innerText = data.ticket.remarks ? data.ticket.remarks : "There are no remarks yet";
           document.getElementById('ticketPriority').innerText = data.ticket.priority;
           document.getElementById('ticketEmployeeId').innerText = data.ticket.employee_id;
           document.getElementById('ticketTechnicalSupport').innerText = data.ticket.technical_support_name;
