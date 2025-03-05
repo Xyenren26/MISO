@@ -75,32 +75,103 @@
   </div>
   
 <!-- Footer -->
-<footer class="footer">
-  <div class="footer-content">
-    <p>&copy; 2025 Electronic Service Queuing Management System. All Rights Reserved.</p>
-    
-    <div class="contact-info">
-      <p><i class="fas fa-phone-alt"></i> Phone: +63 912 345 6789</p>
-      <p><i class="fas fa-envelope"></i> Email: <a href="mailto:support@esqms.ph">support@esqms.ph</a></p>
-      <p><i class="fas fa-globe"></i> Website: <a href="https://www.esqms.ph" target="_blank">www.esqms.ph</a></p>
-    </div>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; TechTrack: An Electronic Service Monitoring and Management
+      System.</p>
+      
+      <div class="contact-info">
+        <p><i class="fas fa-phone-alt"></i> Phone: +63 912 345 6789</p>
+        <p><i class="fas fa-envelope"></i> Email: <a href="mailto:support@esqms.ph">support@techtrack.com</a></p>
+        <p><i class="fas fa-globe"></i> Website: <a href="https://www.techtrack.com" target="_blank">www.techtrack.com</a></p>
+      </div>
 
-    <div class="social-icons">
-      <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
-      <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-      <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/PasigPIO" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://twitter.com/PasigInfo" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com/pasigpio" target="_blank"><i class="fab fa-instagram"></i></a>
+      </div>
     </div>
-  </div>
-</footer>
+  </footer>
 
-<div id="privacy-policy-modal" class="modal">
+  <div id="privacy-policy-modal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Privacy Policy</h2>
-    <p>This Privacy Policy describes how Pasig City Hall's Management Information Systems Office (MISO) collects, uses, discloses, and protects your personal information when you use the E-PIS (Enhanced Pasig Inventory System) and related services...</p>
+    <p>
+      This Privacy Policy describes how Pasig City Hall's Management Information Systems Office (MISO) collects, uses, discloses, and protects your personal information when you use the TechTrack: An Electronic Service Monitoring and Management System and related services. We are devoted to protecting your privacy and handling your personal information responsibly.
+    </p>
+
+    <h3>1. Data Collection Methods</h3>
+    <p>
+      MISO gathers personal information that you submit while using our services, as well as data about how you access and interact with the platform. This data is collected through forms, user activities, and automated techniques such as cookies and server logs. The information gathered is utilized to improve platform functionality, user experience, and ensure effective service delivery and support.
+    </p>
+
+    <h3>2. Personal Data Gathering</h3>
+    <p>
+      The collection of personal information occurs when you register or use our services. This information may include your name, email address, phone number, employee ID, and address. The information we gather allows us to verify your identity, manage your account, and provide personalized features and support, ensuring a secure and efficient experience on our platform.
+    </p>
+
+    <h3>3. Service Usage Analytics</h3>
+    <p>
+      We collect usage data to better understand how you interact with our services. This includes information on your device's Internet Protocol (IP) address, browser type, operating system, the pages you view, and the date and time of your visit. This information allows us to analyze trends, optimize system operation, and provide a more personalized user experience.
+    </p>
+
+    <h3>4. Cookies and Monitoring Technologies</h3>
+    <p>
+      We use cookies and other tracking technologies to enhance your user experience on our platform. Cookies are small data files stored on your device that help us remember your preferences, understand how you use our site, and improve the performance of our services. You can manage or deactivate cookies in your browser settings, but this may limit certain functionalities.
+    </p>
+
+    <h3>5. Information Usage Practices</h3>
+    <p>
+      The data we collect is used to provide, maintain, and enhance our services. This includes addressing user requests, managing accounts, and improving system functionality. Additionally, we may use your information to communicate with you, respond to inquiries, provide customer support, and send important service updates or notifications.
+    </p>
+
+    <h3>6. Disclosure of Personal Data</h3>
+    <p>
+      We prioritize your privacy and are committed to safeguarding your information. We may disclose your data in specific situations, including:
+      <ul>
+        <li>With service providers who assist in system operations.</li>
+        <li>To comply with legal obligations.</li>
+        <li>During business transfers such as mergers or acquisitions.</li>
+        <li>With your explicit consent.</li>
+      </ul>
+    </p>
+
+    <h3>7. Data Privacy Protection</h3>
+    <p>
+      We implement security measures such as encryption, firewalls, and regular security audits to protect your personal information. However, despite our efforts, we cannot guarantee absolute security due to inherent risks associated with data transmission and storage.
+    </p>
+
+    <h3>8. Personal Data Rights</h3>
+    <p>
+      As a user, you have certain rights regarding your personal information, including the right to:
+      <ul>
+        <li>Access, modify, or delete your personal data.</li>
+        <li>Restrict or object to data processing.</li>
+        <li>File a complaint with the appropriate data protection authorities if you believe your rights have been violated.</li>
+      </ul>
+    </p>
+
+    <h3>9. Changes to This Privacy Policy</h3>
+    <p>
+      We may update our Privacy Policy from time to time. We encourage you to review this Privacy Policy periodically for any changes.
+    </p>
+
+    <h3>10. Contact Us</h3>
+    <p>
+      If you have any questions about this Privacy Policy, please contact us:
+      <ul>
+        <li>Email: <a href="mailto:pasigmiso@pasig.city.com">pasigmiso@pasig.city.com</a></li>
+        <li>Phone: +63 123-2131</li>
+        <li>Address: Pasig City</li>
+      </ul>
+    </p>
   </div>
 </div>
+
+
 <script src="{{ asset('js/Signup_Script.js') }}"></script>
 </body>
 </html>

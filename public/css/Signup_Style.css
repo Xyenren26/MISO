@@ -60,6 +60,26 @@ body {
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }
+.modal-content h2 {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.modal-content h2 {
+  font-family: 'Arial', sans-serif;
+  font-size: 24px;
+  color: #4A4A4A;
+  text-align: center;
+  margin: 20px 0;
+  padding: 10px;
+  border-bottom: 2px solid #4A4A4A;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color 0.3sease;
+}
 
 .sign-up-container h2 {
   text-align: center;
