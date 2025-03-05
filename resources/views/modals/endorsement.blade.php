@@ -198,6 +198,14 @@
                 <label for="control_no">Control No:</label>
                 <input type="text" id="EndorsementControlNo" name="control_no" class="modal-input-box" readonly>
             </div>
+            <div class="modal-form-section">
+                <label for="employee">Employee Name:</label>
+                <input type="text" id="EndorsementEmployee" name="employeee" class="modal-input-box" readonly>
+            </div>
+            <div class="modal-form-section">
+                <label for="employee">Employee ID:</label>
+                <input type="text" id="EndorsementEmployeeID" name="employeeeid" class="modal-input-box" readonly>
+            </div>
 
             <!-- Department Section -->
             <div class="modal-form-section">
@@ -212,86 +220,31 @@
 
                     <!-- Left Column -->
                     <div class="modal-column">
-                        <h4>Internet/System/Void</h4>
                         <div class="modal-checkbox-group">
                             <div>
-                                <input type="checkbox" name="network[]" value="IP ADDRESS">
-                                <label>IP ADDRESS</label>
-                                <input type="text" name="network_details[IP ADDRESS]" placeholder="Details" style="display: none;">
+                                <input type="checkbox" name="network[]" value="Network diagnostics">
+                                <label>Network diagnostics</label>
+                                <input type="text" name="network_details[Network diagnostics]" placeholder="Details" style="display: none;">
                             </div>
                             <div>
-                                <input type="checkbox" name="network[]" value="MAC ADDRESS">
-                                <label>MAC ADDRESS</label>
-                                <input type="text" name="network_details[MAC ADDRESS]" placeholder="Details" style="display: none;">
+                                <input type="checkbox" name="network[]" value="Connectivity and access issues">
+                                <label>Connectivity and access issues</label>
+                                <input type="text" name="network_details[Connectivity and access issues]" placeholder="Details" style="display: none;">
                             </div>
                             <div>
-                                <input type="checkbox" name="network[]" value="PING TEST">
-                                <label>PING TEST</label>
-                                <input type="text" name="network_details[PING TEST]" placeholder="Details" style="display: none;">
+                                <input type="checkbox" name="network[]" value="Account creation and management">
+                                <label>Account creation and management</label>
+                                <input type="text" name="network_details[Account creation and management]" placeholder="Details" style="display: none;">
                             </div>
                             <div>
-                                <input type="checkbox" name="network[]" value="TRACET">
-                                <label>TRACET</label>
-                                <input type="text" name="network_details[TRACET]" placeholder="Details" style="display: none;">
+                                <input type="checkbox" name="network[]" value="File sharing and folder permissions">
+                                <label>File sharing and folder permissions</label>
+                                <input type="text" name="network_details[File sharing and folder permissions]" placeholder="Details" style="display: none;">
                             </div>
                             <div>
-                                <input type="checkbox" name="network[]" value="NETWORK CABLE TEST">
-                                <label>NETWORK CABLE TEST</label>
-                                <input type="text" name="network_details[NETWORK CABLE TEST]" placeholder="Details" style="display: none;">
-                            </div>
-                            <div>
-                                <input type="checkbox" name="network[]" value="WEBSITE ACCESS">
-                                <label>WEBSITE ACCESS</label>
-                                <input type="text" name="network_details[WEBSITE ACCESS]" placeholder="Details" style="display: none;">
-                            </div>
-                            <div>
-                                <input type="checkbox" name="network[]" value="ROUTER / ACCESS POINT">
-                                <label>ROUTER / ACCESS POINT</label>
-                                <input type="text" name="network_details[ROUTER / ACCESS POINT]" placeholder="Details" style="display: none;">
-                            </div>
-                            <div>
-                                <input type="checkbox" name="network[]" value="VOID">
-                                <label>VOID</label>
-                                <input type="text" name="network_details[VOID]" placeholder="Details" style="display: none;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-column">
-                        <h4>User Account</h4>
-                        <div class="modal-checkbox-group">
-                            <div>
-                                <input type="checkbox" name="user_account[]" value="NEW DOMAIN ACCOUNT CREATION">
-                                <label>NEW DOMAIN ACCOUNT CREATION</label>
-                                <input type="text" name="user_account_details[NEW DOMAIN ACCOUNT CREATION]" placeholder="Details" style="display: none;">
-                            </div>
-                            <div>
-                                <input type="checkbox" name="user_account[]" value="WINDOWS ACCOUNT RESET">
-                                <label>WINDOWS ACCOUNT RESET</label>
-                                <input type="text" name="user_account_details[WINDOWS ACCOUNT RESET]" placeholder="Details" style="display: none;">
-                            </div>
-                            <div>
-                                <input type="checkbox" name="user_account[]" value="ADMIN">
-                                <label>ADMIN</label>
-                                <input type="text" name="user_account_details[ADMIN]" placeholder="Details" style="display: none;">
-                            </div>
-                            <div>
-                                <input type="checkbox" name="user_account[]" value="FILE SHARING / FILE SERVER">
-                                <label>FILE SHARING / FILE SERVER</label>
-                                <input type="text" name="user_account_details[FILE SHARING / FILE SERVER]" placeholder="Details" style="display: none;">
-                            </div>
-                            <div>
-                                <input type="checkbox" name="user_account[]" value="FOLDER CREATION">
-                                <label>FOLDER CREATION</label>
-                                <input type="text" name="user_account_details[FOLDER CREATION]" placeholder="Office/Folder Name" style="display: none;">
-                            </div>
-                            <div class="inline-group">
-                                <div class="inline-header">
-                                    <input type="checkbox" name="user_account[]" value="FOLDER ACCESS">
-                                    <label>FOLDER ACCESS</label>
-                                    <input type="text" name="user_account_details[FOLDER ACCESS]" placeholder="Folder Name" style="display: none;">
-                                </div>
-                                <input type="text" name="user_account_details[FOLDER ACCESS_USER]" placeholder="User Full Name" class="full-width" style="display: none;">
+                                <input type="checkbox" name="network[]" value="others">
+                                <label>Others</label>
+                                <input type="text" name="network_details[others]" placeholder="Details" style="display: none;">
                             </div>
                         </div>
                     </div>

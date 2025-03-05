@@ -97,9 +97,8 @@
 
                 <!-- Left Column - Network Issues -->
                 <div class="modal-column">
-                    <h4>Internet/System/Void</h4>
                     <div class="modal-checkbox-group">
-                        @foreach(['IP ADDRESS', 'MAC ADDRESS', 'PING TEST', 'TRACET', 'NETWORK CABLE TEST', 'WEBSITE ACCESS', 'ROUTER / ACCESS POINT', 'VOID'] as $networkItem)
+                        @foreach(['Network diagnostics', 'Connectivity and access issues', 'Account creation and management', 'File sharing and folder permissions', 'others'] as $networkItem)
                             <div>
                                 <input type="checkbox" name="network[]" value="{{ $networkItem }}" disabled>
                                 <label>{{ $networkItem }}</label>
@@ -108,38 +107,6 @@
                         @endforeach
                     </div>
                 </div>
-
-                <!-- Right Column - User Account Issues -->
-                <div class="modal-column">
-                    <h4>User Account</h4>
-                    <div class="modal-checkbox-group">
-                        @foreach([
-                            'NEW DOMAIN ACCOUNT CREATION', 
-                            'WINDOWS ACCOUNT RESET', 
-                            'ADMIN', 
-                            'FILE SHARING / FILE SERVER', 
-                            'FOLDER CREATION', 
-                            'FOLDER ACCESS'
-                        ] as $userAccountItem)
-                        <div class="inline-group">
-                            <div class="inline-header">
-                                <input type="checkbox" name="user_account[]" value="{{ $userAccountItem }}" disabled>
-                                <label>{{ $userAccountItem }}</label>
-                                <input type="text" name="user_account_details[{{ $userAccountItem }}]" 
-                                    placeholder="{{ $userAccountItem === '' ? 'Folder Name' : '' }}" readonly disabled>
-                            </div>
-
-                            @if($userAccountItem === 'FOLDER ACCESS')
-                                <div class="inline-extra">
-                                    <input type="text" name="user_account_details[FOLDER ACCESS_USER]" placeholder="" readonly disabled>
-                                </div>
-                            @endif
-                        </div>
-
-                        @endforeach
-                    </div>
-                </div>
-
             </div>
         </div>
 

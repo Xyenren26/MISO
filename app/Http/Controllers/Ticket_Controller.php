@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TicketArchive;
 use App\Models\TicketHistory;
 use App\Models\Approval;
 use App\Models\Ticket;
@@ -539,6 +540,7 @@ class Ticket_Controller extends Controller
 
             return response()->json([
                 'endorsement' => $endorsement,
+                'ticket' => $ticket,
                 'technical_support' => $technicalSupport ? [
                     'first_name' => $technicalSupport->first_name,
                     'last_name' => $technicalSupport->last_name,
@@ -560,8 +562,6 @@ class Ticket_Controller extends Controller
             'department' => 'required|string|max:255',
             'network' => 'nullable|array',
             'network_details' => 'nullable|array',
-            'user_account' => 'nullable|array',
-            'user_account_details' => 'nullable|array',
             'endorsed_to' => 'nullable|string|max:255',
             'endorsed_to_date' => 'nullable|date',
             'endorsed_to_time' => 'nullable|date_format:H:i',
@@ -579,9 +579,6 @@ class Ticket_Controller extends Controller
         // Convert arrays to JSON
         $validated['network'] = json_encode($request->input('network', []));
         $validated['network_details'] = json_encode($request->input('network_details', []));
-        $validated['user_account'] = json_encode($request->input('user_account', []));
-        $validated['user_account_details'] = json_encode($request->input('user_account_details', []));
-
         // Check if endorsement already exists
         $endorsement = Endorsement::where('control_no', $validated['control_no'])->first();
 
@@ -650,8 +647,6 @@ class Ticket_Controller extends Controller
             'endorsed_by_remarks' => $endorsement->endorsed_by_remarks ?? "Not Available",
             'network' => $this->safeJsonDecode($endorsement->network),
             'network_details' => $this->safeJsonDecode($endorsement->network_details),
-            'user_account' => $this->safeJsonDecode($endorsement->user_account),
-            'user_account_details' => $this->safeJsonDecode($endorsement->user_account_details),
            
             // Approval details
             'approval' => [
@@ -817,5 +812,15 @@ class Ticket_Controller extends Controller
         }
     
         return response()->json(['success' => false, 'message' => 'Ticket is already marked as Remarks Done.']);
+    }
+
+    public function archiveTicket($control_no)
+    {
+        $ticket = Ticket::findOrFail($control_no);
+
+        // Archive the ticket
+        $ticket->archive();
+
+        return response()->json(['message' => 'Ticket archived successfully.']);
     }
 }

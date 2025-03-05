@@ -26,11 +26,9 @@
                 @php
                     $metrics = [
                         ['icon' => 'fas fa-ticket-alt', 'title' => 'Pending Tickets', 'count' => $pendingTickets],
-                        ['icon' => 'fas fa-check-circle', 'title' => 'Solved Tickets', 'count' => $solvedTickets],
+                        ['icon' => 'fas fa-check-circle', 'title' => 'Closed Tickets', 'count' => $solvedTickets],
                         ['icon' => 'fas fa-share', 'title' => 'Endorsed Tickets', 'count' => $endorsedTickets],
                         ['icon' => 'fas fa-file-alt', 'title' => 'Technical Reports', 'count' => $technicalReports],
-                        ['icon' => 'fas fa-tools', 'title' => 'Devices in Repair', 'count' => $devicesInRepair],
-                        ['icon' => 'fas fa-cogs', 'title' => 'Repaired Devices', 'count' => $repairedDevices],
                     ];
                 @endphp
                 @foreach ($metrics as $metric)
@@ -69,7 +67,6 @@
                         <th>Technician Name / ID</th>
                         <th>Tickets Assigned</th>
                         <th>Tickets Solved</th>
-                        <th>Avg Resolution Time</th>
                         <th>Endorsed Tickets</th>
                         <th>Pull Out Device</th>
                         <th>Technical Reports</th>
@@ -82,7 +79,6 @@
                             <td>{{ $technician->first_name }} {{ $technician->last_name }} / {{ $technician->employee_id }}</td>
                             <td>{{ $technician->tickets_assigned ?? 'None' }}</td>
                             <td>{{ $technician->tickets_solved ?? 'None' }}</td>
-                            <td>{{ $technician->avg_resolution_time ? $technician->avg_resolution_time . ' hours' : 'None' }}</td>
                             <td>{{ $technician->endorsed_tickets ?? 'None' }}</td>
                             <td>{{ $technician->pull_out ?? 'None' }}</td>
                             <td>{{ $technician->technical_reports ?? 'None' }}</td>
@@ -108,10 +104,10 @@ document.getElementById('datePicker').addEventListener('change', function() {
 new Chart(document.getElementById('combinedMetricsChart').getContext('2d'), { 
     type: 'doughnut', 
     data: {
-        labels: ['Pending', 'Solved', 'Endorsed', 'Reports', 'In Repair', 'Repaired'],
+        labels: ['Pending', 'Closed', 'Endorsed', 'Reports'],
         datasets: [{
-            data: [{{ $pendingTickets }}, {{ $solvedTickets }}, {{ $endorsedTickets }}, {{ $technicalReports }}, {{ $devicesInRepair }}, {{ $repairedDevices }}],
-            backgroundColor: ['#003067', '#0073e6', '#28a745', '#ffc107', '#dc3545', '#6f42c1'],
+            data: [{{ $pendingTickets }}, {{ $solvedTickets }}, {{ $endorsedTickets }}, {{ $technicalReports }}],
+            backgroundColor: ['#003067', '#0073e6', '#28a745', '#ffc107'],
             hoverOffset: 20
         }]
     },

@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('form_no'); // Reference to the service request form number
             $table->string('equipment_type');
             $table->string('brand')->nullable();
+            $table->string('device')->nullable();
+            $table->string('description')->nullable();
             $table->text('remarks')->nullable();
-            $table->json('equipment_parts')->nullable(); // JSON column to store selected parts
             $table->foreign('form_no')->references('form_no')->on('service_requests')->onDelete('cascade');
             $table->timestamps();
         });

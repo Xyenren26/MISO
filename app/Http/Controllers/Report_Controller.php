@@ -31,7 +31,7 @@ class Report_Controller extends Controller
                 ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->count(),
-            'solvedTickets' => Ticket::where('status', 'completed')
+            'solvedTickets' => Ticket::whereIn('status', ['completed', 'pull-out', 'deployment'])
                 ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->count(),
@@ -40,14 +40,6 @@ class Report_Controller extends Controller
                 ->whereMonth('created_at', $month)
                 ->count(),
             'technicalReports' => Ticket::where('status', 'technical-report')
-                ->whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->count(),
-            'devicesInRepair' => ServiceRequest::where('status', 'in-repairs')
-                ->whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->count(),
-            'repairedDevices' => ServiceRequest::where('status', 'repaired')
                 ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->count(),
@@ -171,7 +163,7 @@ class Report_Controller extends Controller
             ->get();
     
         // Define CSV header
-        $csvData = "Technician Name / ID, Tickets Assigned, Tickets Solved, Avg. Resolution Time, Endorsed Tickets, Pull Out Device, Technical Reports Submitted, Rating\n";
+        $csvData = "Technician Name / ID, Tickets Assigned, Tickets Solved, Endorsed Tickets, Pull Out Device, Technical Reports Submitted, Rating\n";
     
         // Populate the CSV with technician data
         foreach ($technicians as $technician) {
@@ -184,12 +176,6 @@ class Report_Controller extends Controller
             $pullOut = $techTickets->where('status', 'pull-out')->count() ?: 'None';
             $technicalReports = $techTickets->where('status', 'technical-report')->count() ?: 'None';
     
-            // Calculate average resolution time
-            $avgResolutionTime = $techTickets->where('status', 'completed')
-                ->whereNotNull('updated_at')
-                ->map(fn($ticket) => $ticket->updated_at->diffInHours($ticket->created_at))
-                ->average() ?: '0';
-            $avgResolutionTime = $avgResolutionTime ? $avgResolutionTime . ' hours' : 'None';
     
             // Calculate average rating
             $averageRating = $technician->ratings->avg('rating') ? number_format($technician->ratings->avg('rating'), 1) . ' / 5' : 'No Rating';
@@ -198,7 +184,6 @@ class Report_Controller extends Controller
             $csvData .= "{$technician->first_name} {$technician->last_name} / {$technician->employee_id},"
                 . "$ticketsAssigned,"
                 . "$ticketsSolved,"
-                . "$avgResolutionTime,"
                 . "$endorsedTickets,"
                 . "$pullOut,"
                 . "$technicalReports,"

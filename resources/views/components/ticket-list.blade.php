@@ -74,7 +74,7 @@
                         @elseif ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired) 
                             <span style="color: red; font-weight: bold; font-size:15px;">Mark it as repaired</span>
                         @else
-                            {{ $ticket->status === 'pull-out' ? 'Equipment Handover' : ucfirst($ticket->status) }}
+                            {{ $ticket->status === 'pull-out' ? 'Turn-Over to MISO' : ucfirst($ticket->status) }}
                         @endif
                     </td>
 
@@ -136,6 +136,13 @@
                             @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
                                 <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
                                     <i class="fas fa-check-circle"></i>
+                                </button>
+                            @endif
+
+                            @if (($ticket->isRemarksDone && $ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
+                            || ($ticket->isRemarksDone && $ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels&& $ticket->isRepaired))
+                                <button class="action-button archive-btn" onclick="archiveTicket('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-archive"></i>
                                 </button>
                             @endif
                             

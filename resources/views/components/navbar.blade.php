@@ -59,7 +59,7 @@
                 <div class="dropdown-menu notification-dropdown" id="notificationMenu">
                     <div class="notification-header">
                         <h3>Notifications</h3>
-                        <span class="mark-all" onclick="markAllAsRead()">Delete all Notifications</span>
+                        <span class="mark-all" onclick="markAllAsRead()">Delete All Notifications</span>
                     </div>
                     <div id="notificationList">
                         <p class="text-muted text-center">No new notifications</p>

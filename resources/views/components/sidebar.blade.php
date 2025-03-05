@@ -59,6 +59,12 @@
                         <i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span>
                     </a>
                 </li>
+                <li class="{{ Request::is('archive') ? 'active' : '' }}">
+                    <a href="{{ route('archive.index') }}">
+                        <i class="fas fa-archive"></i>
+                        <span class="menu-label">Archived Tickets</span>
+                    </a>
+                </li>
                 <li class="{{ Request::is('audit_logs') ? 'active' : '' }}">
                     <a href="{{ route('audit_logs') }}">
                         <i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span>

@@ -55,8 +55,10 @@ class EndUserController extends Controller
             'resolvedTickets'
         ));
 
-        $recentTickets = \App\Models\Ticket::latest('time_in')->take(10)->get();
-
+        $recentTickets = \App\Models\Ticket::where('employee_id', auth()->user()->employee_id)
+                    ->latest('time_in')
+                    ->take(3)
+                    ->get();
     }      
     
     public function showEmployeeTicket()

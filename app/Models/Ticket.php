@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TicketArchive;
 
 class Ticket extends Model
 {
@@ -65,6 +66,14 @@ class Ticket extends Model
         return $this->hasOne(Rating::class, 'control_no', 'control_no');
     }
 
+    public function archive()
+    {
+        // Move ticket to archive table
+        TicketArchive::create($this->toArray());
+
+        // Delete from the active tickets table
+        $this->delete();
+    }
 
     // 🔹 Model Events for Audit Logging
     protected static function boot()

@@ -190,57 +190,25 @@
                 <!-- Equipment Description Section -->
                 <section class="form-popup-section">
                     <h3 class="form-popup-title">Equipment Description</h3>
-                    <table class="form-popup-table">
+                    <table class="form-popup-table" id="equipmentTable">
                         <thead>
                             <tr>
                                 <th>Brand</th>
+                                <th>Device</th>
                                 <th>Description</th>
-                                <th>Motherboard</th>
-                                <th>RAM</th>
-                                <th>HDD</th>
-                                <th>Accessories</th>
                                 <th>Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input class="form-popup-input" type="text" name="system_brand" placeholder="Brand"></td>
-                                <td>System Unit</td>
-                                <td><input type="checkbox" name="system_motherboard"></td>
-                                <td><input type="checkbox" name="system_ram"></td>
-                                <td><input type="checkbox" name="system_hdd"></td>
-                                <td><input type="checkbox" name="system_accessories"></td>
-                                <td><input class="form-popup-input" type="text" name="system_remarks"></td>
-                            </tr>
-                            <tr>
-                                <td><input class="form-popup-input" type="text" name="monitor_brand" placeholder="Brand"></td>
-                                <td>Monitor</td>
-                                <td colspan="5"><input class="form-popup-input" type="text" name="monitor_remarks" placeholder="Remarks"></td>
-                            </tr>
-                            <tr>
-                                <td><input class="form-popup-input" type="text" name="laptop_brand" placeholder="Brand"></td>
-                                <td>Laptop</td>
-                                <td><input type="checkbox" name="laptop_motherboard"></td>
-                                <td><input type="checkbox" name="laptop_ram"></td>
-                                <td><input type="checkbox" name="laptop_hdd"></td>
-                                <td><input type="checkbox" name="laptop_accessories"></td>
-                                <td><input class="form-popup-input" type="text" name="laptop_remarks"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" class="form-popup-subheader">Printer and UPS</td>
-                            </tr>
-                            <tr>
-                                <td><input class="form-popup-input" type="text" name="printer_brand" placeholder="Brand"></td>
-                                <td>Printer</td>
-                                <td colspan="5"><input class="form-popup-input" type="text" name="printer_remarks" placeholder="Remarks"></td>
-                            </tr>
-                            <tr>
-                                <td><input class="form-popup-input" type="text" name="ups_brand" placeholder="Brand"></td>
-                                <td>UPS</td>
-                                <td colspan="5"><input class="form-popup-input" type="text" name="ups_remarks" placeholder="Remarks"></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][brand]" placeholder="Brand"></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][device]" placeholder="Device"></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][description]" placeholder="Description"></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][remarks]" placeholder="Remarks"></td>
                             </tr>
                         </tbody>
                     </table>
+                    <button type="button" class="form-popup-button" id="addDeviceBtn" onclick="addNewDeviceRow()">Add Another Device</button>
                 </section>
 
                 <section class="form-popup-section">
@@ -259,3 +227,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    function addNewDeviceRow() {
+        let table = document.getElementById("equipmentTable").getElementsByTagName('tbody')[0];
+        let rowCount = table.rows.length; // Get current row count
+        let newRow = table.insertRow();
+
+        newRow.innerHTML = `
+            <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][brand]" placeholder="Brand"></td>
+            <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][device]" placeholder="Device"></td>
+            <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][description]" placeholder="Description"></td>
+            <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][remarks]" placeholder="Remarks"></td>
+        `;
+    }
+
+    // Attach the function to the button
+    document.getElementById("addDeviceBtn").addEventListener("click", addNewDeviceRow);
+</script>
+

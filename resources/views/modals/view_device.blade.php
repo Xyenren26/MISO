@@ -138,31 +138,31 @@
 
 
 </style>
+<!-- View Device Form Popup -->
 <div id="viewFormPopup" class="form-popup-container" style="display: none;">
     <div class="form-popup-content-view">
         <span class="form-popup-close-btn" onclick="closePopup('viewFormPopup')">×</span>
         <div class="form-popup-form-container">
-            <header class="form-popup-header">
 
-            <div class="rating-container" id="rating-containerPullOut">
-                <label class="form-popup-label">Rating:</label>
-                <div id="starRatingPullOut"></div>
-            </div>
-                
-            <div id="waitingForApprovalService" class="waiting-approval" style="display: none;">
-                <p>🚨 Waiting for admin approval...</p>
-            </div>
+        <div class="rating-container" id="rating-containerPullOut">
+            <label class="form-popup-label">Rating:</label>
+            <div id="starRatingPullOut"></div>
+        </div>
             
-            
-                <div id="qrCodeContainer"  onclick="printQRCode()">
-                    <img id="qrCodeImage" class="qr-code" src="" alt="QR Code">
-                </div>
+        <div id="waitingForApprovalService" class="waiting-approval" style="display: none;">
+            <p>🚨 Waiting for admin approval...</p>
+        </div>
+        
+        
+            <div id="qrCodeContainer"  onclick="printQRCode()">
+               
+            </div>
 
             <div class="status-container">
-                    <label class="form-popup-label">Status:</label>
-                    <input type="text" id="viewStatusService" class="status-text" readonly>
-                </div>
-
+                <label class="form-popup-label">Status:</label>
+                <input type="text" id="viewStatusService" class="status-text" readonly>
+            </div>
+            <header class="form-popup-header">
                 <div class="form-popup-logo">
                     <img src="images/systemlogo.png" alt="Logo">
                 </div>
@@ -171,46 +171,36 @@
                     <label for="viewFormNoService" class="form-label-no">Form No.:</label>
                     <input type="text" id="viewFormNoService" class="form-input-no" readonly>
                 </div>
-
-
-
             </header>
 
-           <!-- Service Type (Radio Buttons) -->
+            <!-- Service Type (Radio Buttons) -->
             <section class="form-popup-section-radio">
-                <label>
-                    <input type="radio" name="service_type" value="walk_in" required 
-                        id="service_type_walk_in" disabled> Walk-In
-                </label>
-                <label>
-                    <input type="radio" name="service_type" value="pull_out" required 
-                        id="service_type_pull_out"disabled> Pull-Out
-                </label>
+                <label><input type="radio" name="service_type" id="view_service_type_walk_in" disabled> Walk-In</label>
+                <label><input type="radio" name="service_type" id="view_service_type_pull_out" disabled> Pull-Out</label>
             </section>
-
 
             <!-- General Information Section -->
             <section class="form-popup-section">
                 <h3 class="form-popup-title">General Information</h3>
                 <div class="form-popup-row">
-                        <div class="form-popup-input-group">
-                            <label class="form-popup-label">Employee Name:</label>
-                            <input class="form-popup-input" id="viewName" readonly>
-                        </div>
-                        <div class="form-popup-input-group">
-                            <label class="form-popup-label">Employee ID:</label>
-                            <input class="form-popup-input" id="viewEmployee_ID" readonly>
-                        </div>
+                    <div class="form-popup-input-group">
+                        <label class="form-popup-label">Employee Name:</label>
+                        <input class="form-popup-input" id="viewName" readonly>
                     </div>
+                    <div class="form-popup-input-group">
+                        <label class="form-popup-label">Employee ID:</label>
+                        <input class="form-popup-input" id="viewEmployee_ID" readonly>
+                    </div>
+                </div>
                 <div class="form-popup-input-group">
                     <label class="form-popup-label">Department / Office / Unit:</label>
                     <input class="form-popup-input" id="viewDepartment" readonly>
                 </div>
                 <div class="form-popup-checkbox-group">
                     <label class="form-popup-label">Condition of Equipment:</label>
-                    <label><input type="radio" name="condition[]" id="condition_working" value="working" disabled> Working</label>
-                    <label><input type="radio" name="condition[]" id="condition_not_working" value="not-working" disabled> Not Working</label>
-                    <label><input type="radio" name="condition[]" id="condition_needs_repair" value="needs-repair" disabled> Needs Repair</label>
+                    <label><input type="radio" name="view_condition" id="view_condition_working" disabled> Working</label>
+                    <label><input type="radio" name="view_condition" id="view_condition_not_working" disabled> Not Working</label>
+                    <label><input type="radio" name="view_condition" id="view_condition_needs_repair" disabled> Needs Repair</label>
                 </div>
             </section>
 
@@ -221,16 +211,13 @@
                     <thead>
                         <tr>
                             <th>Brand</th>
+                            <th>Device</th>
                             <th>Description</th>
-                            <th>Motherboard</th>
-                            <th>RAM</th>
-                            <th>HDD</th>
-                            <th>Accessories</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody id="viewEquipmentTable">
-                        <!-- Dynamic rows will go here -->
+                        <!-- Dynamic rows will be populated via JS -->
                     </tbody>
                 </table>
             </section>
@@ -241,22 +228,31 @@
                 <input class="form-popup-input" id="viewTechnicalSupport" readonly>
             </div>
 
+            <!-- Approval Details -->
             <section class="form-popup-section" id="approvalSection">
                 <h3 class="form-popup-title">Approval Details</h3>
-
                 <div class="form-popup-input-group">
                     <label class="form-popup-label">Noted By:</label>
                     <input class="form-popup-input" id="viewNotedByService" readonly>
-                </div>    
-
-                <div class="form-popup-input-group"> 
+                </div>
+                <div class="form-popup-input-group">
                     <label class="form-popup-label">Approval Date:</label>
                     <input class="form-popup-input" id="viewApproveDateService" readonly>
                 </div>
             </section>
 
+            <!-- QR Code & Status -->
+            <div class="status-container">
+                <label class="form-popup-label">Status:</label>
+                <input type="text" id="viewStatusService" class="status-text" readonly>
+            </div>
 
-            <button type="button" id="ButtonService"onclick="downloadModalAsPDFService()">Download PDF</button>
+            <div id="qrCodeContainer" onclick="printQRCode()">
+                <img id="qrCodeImage" class="qr-code" src="" alt="QR Code">
+            </div>
+
+            <!-- Action Buttons -->
+            <button type="button" id="ButtonService" onclick="downloadModalAsPDFService()">Download PDF</button>
             @if(in_array(auth()->user()->account_type, ['technical_support', 'administrator']))
                 <button type="button" id="updateButton" onclick="toggleEditMode()">Update</button>
                 <button type="button" id="saveButton" style="display: none;" onclick="saveChanges()">Save</button>
@@ -264,6 +260,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Add a close button to hide the popup -->
 <script>

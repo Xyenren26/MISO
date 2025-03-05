@@ -25,8 +25,6 @@ class Endorsement extends Model
         'department',
         'network',
         'network_details',
-        'user_account',
-        'user_account_details',
         'endorsed_to',
         'endorsed_to_date',
         'endorsed_to_time',

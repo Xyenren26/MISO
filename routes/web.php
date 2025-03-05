@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\Signup_Controller;
 use App\Http\Controllers\AccountSecurityController;
@@ -113,6 +114,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/technical-reports/check/{control_no}', [Ticket_Controller::class, 'checkTechnicalReport']);
     Route::get('/get-ticket-details/{control_no}', [Ticket_Controller::class, 'getTechnicalReportDetails']);
     Route::get('/get-deployment-names/{control_no}', [Ticket_Controller::class, 'getDeploymentNames']);
+    Route::post('/tickets/{control_no}/archive', [Ticket_Controller::class, 'archiveTicket']);
     Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
     Route::get('/get-qr-code/{form_no}', [ServiceRequestController::class, 'getQrCode']);
 
@@ -142,6 +144,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/account/verify-password', [AccountSecurityController::class, 'verifyPassword'])->name('account.verifyPassword');
     
     Route::middleware(['auth', 'CheckAdmin'])->group(function () {
+        Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
         Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
         Route::get('/user/management', [User_Management_Controller::class, 'showUser_Management'])->name('user.management');
         Route::post('/user/update/{employee_id}', [User_Management_Controller::class, 'update'])->name('user.update');

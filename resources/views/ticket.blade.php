@@ -42,7 +42,7 @@
                     @endif
                 </button>
                 <button class="tab-button" data-status="pull-out" onclick="filterTickets('pull-out', event)">
-                    <i class="fas fa-times-circle"></i> Equipment Handover
+                    <i class="fas fa-times-circle"></i>Turn-Over to MISO
                     @if($pullOutCount > 0)
                         <span class="notifcounter">{{ $pullOutCount }}</span>
                     @endif

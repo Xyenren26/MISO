@@ -34,6 +34,11 @@ class ServiceRequest extends Model
         return $this->belongsTo(Ticket::class, 'ticket_id', 'control_no');
     }
 
+    public function rating()
+    {
+        return $this->hasOne(Rating::class, 'control_no', 'ticket_id');
+    }
+    
     // 🔹 Model Events for Audit Logging
     protected static function boot()
     {

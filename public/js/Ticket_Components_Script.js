@@ -67,9 +67,12 @@ function openEndorsementModal(ticket_id) {
   
           if (data.endorsement) {
               let endorsement = data.endorsement;
+              let ticket = data.ticket;
   
               // Set values dynamically
               document.getElementById('EndorsementControlNo').value = endorsement.control_no || '';
+              document.getElementById('EndorsementEmployee').value = ticket.name || '';
+              document.getElementById('EndorsementEmployeeID').value = ticket.employee_id || '';
               document.getElementById('EndorsementDepartment').value = endorsement.department || '';
               document.getElementById('endorsed_to').value = endorsement.endorsed_to || '';
               document.getElementById('endorsed_to_date').value = endorsement.endorsed_to_date || new Date().toISOString().split('T')[0];
@@ -161,15 +164,6 @@ function openViewEndorsementModal(ticket_id) {
                 let detailInput = input.nextElementSibling.nextElementSibling;
                 if (detailInput) {
                     detailInput.value = data.network_details[input.value] || "";
-                }
-            });
-
-            // Populate user account checkboxes
-            document.querySelectorAll('input[name="user_account[]"]').forEach(input => {
-                input.checked = data.user_account.includes(input.value);
-                let detailInput = input.nextElementSibling.nextElementSibling;
-                if (detailInput) {
-                    detailInput.value = data.user_account_details[input.value] || "";
                 }
             });
 
@@ -312,7 +306,6 @@ function openViewModal(formNo) {
         .then(response => response.json())
         .then(data => {
             console.log(data); // Debugging: Log data to check the response
-            console.log("Form No:", data ? data.form_no : 'No Service Request');
 
             // Populate general information
             document.getElementById('viewFormNoService').value = data.form_no;
@@ -335,124 +328,88 @@ function openViewModal(formNo) {
                 document.getElementById("qrCodeContainer").style.display = "block"; // Show QR code container
             } else{
                 document.getElementById("qrCodeContainer").style.display = "none";
+                document.getElementById("qrCodeImage").style.display = "none";
             }
 
-          // Populate technical support
-          document.getElementById('viewTechnicalSupport').value = data.technical_support;
+            // Populate technical support
+            document.getElementById('viewTechnicalSupport').value = data.technical_support;
 
-          // Handle service_type and other fields as needed
-          document.getElementById(`service_type_${data.service_type}`).checked = true;
-        // Populate condition radio buttons
-        const condition = data.condition; // Assuming data.condition contains the value ("working", "not-working", "needs-repair")
-        if (condition === 'working') {
-            document.getElementById('condition_working').checked = true;
-        } else if (condition === 'not-working') {
-            document.getElementById('condition_not_working').checked = true;
-        } else if (condition === 'needs-repair') {
-            document.getElementById('condition_needs_repair').checked = true;
-        }
+            // Handle service_type radio buttons
+            const serviceTypeId = `view_service_type_${data.service_type}`;
+            if (document.getElementById(serviceTypeId)) {
+                document.getElementById(serviceTypeId).checked = true;
+            }
 
-          // Clear previous table rows
-          const equipmentTable = document.getElementById('viewEquipmentTable');
-          equipmentTable.innerHTML = ''; // Clear the table before adding new rows
+            // Populate condition radio buttons
+            if (data.condition === 'working') {
+                document.getElementById('view_condition_working').checked = true;
+            } else if (data.condition === 'not-working') {
+                document.getElementById('view_condition_not_working').checked = true;
+            } else if (data.condition === 'needs-repair') {
+                document.getElementById('view_condition_needs_repair').checked = true;
+            }
 
-          // Define equipment types and parts
-          const equipmentTypes = [
-              { type: 'System Unit', parts: ['motherboard', 'ram', 'hdd', 'accessories'], remarks: 'system_remarks' },
-              { type: 'Monitor', parts: [], remarks: 'monitor_remarks' },
-              { type: 'Laptop', parts: ['motherboard', 'ram', 'hdd', 'accessories'], remarks: 'laptop_remarks' },
-              { type: 'Printer', parts: [], remarks: 'printer_remarks' },
-              { type: 'UPS', parts: [], remarks: 'ups_remarks' }
-          ];
+            // Clear existing equipment descriptions
+            const tableBody = document.getElementById("viewEquipmentTable");
+            tableBody.innerHTML = ""; 
 
-            // Loop through each equipment type to generate and populate rows
-            equipmentTypes.forEach((equipmentType) => {
-                const row = document.createElement('tr');
+            if (data.equipment_descriptions && Array.isArray(data.equipment_descriptions)) {
+                data.equipment_descriptions.forEach((equipment) => {
+                    const row = document.createElement('tr');
 
-                // Add brand input field
-                const brandCell = document.createElement('td');
-                const brandInput = document.createElement('input');
-                brandInput.classList.add('form-popup-input');
-                brandInput.type = 'text';
-                brandInput.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_brand`;
-                brandInput.placeholder = 'Brand';
-                brandInput.readOnly = true; // Prevent editing
-                row.appendChild(brandCell);
-                brandCell.appendChild(brandInput);
+                    // Brand Column
+                    const brandCell = document.createElement('td');
+                    const brandInput = document.createElement('input');
+                    brandInput.classList.add('form-popup-input');
+                    brandInput.type = 'text';
+                    brandInput.value = equipment.brand || 'N/A';
+                    brandInput.readOnly = true;
+                    brandCell.appendChild(brandInput);
+                    row.appendChild(brandCell);
 
-                // Add equipment type description
-                const typeCell = document.createElement('td');
-                typeCell.textContent = equipmentType.type;
-                row.appendChild(typeCell);
+                    // Device Column
+                    const typeCell = document.createElement('td');
+                    typeCell.textContent = equipment.equipment_type || 'Unknown';
+                    row.appendChild(typeCell);
 
-                // Add checkbox cells based on parts
-                equipmentType.parts.forEach((part) => {
-                    const partCell = document.createElement('td');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_${part}`;
-                    checkbox.disabled = true; // Prevent editing
-                    partCell.appendChild(checkbox);
-                    row.appendChild(partCell);
+                    // Description Column
+                    const descCell = document.createElement('td');
+                    descCell.textContent = equipment.description || 'N/A';
+                    row.appendChild(descCell);
+
+                    // Remarks Column
+                    const remarksCell = document.createElement('td');
+                    const remarksInput = document.createElement('input');
+                    remarksInput.classList.add('form-popup-input');
+                    remarksInput.type = 'text';
+                    remarksInput.value = equipment.remarks || 'N/A';
+                    remarksInput.readOnly = true;
+                    remarksCell.appendChild(remarksInput);
+                    row.appendChild(remarksCell);
+
+                    tableBody.appendChild(row);
                 });
+            }
 
-                // Add remarks field
-                const remarksCell = document.createElement('td');
-                const remarksInput = document.createElement('input');
-                remarksInput.classList.add('form-popup-input');
-                remarksInput.type = 'text';
-                remarksInput.name = `${equipmentType.type.toLowerCase().replace(' ', '_')}_remarks`;
-                remarksInput.placeholder = 'Remarks';
-                remarksInput.readOnly = true; // Prevent editing
-                row.appendChild(remarksCell);
-                remarksCell.appendChild(remarksInput);
+            // Populate approval details
+            document.getElementById("viewNotedByService").value = data.approval?.name || "Not Available";
+            document.getElementById("viewApproveDateService").value = data.approval?.approve_date || "Not Available";
 
-                // Append row to the table
-                equipmentTable.appendChild(row);
+            // Show or hide approval waiting message
+            if (data.approval?.name === "Not Available" || data.approval?.approve_date === "Not Available") {
+                document.getElementById("waitingForApprovalService").style.display = "block";
+                document.getElementById("ButtonService").style.display = "none"; // Hide Download button
+                document.getElementById("rating-containerPullOut").style.display = "none";
+            } else {
+                document.getElementById("waitingForApprovalService").style.display = "none";
+                document.getElementById("ButtonService").style.display = "block"; // Show Download button
+                document.getElementById("rating-containerPullOut").style.display = "block"; // Corrected from "black"
+            }
 
-                // Fixing colspan for Remarks Column (Monitor, Printer, UPS)
-                if (equipmentType.parts.length === 0) {
-                    remarksCell.colSpan = 4;
-                }
-
-                // Populate data for this equipment type
-                const equipmentDescription = data.equipment_descriptions.find(description => description.equipment_type === equipmentType.type);
-                if (equipmentDescription) {
-                    // Set brand and remarks if available
-                    brandInput.value = equipmentDescription.brand || '';
-                    remarksInput.value = equipmentDescription.remarks || '';
-
-                    // Handle parts (checkboxes)
-                    equipmentType.parts.forEach((part) => {
-                        const checkbox = row.querySelector(`[name="${equipmentType.type.toLowerCase().replace(' ', '_')}_${part}"]`);
-                        if (checkbox) {
-                            checkbox.checked = equipmentDescription.equipment_parts.some(p => p.toLowerCase() === part);
-                        }
-                    });
-                }
-            });
-
-
-          // Populate approval details
-          document.getElementById("viewNotedByService").value = data.approval.name;
-          document.getElementById("viewApproveDateService").value = data.approval.approve_date;
-
-         // Show or hide the waiting approval message
-          if (data.approval.name === "Not Available" || data.approval.approve_date === "Not Available") {
-              document.getElementById("waitingForApprovalService").style.display = "block";
-              document.getElementById("ButtonService").style.display = "none"; // Hide Download button
-              document.getElementById("rating-containerPullOut").style.display = "none";
-          } else {
-              document.getElementById("waitingForApproval").style.display = "none";
-              document.getElementById("ButtonService").style.display = "block"; // Show Download button
-              document.getElementById("rating-containerPullOut").style.display = "black";
-          }                      
-          
-
-          // Display the modal
-          document.getElementById('viewFormPopup').style.display = 'flex';
-      })
-      .catch(error => console.error('Error fetching service request details:', error));
+            // Display the modal
+            document.getElementById('viewFormPopup').style.display = 'flex';
+        })
+        .catch(error => console.error('Error fetching service request details:', error));
 }
 
 function closePopup(id) {
