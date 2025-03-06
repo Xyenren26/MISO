@@ -81,14 +81,14 @@
 
                     <td>
                         <div class="button-container">
-                            <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                        <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
 
                             @if ($ticket->status == 'technical-report')
-                                <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-file-alt"></i>
-                                </button>
+                            <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')" title="View Technical Report">
+                                <i class="fas fa-file-alt"></i>
+                            </button>
                             @elseif ($ticket->status == 'endorsed')
                                 @php
                                     $endorsement = \App\Models\Endorsement::where('ticket_id', $ticket->control_no)->first();
@@ -115,20 +115,20 @@
                             @else
                                 @if (!$ticket->isRemarksDone)
                                     <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
-                                            id="remarks-btn-{{ $ticket->control_no }}">
+                                            id="remarks-btn-{{ $ticket->control_no }}"title="Remarks">
                                         <i class="fas fa-sticky-note"></i>
                                     </button>
                                 @endif
                             @endif
 
                             @if (!$ticket->isRemarksDone)
-                                <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" onclick="sendMessageTechnical('{{ $ticket->control_no }}')">
+                                <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" onclick="sendMessageTechnical('{{ $ticket->control_no }}')"title="Message">
                                         <i class="fas fa-comments"></i> 
                                 </button>
 
                                     @if (!$ticket->isAssistDone)
                                         <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
-                                                id="assist-btn-{{ $ticket->control_no }}">
+                                                id="assist-btn-{{ $ticket->control_no }}"title="Assist">
                                             <i class="fas fa-handshake"></i> 
                                         </button>
                                     @endif
