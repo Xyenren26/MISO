@@ -274,3 +274,11 @@ body {
         opacity: 1; /* Fully visible */
     }
 }
+/* Mobile Devices (480px and below) */
+@media (max-width: 480px) {
+    .toggle-btn {
+        width: 10%;
+        min-width: 80px;
+       
+    }
+}

@@ -491,3 +491,20 @@ body {
     width: 130px; /* Reduce logo size */
   }
 }
+/* Mobile Devices (480px and below) */
+@media (max-width: 480px) {
+  .sign-up-container {
+    max-width: 90%; /* Narrower container */
+    padding: 15px; /* Reduce padding */
+  }
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+  }
+  .input-wrapper input {
+    width: 90%;
+  }
+  .modal-content {
+    width: 80%;
+  }
+}

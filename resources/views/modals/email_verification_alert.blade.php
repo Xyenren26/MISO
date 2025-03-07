@@ -45,10 +45,24 @@
             font-weight: bold;
             color: #333;
         }
+        /* Mobile Devices (480px and below) */
+        @media (max-width: 480px) {
+            /* ✅ Email Verification Alert Box */
+            #email-alert-box {
+                width: 100%;
+            }
+            /* ✅ Button */
+            #trigger-verification-btn {
+                top: 5px;
+            }
+            .alert-message{
+                font-size:8px;
+            }
+        }
     </style> 
 
 
-    <div id="email-alert-box" id="email-alert-box" class="alert-box">
+    <div id="email-alert-box" class="alert-box">
         <span class="alert-message">
             ⚠️ Hey there! Just a quick reminder to verify your email for a secure experience!
         </span>

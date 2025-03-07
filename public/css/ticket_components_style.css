@@ -676,3 +676,17 @@ background-color: #00214e;
     top: 5px;
     cursor: pointer;
   }
+  
+@media screen and (max-width: 480px) {
+    .ticket-form-container {
+        top: 50%;  /* Center vertically */
+        width: 70%;  /* Make sure it doesn’t go too wide */
+        max-width: 1200px;  /* Restrict the form size */
+        padding: 20px;
+    }
+    /* Container to hold both date/time and footer on the same line */
+    .modal-footer-container {
+       width:80%;
+    }
+
+}

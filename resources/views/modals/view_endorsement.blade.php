@@ -36,16 +36,16 @@
         transition: 0.3s;
     }
     .rating-container {
-    position: absolute;
-    top: 50px;
-    right: 40px;
-    background: #f8f9fa; /* Light background */
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 50px;
+        right: 40px;
+        background: #f8f9fa; /* Light background */
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .rating-label {
@@ -55,6 +55,22 @@
     .rating-value {
         color: #ffcc00; /* Yellow for rating */
         font-size: 18px;
+    }
+    /* Responsive Design for 480px and smaller */
+    @media (max-width: 480px) {
+        .rating-container {
+            top: 10%; /* Move closer to the top */
+            right: 20px; /* Adjust right position */
+            padding: 4px 8px; /* Reduce padding */
+        }
+
+        .rating-label {
+            font-size: 12px; /* Smaller font size */
+        }
+
+        .rating-value {
+            font-size: 16px; /* Smaller font size */
+        }
     }
 
 </style>

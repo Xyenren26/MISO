@@ -16,7 +16,7 @@
 }
 
 /* Sidebar Background Image */
-.sidebar:before {
+.sidebar::before {
     content: "";
     position: absolute;
     top: 0;
@@ -129,7 +129,8 @@
     border-radius: 25px;
 }
 
-.sidebar .menu li:hover i, .sidebar .menu li:hover a {
+.sidebar .menu li:hover i,
+.sidebar .menu li:hover a {
     color: white;
 }
 
@@ -140,8 +141,8 @@
 }
 
 .employeetickets {
-    background-color: #003067; 
-    color: white; 
+    background-color: #003067;
+    color: white;
     font-size: 18px;
     font-weight: bold;
     border: 2px solid #003067;
@@ -166,11 +167,6 @@
 }
 
 /* Minimized Sidebar Styling */
-.sidebar.minimized {
-    width: 60px;
-    padding-top: 10px;
-}
-
 .sidebar.minimized .menu .label {
     display: none;
 }
@@ -203,6 +199,7 @@
 .sidebar .menu .label {
     pointer-events: none;
 }
+
 .sidebar.minimized .menu a {
     text-align: center;
 }
@@ -215,17 +212,8 @@
     border-radius: 25px;
 }
 
-.sidebar .menu li.active a {
-    color: white;
-}
-
+.sidebar .menu li.active a,
 .sidebar .menu li.active i {
-    color: white;
-}
-
-/* Hover Effect for Menu Items */
-.sidebar .menu li:hover {
-    background-color: #003067;
     color: white;
 }
 
@@ -249,125 +237,99 @@
     border-radius: 50%;
 }
 
-/* Media Queries for Responsiveness */
-@media screen and (max-width: 1200px) {
-    /* On screens smaller than 1200px, reduce sidebar width */
-    .sidebar {
-        width: 200px;
-    }
-
-
+/* For Tablet View (Max 1024px) */
 @media screen and (max-width: 1024px) {
-    /* On screens smaller than 1024px, make the sidebar smaller */
     .sidebar {
-        width: 180px;
+        width: 60px; /* Minimized by default */
     }
 
     .main-content {
-        margin-left: 180px;
+        margin-left: 60px;
     }
 }
 
+/* For Mobile View (Max 768px) */
 @media screen and (max-width: 768px) {
-    /* On screens smaller than 768px, hide the sidebar */
     .sidebar {
-        width: 0;
-        display: none; /* Optionally hide sidebar completely */
+        width: 60px; /* Minimized by default */
     }
 
     .main-content {
-        margin-left: 0; /* Make content full-width */
-    }
-}
-
-/* Optional: for small screens, adjust content margin if sidebar is hidden */
-@media screen and (max-width: 480px) {
-    .main-content {
-        padding: 10px; /* Reduce padding on very small screens */
-    }
-}
-
-/* Adjust sidebar toggle button position for smaller screens */
-@media screen and (max-width: 768px) {
-    .sidebar .sidebar-toggle-btn {
-        top: 20px; /* Adjust toggle button position */
-        right: -10px;
-      
-    }
-}
-
-    .sidebar.minimized {
-        width: 50px;
+        margin-left: 60px;
     }
 
-    .sidebar .logo-container {
-        text-align: center;
-        padding: 5px 0;
+    /* Adjust Sidebar Toggle Button */
+    .sidebar-toggle-btn {
+        top: 10px;
+        left: 10px;
     }
 
-    .sidebar .sidebar-logo {
-        width: 150px;
+    .sidebar.minimized .menu-label {
+        display: none;
+    }
+    
+    /* Disable Hover Effect on "General" and "Administrative" labels when sidebar is minimized */
+    .sidebar .menu .label {
+        pointer-events: none;
     }
 
+    /* Center Menu Items in Minimized Sidebar */
     .sidebar .menu li {
-        font-size: 14px;
-        padding: 12px 15px;
-    }
-
-    .sidebar .menu li i {
-        margin-right: 10px;
-        font-size: 18px;
-    }
-
-    .sidebar .sidebar-toggle-btn {
-        top: 70px;
-    }
-
-    .sidebar.minimized + .main-content {
-        margin-left: 50px;
+        justify-content: center;
     }
 }
 
-/* For mobile screens */
-@media (max-width: 480px) {
+/* For Mobile View (Max 768px) */
+@media screen and (max-width: 480px) {
     .sidebar {
-        width: 100%;
-        height: 100vh;
-        position: relative; /* Fix positioning for mobile */
-        margin-top: 0;
-        box-shadow: none;
-        padding-top: 10px;
+        width: 60px; /* Minimized by default */
     }
 
-    .sidebar .logo-container {
+    .main-content {
+        margin-left: 60px;
+    }
+
+    /* Adjust Sidebar Toggle Button */
+    .sidebar-toggle-btn {
+        top: 10px;
+        left: 10px;
+    }
+
+    .sidebar .menu-label {
+        display: none;
+    }
+    
+   /* Minimized Sidebar Styling */
+    .sidebar .menu .label {
         display: none;
     }
 
     .sidebar .sidebar-logo {
-        width: 120px;
-        margin: 0 auto;
-        text-align: center;
+        width: 60px;
+        margin-bottom: 100px;
     }
 
+    /* Center Menu Items in Minimized Sidebar */
     .sidebar .menu li {
-        font-size: 12px;
-        padding: 10px 12px;
+        justify-content: center;
     }
 
-    .sidebar .menu li i {
-        margin-right: 8px;
-        font-size: 16px;
+    /* Hide text when sidebar is minimized */
+    .sidebar .employeeticketstext {
+        display: none;
     }
 
-    .main-content {
-        margin-left: 0;
+    /* Adjust button size when sidebar is minimized */
+    .sidebar .employeetickets {
+        width: 50px;
+        height: 50px;
         padding: 10px;
+        justify-content: center;
+        border-radius: 50%;
     }
-
+    /* Sidebar Toggle Button (Circle Button) */
     .sidebar .sidebar-toggle-btn {
-        position: absolute;
-        top: 20px;
-        right: 10px;
+        display:none;
     }
 }
 

@@ -127,7 +127,7 @@
     <!-- Add New Ticket Button -->
     <div class="add-ticket-section">
         <button class="add-ticket" onclick="openTicketFormModal()">
-            <span class="icon">➕</span> Request Support
+            <span class="icon">➕</span> Walk In Request
         </button>
     </div>
 </div>

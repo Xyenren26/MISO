@@ -177,6 +177,75 @@
             flex-direction: column;
         }
     }
+    /* Responsive Design */
+@media (max-width: 768px) {
+    .endorsed-modal-content {
+        width: 70%; /* Adjust width for smaller screens */
+        padding: 15px; /* Reduce padding */
+    }
+
+    .modal-header h2 {
+        font-size: 1.2rem; /* Smaller font size */
+    }
+
+    .modal-two-column {
+        flex-direction: column; /* Stack columns vertically */
+        gap: 10px; /* Reduce gap */
+    }
+
+    .modal-stacked-date-time {
+        flex-direction: column; /* Stack date and time vertically */
+        gap: 10px; /* Reduce gap */
+    }
+
+    .modal-column {
+        min-width: 70%; /* Full width for columns */
+    }
+
+    .modal-input-box,
+    .modal-input-box-date {
+        font-size: 12px; /* Smaller font size for inputs */
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-header img {
+        width: 150px; /* Smaller logo */
+    }
+
+    .modal-header h2 {
+        font-size: 1rem; /* Smaller font size */
+        padding: 10px; /* Reduce padding */
+    }
+
+    .modal-header p {
+        font-size: 12px; /* Smaller font size */
+    }
+
+    .endorsementsave {
+        font-size: 14px; /* Smaller font size */
+    }
+    /* Form Section */
+    .modal-form-section {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .modal-form-section label {
+      text-align: left;
+    }
+    .modal-input-box {
+        width: 95%;
+   }
+
+    .modal-input-box-date{
+        width: 95%;
+    }
+    /* Footer Section */
+    .modal-footer {
+       text-align:left;
+    }
+}
 </style>
 
 <!-- Modal HTML Structure -->

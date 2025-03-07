@@ -209,3 +209,10 @@
     right: 58px;
     transform: translate(50%, -50%);
 }
+
+/* Mobile Devices (480px and below) */
+@media (max-width: 480px) {
+    .navbar {
+        width: 93%; /* Full width */
+    }
+}

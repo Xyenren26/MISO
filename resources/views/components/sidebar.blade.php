@@ -30,7 +30,7 @@
                     </button>
                 </div>
                 <li class="{{ Request::is('employee/home') ? 'active' : '' }}">
-                    <a href="{{ route('employee.home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
+                    <a href="{{ route('employee.home') }}"><i class="fas fa-home"></i><span class="menu-label">Dashboard</span></a>
                 </li>
                 <li class="{{ request()->routeIs('employee.tickets') ? 'active' : '' }}">
                     <a href="{{ route('employee.tickets') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
@@ -38,7 +38,7 @@
             @elseif(in_array(auth()->user()->account_type, ['technical_support']))
                 <!-- Only show 'Home' for technical_support but not for administrator or technical_support_head -->
                 <li class="{{ Request::is('home') ? 'active' : '' }}">
-                    <a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
+                    <a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Dashboard</span></a>
                 </li>
             @endif
 

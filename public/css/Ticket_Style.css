@@ -371,3 +371,102 @@
     right: 0; /* Move to the right */
     transform: translate(50%, -50%); /* Adjust position */
 }
+
+
+@media screen and (max-width: 480px) {
+   
+    /* Tab button adjustments */
+    .tabs {
+        display: flex;
+        flex-wrap: nowrap; /* Prevent wrapping */
+        justify-content: center; /* Center tabs */
+        gap: 60px; /* Reduce gap between tabs */
+    }
+
+    .tab-button {
+        font-size: 14px; /* Reduce font size */
+        padding: 8px 12px; /* Reduce padding */
+    }
+
+    .tab-button i {
+        margin-right: 4px; /* Reduce icon margin */
+    }
+
+    /* Active tab line */
+    .tab-button.active::after {
+        height: 2px; /* Reduce line thickness */
+    }
+
+    .search-container {
+        width: 100%; /* Full width for search container */
+    }
+
+    .search-input {
+        width: 80%; /* Adjust input width */
+        padding: 8px; /* Reduce padding */
+    }
+
+    .search-button {
+        padding: 8px; /* Reduce padding */
+    }
+
+    .date-filter-container {
+        display: none;
+    }
+
+    /* Dropdown, Add Ticket, and Refresh Button adjustments */
+    .dropdown-button,
+    .add-ticket,
+    .refresh {
+        display:none;
+    }
+
+    .date-filter {
+        display:none;
+    }
+
+    #email-alert-box{
+        display:none;
+    }
+
+    /* Ticket Table adjustments */
+    .tickets-table {
+        font-size: 12px; /* Reduce font size */
+    }
+
+    .tickets-table th,
+    .tickets-table td {
+        padding: 8px; /* Reduce padding */
+    }
+
+    /* No Records Message adjustments */
+    .no-records {
+        height: 200px; /* Reduce height */
+        font-size: 18px; /* Reduce font size */
+    }
+
+    /* Results Count adjustments */
+    .results-count {
+        position: static; /* Remove fixed positioning */
+        text-align: center; /* Center text */
+        margin-top: 10px; /* Add margin */
+    }
+
+    /* Pagination adjustments */
+    .pagination-container {
+        flex-direction: column; /* Stack pagination elements vertically */
+        gap: 10px; /* Add gap */
+    }
+
+    .pagination-buttons ul li a,
+    .pagination-buttons ul li span {
+        padding: 4px 8px; /* Reduce padding */
+        font-size: 12px; /* Reduce font size */
+    }
+
+    /* Notification counter adjustments */
+    .notifcounter {
+        font-size: 10px; /* Reduce font size */
+        padding: 3px 6px; /* Reduce padding */
+    }
+}

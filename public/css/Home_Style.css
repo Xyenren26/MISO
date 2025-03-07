@@ -291,3 +291,9 @@ canvas {
         gap: 10px;
     }
 }
+/* Mobile Devices (480px and below) */
+@media (max-width: 480px) {
+    .card {
+        width: 20%; /* Adjusted width */
+    }
+}
