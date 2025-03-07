@@ -18,41 +18,70 @@
             <!-- Tabs Section -->
             <div class="tabs">
                 <button class="tab-button active" data-status="recent" onclick="filterTickets('recent', event)">
-                    <i class="fas fa-laptop"></i> Recent
+                    <i class="fas fa-clock"></i> Recent
                 </button>
                 <button class="tab-button" data-status="in-progress" onclick="filterTickets('in-progress', event)">
-                    <i class="fas fa-tools"></i> In-Progress
-                    @if($inProgressCount > 0)
+                    <i class="fas fa-spinner"></i> In-Progress
+                    @if(isset($inProgressCount) && $inProgressCount > 0)
                         <span class="notifcounter">{{ $inProgressCount }}</span>
                     @endif
                 </button>
                 <button class="tab-button" data-status="completed" onclick="filterTickets('completed', event)">
                     <i class="fas fa-check-circle"></i> Solved
                 </button>
-                <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
-                    <i class="fas fa-arrow-right"></i> Endorsed
-                    @if($endorsedCount > 0)
-                        <span class="notifcounter">{{ $endorsedCount }}</span>
-                    @endif
-                </button>
-                <button class="tab-button" data-status="technical-report" onclick="filterTickets('technical-report', event)">
-                    <i class="fas fa-times-circle"></i> Technical-Report
-                    @if($technicalReportCount > 0)
-                        <span class="notifcounter">{{ $technicalReportCount }}</span>
-                    @endif
-                </button>
-                <button class="tab-button" data-status="pull-out" onclick="filterTickets('pull-out', event)">
-                    <i class="fas fa-times-circle"></i>Turn-Over to MISO
-                    @if($pullOutCount > 0)
-                        <span class="notifcounter">{{ $pullOutCount }}</span>
-                    @endif
-                </button>
-                <button class="tab-button" data-status="deployment" onclick="filterTickets('deployment', event)">
-                    <i class="fas fa-times-circle"></i> New Device Deployment
-                    @if($deploymentCount > 0)
-                        <span class="notifcounter">{{ $deploymentCount }}</span>
-                    @endif
-                </button>
+
+                {{-- Show counts based on user role --}}
+                @if(auth()->user()->account_type === 'technical_support')
+                    <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
+                        <i class="fas fa-share"></i> Endorsed
+                        @if(isset($endorsedCount) && $endorsedCount > 0)
+                            <span class="notifcounter">{{ $endorsedCount }}</span>
+                        @endif
+                    </button>
+                    <button class="tab-button" data-status="technical-report" onclick="filterTickets('technical-report', event)">
+                        <i class="fas fa-file-alt"></i> Technical Report
+                        @if(isset($technicalReportCount) && $technicalReportCount > 0)
+                            <span class="notifcounter">{{ $technicalReportCount }}</span>
+                        @endif
+                    </button>
+                    <button class="tab-button" data-status="pull-out" onclick="filterTickets('pull-out', event)">
+                        <i class="fas fa-undo"></i> Turn-Over to MISO
+                        @if(isset($pullOutCount) && $pullOutCount > 0)
+                            <span class="notifcounter">{{ $pullOutCount }}</span>
+                        @endif
+                    </button>
+                    <button class="tab-button" data-status="deployment" onclick="filterTickets('deployment', event)">
+                        <i class="fas fa-truck"></i> New Device Deployment
+                        @if(isset($deploymentCount) && $deploymentCount > 0)
+                            <span class="notifcounter">{{ $deploymentCount }}</span>
+                        @endif
+                    </button>
+                @elseif(auth()->user()->account_type === 'technical_support_head')
+                    <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
+                        <i class="fas fa-share"></i> Endorsed
+                        @if(isset($endorsedCount) && $endorsedCount > 0)
+                            <span class="notifcounter">{{ $endorsedCount }}</span>
+                        @endif
+                    </button>
+                    <button class="tab-button" data-status="technical-report" onclick="filterTickets('technical-report', event)">
+                        <i class="fas fa-file-alt"></i> Technical Report
+                        @if(isset($technicalReportCount) && $technicalReportCount > 0)
+                            <span class="notifcounter">{{ $technicalReportCount }}</span>
+                        @endif
+                    </button>
+                    <button class="tab-button" data-status="pull-out" onclick="filterTickets('pull-out', event)">
+                        <i class="fas fa-undo"></i> Turn-Over to MISO
+                        @if(isset($pullOutCount ) && $pullOutCount > 0)
+                            <span class="notifcounter">{{ $pullOutCount }}</span>
+                        @endif
+                    </button>
+                    <button class="tab-button" data-status="deployment" onclick="filterTickets('deployment', event)">
+                        <i class="fas fa-truck"></i> New Device Deployment
+                        @if(isset($deploymentCount) && $deploymentCount > 0)
+                            <span class="notifcounter">{{ $deploymentCount }}</span>
+                        @endif
+                    </button>
+                @endif
             </div>
         </div>
 

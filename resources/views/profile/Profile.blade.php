@@ -282,6 +282,10 @@
         <a href="{{ route('home') }}" class="nav-button home-button">
             <i class="fas fa-home"></i> <span>Home</span>
         </a>
+    @elseif(auth()->user()->account_type == 'technical_support_head')
+        <a href="{{ route('home') }}" class="nav-button home-button">
+            <i class="fas fa-home"></i> <span>Home</span>
+        </a>
     @elseif(auth()->user()->account_type == 'administrator')
         <a href="{{ route('home') }}" class="nav-button home-button">
             <i class="fas fa-home"></i> <span>Home</span>

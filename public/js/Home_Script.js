@@ -20,7 +20,7 @@ if (inRepairs === 0 && repaired === 0) {
     const deviceManagementGraph = new Chart(ctx2, {
         type: 'doughnut',
         data: {
-            labels: ['In Repairs', 'Repaired'],
+            labels: ['Pending Repairs', 'Repaired'],
             datasets: [{
                 data: [inRepairs, repaired],
                 backgroundColor: ['#FF6347', '#32CD32'],
@@ -127,7 +127,7 @@ const ticketPerformanceGraph = new Chart(ctxPerformance, {
                 tension: 0.1,
             },
             {
-                label: 'Technical Report Tickets',
+                label: 'Pending Tickets',
                 data: technicalReportDataByDay, // Data for technical report tickets by day
                 borderColor: '#FF5722',
                 backgroundColor: 'rgba(255, 87, 34, 0.2)',

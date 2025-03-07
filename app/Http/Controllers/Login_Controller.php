@@ -93,10 +93,15 @@ class Login_Controller extends Controller
     {
         if ($user->account_type === 'end_user') {
             return redirect('/employee/home'); // Redirect to employee's home page
-        } elseif (in_array($user->account_type, ['technical_support', 'administrator'])) {
-            return redirect()->route('home'); // Redirect to technical roles or admin home
+        } elseif ($user->account_type === 'technical_support_head') {
+            return redirect()->route('ticket'); // Redirect technical_support_head to Ticket Management
+        } elseif ($user->account_type === 'administrator') {
+            return redirect()->route('report'); // Redirect administrator to Reports and Analytics
+        } elseif ($user->account_type === 'technical_support') {
+            return redirect()->route('home'); // Redirect technical support to home
         }
     }
+    
 
     public function logout()
     {

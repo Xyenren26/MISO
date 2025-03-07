@@ -103,10 +103,10 @@ class Ticket extends Model
         static::deleted(function ($ticket) {
             Audit_logs::create([
                 'date_time' => now(),
-                'action_type' => 'deleted',
+                'action_type' => 'archived',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
                 'ticket_or_device_id' => $ticket->control_no,
-                'remarks' => 'Ticket deleted'
+                'remarks' => 'Ticket Archived'
             ]);
         });
     }

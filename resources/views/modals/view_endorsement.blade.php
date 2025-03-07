@@ -98,7 +98,7 @@
                 <!-- Left Column - Network Issues -->
                 <div class="modal-column">
                     <div class="modal-checkbox-group">
-                        @foreach(['Network diagnostics', 'Connectivity and access issues', 'Account creation and management', 'File sharing and folder permissions', 'others'] as $networkItem)
+                        @foreach(['Network diagnostics', 'Connectivity and access issues', 'Account creation and management', 'File sharing and folder permissions', 'Others'] as $networkItem)
                             <div>
                                 <input type="checkbox" name="network[]" value="{{ $networkItem }}" disabled>
                                 <label>{{ $networkItem }}</label>

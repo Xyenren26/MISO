@@ -143,7 +143,6 @@
     margin-right: 20px;
     transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
 }
-
 .date-filter-container {
     display: flex;
     align-items: center;
@@ -159,6 +158,9 @@
     padding: 8px;
     border: 2px solid #003067;
     border-radius: 4px;
+    content: attr(data-date);
+    text-transform: uppercase;
+    color: #003067;
     outline: none;
     transition: border-color 0.3s;
 }

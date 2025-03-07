@@ -1,9 +1,13 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
 /* Dashboard Sections */
 .dashboard-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
     padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 /* Top Section: Image Container + Overview Cards */
@@ -38,49 +42,10 @@
     padding: 20px;
 }
 
-/* Individual Cards */
-.card {
-    flex: 1;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    font-weight: bold;
-    min-width: 180px; /* Slightly increased for better balance */
-    transition: transform 0.3s ease-in-out;
-}
-
-/* Ensure hover effect applies properly */
-.card:hover {
-    transform: translateY(-5px);
-}
-
 /* Prevent AOS from overriding the transform */
 [data-aos] {
     will-change: opacity, transform;
 }
-
-/* Card Title */
-.card-title {
-    font-size: 18px;
-    color: white;
-    margin-bottom: 10px;
-}
-
-/* Card Number - Highlighting the Count */
-.card-number {
-    font-size: 32px;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px;
-    border-radius: 8px;
-    display: inline-block;
-}
-
-/* Updated Background Colors for Two Cards */
-.card:nth-child(1) { background: #007ACC; color: white; } /* Deep Sky Blue */
-.card:nth-child(2) { background: #005A9E; color: white; } /* Darker Navy Blue */
-.card:nth-child(3) { background: #005A9E; color: white; } /* Darker Navy Blue */
 
 /* Activity Panel */
 .activity-panel {
@@ -90,16 +55,16 @@
     padding: 15px;
     background: #f0f4f8; /* Soft grayish-blue */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
 .activity-panel h2 {
-    margin: 0 0 15px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #004080;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #004080; 
     text-align: center;
     border-bottom: 2px solid #007bff;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 /* Activity List */
@@ -109,9 +74,12 @@
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 8px;
-    background: #004080; /* Dark blue */
+    background: #004080; 
     box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.05);
+    color: #ffffff; 
+    font-size: 1rem;
 }
+
 
 /* Activity Item - NO HOVER */
 .activity-item {
@@ -189,4 +157,120 @@
     padding: 10px;
     margin: 5px 0;
     border-radius: 5px;
+}
+
+.no-activity-message {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff; /* White text for contrast */
+    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+    margin-top: 10px;
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+.toggle-btn {
+    background-color: #002855;
+    color: #fff;
+    padding: 15px 20px;
+    width: 30%;
+    min-width: 150px;
+    height: auto;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: bold;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease, transform 0.2s ease;
+
+    /* Positioning */
+    position: absolute; /* Absolute positioning */
+    left: 0; /* Align to the left */
+    top: 15%; /* Adjust vertically (if needed) */
+    transform: translateY(-50%); /* Center vertically */
+    margin-left: 10px; /* Optional: Add spacing from the left edge */
+}
+
+
+.toggle-btn:hover {
+    background-color: #004aad; /* Lighter blue */
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+.toggle-btn:active {
+    transform: scale(0.98); /* Prevents the button from looking bigger */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle press effect */
+}
+
+.toggle-btn i {
+    font-size: 1rem;
+}
+
+/* Section 1 Style */
+.text-slideshow-container {
+    text-align: center; /* Center everything inside */
+}
+
+.text-slideshow-container h2 {
+    font-size: 28px; /* Bigger font size for emphasis */
+    font-weight: bold;
+    color: #003366; /* Your preferred blue color */
+    text-transform: uppercase; /* Capitalized text */
+    letter-spacing: 2px; /* Space between letters */
+    position: relative; /* Allow underline positioning */
+    display: inline-block; /* Align underline with text */
+}
+
+.text-slideshow-container h2::after {
+    content: '';
+    width: 100px; /* Underline length */
+    height: 3px; /* Underline thickness */
+    background: #003366; /* Underline color */
+    position: absolute;
+    bottom: -10px; /* Distance between text and underline */
+    left: 50%; 
+    transform: translateX(-50%); /* Center the underline */
+    border-radius: 5px; /* Rounded underline */
+}
+
+.text-slideshow {
+    margin-top: 20px; /* Space between heading and slideshow */
+    font-size: 20px; /* Text size */
+    font-weight: bold; /* Bold text */
+    color: #003366; /* Text color in blue */
+    padding: 10px 20px; /* Padding for spacing */
+    line-height: 1.8; /* Line spacing */
+    max-width: 700px; /* Limit width */
+    margin: 0 auto; /* Center horizontally */
+    background: rgba(0, 51, 102, 0.1); /* Light transparent background */
+    border-radius: 15px; /* Soft rounded corners */
+    box-shadow: 0 0 10px rgba(0, 51, 102, 0.3); /* Subtle shadow effect */
+    transition: opacity 0.5s ease-in-out; /* Smooth fade effect */
+    min-height: 50px; /* Fixed height */
+}
+
+.text-slideshow p {
+    margin: 0; /* Remove default margin */
+    letter-spacing: 1px; /* Letter spacing */
+    animation: slideUp 1s ease-out; /* Slide-up animation */
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px); /* Start position */
+        opacity: 0; /* Invisible */
+    }
+    to {
+        transform: translateY(0); /* End position */
+        opacity: 1; /* Fully visible */
+    }
 }

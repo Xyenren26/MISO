@@ -27,7 +27,7 @@ class CreateUsersTable extends Migration
                 $table->string('password'); // Password
                 $table->string('department')->nullable(); // Department
                 $table->string('phone_number')->nullable(); // Phone number
-                $table->enum('account_type', ['administrator', 'technical_support', 'end_user']); // Account type
+                $table->enum('account_type', ['administrator', 'technical_support','technical_support_head' ,'end_user']); // Account type
                 $table->enum('status', ['active', 'inactive'])->default('active');
                 $table->rememberToken(); // Remember token
                 $table->string('session_id')->nullable(); // Session ID
@@ -41,13 +41,13 @@ class CreateUsersTable extends Migration
         DB::table('users')->insert([
             'employee_id' => 0000001,
             'id' => 0000001,
-            'first_name' => 'Main',
+            'first_name' => 'TechTrack',
             'last_name' => 'Admin',
-            'name' => 'Main Admin',
+            'name' => 'TechTrack Admin',
             'department' => 'Management Information Systems Office (MISO)',
-            'email' => 'taverajericho@gmail.com',
+            'email' => 'techtrackesmms@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('M@lupetako'),
+            'password' => Hash::make('M@lupetako123'),
             'account_type' => 'administrator',
             'status' => 'active',
             'is_first_login' => 0,

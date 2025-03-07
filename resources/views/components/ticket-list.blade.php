@@ -58,7 +58,7 @@
                     <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
                     <td class="{{ getStatusClass($ticket->status) }}">
                         @if ($ticket->isRemarksDone && !$ticket->isApproved && $ticket->existsInModels)
-                            <span style="color: red; font-weight: bold; font-size:15px;">Waiting for Admin Approval</span>
+                            <span style="color: red; font-weight: bold; font-size:15px;">Waiting for Technical Support Head Approval</span>
                         @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress'&& $ticket->status !== 'endorsed')  && $ticket->isRemarksDone && !$ticket->isApproved && !$ticket->formfillup)
                             <span style="color: red; font-weight: bold; font-size:15px;">Form is Required to fill up</span>
                         @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress')  && $ticket->isRemarksDone && !$ticket->isApproved && $ticket->formfillup)
@@ -133,7 +133,7 @@
                                         </button>
                                     @endif
                             @endif
-                            @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
+                            @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'technical_support_head' && $ticket->existsInModels)
                                 <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
                                     <i class="fas fa-check-circle"></i>
                                 </button>

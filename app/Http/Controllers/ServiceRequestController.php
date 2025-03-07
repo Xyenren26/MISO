@@ -84,7 +84,7 @@ class ServiceRequestController extends Controller
         }
 
         // Retrieve the administrator
-        $admin = User::where('account_type', 'administrator')->first();
+        $admin = User::where('account_type', 'technical_support_head')->first();
 
         if ($admin) {
             $notification = new SystemNotification(

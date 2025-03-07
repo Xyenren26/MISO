@@ -2,18 +2,9 @@
     @php
         $userEmail = Auth::user()->email; // Get user email for localStorage key
     @endphp
-
-    <div id="email-alert-box" class="alert-box">
-        <span class="alert-message">
-            ⚠️ Hey there! Just a quick reminder to verify your email for a secure experience!
-        </span>
-        <button id="trigger-verification-btn" class="resend-email-btn" onclick="redirectToProfile()">Verify Now</button>
-        <span class="close-alert" onclick="closeAlertBox()">&times;</span>
-    </div>
-
     <style>
         /* ✅ Email Verification Alert Box */
-        .alert-box {
+        #email-alert-box {
             background-color: #ffcc00; /* Yellow background */
             color: #333; /* Dark text */
             padding: 10px;
@@ -55,6 +46,15 @@
             color: #333;
         }
     </style> 
+
+
+    <div id="email-alert-box" id="email-alert-box" class="alert-box">
+        <span class="alert-message">
+            ⚠️ Hey there! Just a quick reminder to verify your email for a secure experience!
+        </span>
+        <button id="trigger-verification-btn" class="resend-email-btn" onclick="redirectToProfile()">Verify Now</button>
+        <span class="close-alert" onclick="closeAlertBox()">&times;</span>
+    </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

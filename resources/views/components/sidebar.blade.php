@@ -35,17 +35,21 @@
                 <li class="{{ request()->routeIs('employee.tickets') ? 'active' : '' }}">
                     <a href="{{ route('employee.tickets') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
                 </li>
-            @elseif(in_array(auth()->user()->account_type, ['administrator', 'technical_support']))
+            @elseif(in_array(auth()->user()->account_type, ['technical_support']))
+                <!-- Only show 'Home' for technical_support but not for administrator or technical_support_head -->
                 <li class="{{ Request::is('home') ? 'active' : '' }}">
                     <a href="{{ route('home') }}"><i class="fas fa-home"></i><span class="menu-label">Home</span></a>
                 </li>
+            @endif
+
+            @if(in_array(auth()->user()->account_type, ['administrator', 'technical_support', 'technical_support_head']))
                 <li class="{{ Request::is('ticket') ? 'active' : '' }}">
                     <a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
                 </li>
             @endif
         </ul>
 
-        @if(in_array(auth()->user()->account_type, ['administrator', 'technical_support']))
+        @if(in_array(auth()->user()->account_type, ['administrator', 'technical_support', 'technical_support_head']))
             <!-- Administrative Section -->
             <ul class="menu">
                 <li class="label">Administrative</li>

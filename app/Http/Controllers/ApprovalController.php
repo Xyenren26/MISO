@@ -45,8 +45,8 @@ class ApprovalController extends Controller
         $EndUserID = $ticket->employee_id;
         $SenderID = $ticket->technical_support_id;
 
-        $message = "Hello, {$ticket->name} your ticket with Ticket No:{$ticket->control_no} has been 
-                   Approved by {$approval->name} on {$approval->approve_date}
+        $message = "Hello, {$ticket->name} your ticket with Ticket No:{$ticket->control_no} 
+                    has been Approved by {$approval->name} on {$approval->approve_date}
                     
                     If you have any question related to your Ticket Service Request Please fill free to Inquire.
                     

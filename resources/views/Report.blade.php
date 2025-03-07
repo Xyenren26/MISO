@@ -104,7 +104,7 @@ document.getElementById('datePicker').addEventListener('change', function() {
 new Chart(document.getElementById('combinedMetricsChart').getContext('2d'), { 
     type: 'doughnut', 
     data: {
-        labels: ['Pending', 'Closed', 'Endorsed', 'Reports'],
+        labels: ['Pending', 'Closed', 'Endorsed', 'Technical-Report'],
         datasets: [{
             data: [{{ $pendingTickets }}, {{ $solvedTickets }}, {{ $endorsedTickets }}, {{ $technicalReports }}],
             backgroundColor: ['#003067', '#0073e6', '#28a745', '#ffc107'],

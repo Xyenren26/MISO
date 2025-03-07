@@ -49,7 +49,7 @@ class ServiceRequest extends Model
                 'date_time' => now(),
                 'action_type' => 'created',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->form_no,
+                'ticket_or_device_id' => $request->ticket_id,
                 'remarks' => 'Service request created'
             ]);
         });
