@@ -16,6 +16,9 @@
 <body>
 
 <div class="container">
+    @auth
+        @include('components.greetings', ['accountType' => auth()->user()->account_type])
+    @endauth
     <!-- Sidebar -->
     @include('components.sidebar')
 

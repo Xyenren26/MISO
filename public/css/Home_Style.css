@@ -216,62 +216,6 @@ canvas {
     border-color: #0056b3;
 }
 
-.containerCards {
-    display: flex;
-    justify-content: space-around;
-    padding: 20px;
-}
-
-.card {
-    background: rgba(0, 51, 102, 0.1);
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0, 51, 102, 0.3);
-    color: #003067;
-    padding: 20px;
-    width: 25%; /* Adjusted width */
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.card:hover {
-    transform: scale(1.05);
-}
-
-/* Modal Styling */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: white;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 15px;
-    width: 50%;
-    color: #003067;
-    box-shadow: 0 0 10px rgba(0, 51, 102, 0.3);
-}
-
-.close {
-    color: #003067;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: #001f3f;
-}
 /* Adjusting for screen size */
 @media (max-width: 768px) {
     .metrics-container {

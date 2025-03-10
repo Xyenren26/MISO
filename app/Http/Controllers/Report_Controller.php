@@ -74,11 +74,7 @@ class Report_Controller extends Controller
                 'endorsed_tickets' => $techTickets->where('status', 'endorsed')->count() ?: 'None',
                 'technical_reports' => $techTickets->where('status', 'technical-report')->count() ?: 'None',
                 'pull_out' => $techTickets->where('status', 'pull-out')->count() ?: 'None',
-                'avg_resolution_time' => $techTickets->where('status', 'completed')
-                    ->whereNotNull('updated_at')
-                    ->map(fn($ticket) => $ticket->updated_at->diffInHours($ticket->created_at))
-                    ->average() ?: '0',
-                'rating' => $averageRating ? number_format($averageRating, 1) . ' / 5' : 'No Rating'
+                'rating' => $averageRating ? number_format(($averageRating / 5) * 100, 1) . '%' : 'No Rating'
             ];
         });
     }
@@ -177,8 +173,10 @@ class Report_Controller extends Controller
             $technicalReports = $techTickets->where('status', 'technical-report')->count() ?: 'None';
     
     
-            // Calculate average rating
-            $averageRating = $technician->ratings->avg('rating') ? number_format($technician->ratings->avg('rating'), 1) . ' / 5' : 'No Rating';
+            // Calculate average rating and convert to percentage
+            $averageRating = $technician->ratings->avg('rating');
+            $ratingPercentage = $averageRating ? number_format(($averageRating / 5) * 100, 1) . '%' : 'No Rating';
+
     
             // Append row data
             $csvData .= "{$technician->first_name} {$technician->last_name} / {$technician->employee_id},"

@@ -257,6 +257,20 @@
             background: #0056b3;
         }
 
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #003067; /* Stroke color */
+            padding: 2px;
+            transition: 0.3s ease-in-out;
+        }
+
+        .profile-image:hover {
+            opacity: 0.8;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .profile-header {
@@ -303,18 +317,23 @@
         <!-- Header Section -->
         <div class="profile-header">
             <div class="profile-info">
-                <!-- Replace Profile Picture with System Logo -->
-                <img 
-                    src="{{ asset('images/systemLogo.png') }}" 
-                    alt="System Logo" 
-                    class="system-logo" 
-                    id="system-logo">
+                <!-- Clickable Profile Picture -->
+                <label for="profile-upload" class="profile-container">
+                    <img 
+                        src="{{ Auth::user()->avatar ? asset('storage/users-avatar/'.Auth::user()->avatar) : asset('default-profile.png') }}" 
+                        alt="Profile Picture" 
+                        class="profile-image" 
+                        id="profile-picture">
+                    <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+                </label>
+
                 <div class="name-section">
                     <h1 id="username">{{ strtoupper($user->first_name) }} {{ strtoupper($user->last_name) }}</h1>
                     <p id="employee-id">{{ str_pad($user->employee_id, 7, '0', STR_PAD_LEFT) }}</p>
                 </div>
             </div>
         </div>
+
 
         <!-- Main Content -->
         <div class="profile-details">

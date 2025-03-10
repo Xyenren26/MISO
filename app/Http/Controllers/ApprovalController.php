@@ -3,12 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TicketArchive;
+use App\Models\TicketHistory;
 use App\Models\Approval;
 use App\Models\Ticket;
+use App\Models\Rating;
+use App\Models\User;
+use App\Models\ServiceRequest;
+use App\Models\Endorsement;
+use App\Models\Deployment;
+use App\Models\TechnicalReport;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketApproved;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Chatify\Facades\ChatifyMessenger as Chatify; 
 use App\Models\ChMessage;
 
@@ -107,6 +115,41 @@ class ApprovalController extends Controller
             ->first();
 
         return response()->json($approval);
+    }
+
+    public function denyTicket(Request $request)
+    {
+        $controlNo = $request->input('ticket_id');
+
+        // Start a database transaction
+        DB::beginTransaction();
+
+        try {
+            // Delete related records
+            Deployment::where('control_number', $controlNo)->delete();
+            Endorsement::where('ticket_id', $controlNo)->delete();
+            ServiceRequest::where('ticket_id', $controlNo)->delete();
+            TechnicalReport::where('control_no', $controlNo)->delete();
+
+            // Update the ticket status to 'in-progress'
+            Ticket::where('control_no', $controlNo)->update(['status' => 'in-progress']);
+
+            // Commit the transaction
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ticket denied successfully.'
+            ]);
+        } catch (\Exception $e) {
+            // Rollback the transaction in case of error
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to deny ticket: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }

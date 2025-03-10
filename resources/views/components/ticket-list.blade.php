@@ -40,6 +40,7 @@
         <thead>
             <tr>
                 <th>Control No</th>
+                <th>Date and Time</th>
                 <th>Name</th>
                 <th>Department</th>
                 <th>Concern</th>
@@ -52,6 +53,7 @@
             @foreach ($tickets as $ticket)
                 <tr>
                     <td>{{ $ticket->control_no }}</td>
+                    <td>{{ $ticket->created_at }}</td>
                     <td>{{ ucwords(strtolower($ticket->name)) }}</td>
                     <td>{{ ucwords(strtolower($ticket->department)) }}</td>
                     <td>{{ ucwords(strtolower($ticket->concern)) }}</td>
@@ -135,7 +137,10 @@
                             @endif
                             @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'technical_support_head' && $ticket->existsInModels)
                                 <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-check-circle"></i>
+                                    <i class="fas fa-check-circle"></i> 
+                                </button>
+                                <button class="action-button deny-button" onclick="denyTicket('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-times-circle"></i> 
                                 </button>
                             @endif
 

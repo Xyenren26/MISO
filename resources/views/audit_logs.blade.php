@@ -64,7 +64,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($auditLogs as $log) <!-- Use $auditLogs instead of $logs -->
+                    @forelse ($auditLogs as $log) <!-- Use $auditLogs instead of $logs -->
                         <tr>
                             <td>{{ $log->date_time }}</td>
                             <td>
@@ -85,7 +85,11 @@
                             <td>{{ $log->ticket_or_device_id }}</td>
                             <td>{{ $log->remarks }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="5" class="no-results">No archived tickets found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
 

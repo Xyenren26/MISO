@@ -471,6 +471,33 @@ function approveTicket(controlNo) {
     }
 }
 
+function denyTicket(controlNo) {
+    if (confirm('Are you sure you want to deny this ticket? This action will reset related records and set the status to in-progress.')) {
+        fetch('/deny-ticket', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ ticket_id: controlNo })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Denial issue: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while denying the ticket.');
+        });
+    }
+}
+
 
 let currentFormNo = '';
 

@@ -245,7 +245,7 @@
     justify-content: center;
     align-items: center;
     height: 400px; /* Adjust as necessary */
-    font-family: monospace;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 24px;
     color: #003067;
     text-align: center;

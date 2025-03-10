@@ -102,3 +102,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
+document.getElementById("profile-upload").addEventListener("change", function(event) {
+    let file = event.target.files[0];
+    
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById("profile-picture").src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // Auto-submit form after selecting a file
+        uploadProfilePicture(file);
+    }
+});
+
+function uploadProfilePicture(file) {
+    let formData = new FormData();
+    formData.append("avatar", file);
+    formData.append("_token", "{{ csrf_token() }}");
+
+    fetch("{{ route('profile.updateAvatar') }}", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Profile picture updated successfully!");
+        } else {
+            alert("Error updating profile picture.");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}

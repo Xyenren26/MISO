@@ -31,7 +31,7 @@
                 </button>
 
                 {{-- Show counts based on user role --}}
-                @if(auth()->user()->account_type === 'technical_support')
+                @if(in_array(auth()->user()->account_type, ['technical_support', 'administrator', 'technical_support_head']))
                     <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
                         <i class="fas fa-share"></i> Endorsed
                         @if(isset($endorsedCount) && $endorsedCount > 0)

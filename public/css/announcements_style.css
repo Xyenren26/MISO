@@ -1,0 +1,275 @@
+.title {
+    color: #003067;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Filters Section */
+.filters {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
+}
+
+.search-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-button, .create-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #003067;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.search-button:hover, .create-button:hover {
+    background-color: white;
+    color: #003067;
+    border: 1px solid #003067;
+}
+
+.announcements-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.announcements-table th, .announcements-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.announcements-table th {
+    background-color: #003067;
+    color: white;
+}
+
+.no-results {
+    color: #777;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.results-count {
+    font-size: 14px;
+    color: #555;
+}
+
+.pagination-buttons ul {
+    list-style: none;
+    display: flex;
+    gap: 5px;
+    padding: 0;
+}
+
+.pagination-buttons li {
+    display: inline;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.pagination-buttons li.active {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.pagination-buttons li a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.pagination-buttons li a:hover {
+    text-decoration: underline;
+}
+
+.pagination-buttons li.disabled {
+    pointer-events: none;
+    color: #ccc;
+    border-color: #ccc;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-button, .delete-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+}
+
+.edit-button {
+    background-color: #28a745;
+}
+
+.delete-button {
+    background-color: #dc3545;
+}
+
+.edit-button:hover {
+    background-color: #218838;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 2px solid #003067; /* Stroke color */
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal .close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #003067; /* Theme color */
+}
+
+.modal .close:hover {
+    color: #002147; /* Darker shade for hover */
+}
+
+.modal h2 {
+    color: #003067; /* Theme color */
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+}
+
+.modal p {
+    color: #555;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal .form-group {
+    margin-bottom: 15px;
+}
+
+.modal .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #003067; /* Theme color */
+}
+
+.modal .form-group input,
+.modal .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #003067; /* Theme color */
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.modal .form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.modal .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.modal .btn-primary {
+    background-color: #003067; /* Theme color */
+    color: white;
+}
+
+.modal .btn-primary:hover {
+    background-color: #002147; /* Darker shade for hover */
+}
+
+.modal .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.modal .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal .btn-danger:hover {
+    background-color: #c82333;
+}

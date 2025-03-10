@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Approval;
+use App\Models\Announcement;
 use App\Models\ServiceRequest;
 use App\Models\Endorsement;
+use App\Models\Event;
 use App\Models\Deployment;
 use App\Models\TechnicalReport;
 use App\Models\Ticket;
@@ -19,12 +21,13 @@ use Illuminate\Support\Facades\Log;
 
 class EndUserController extends Controller
 {
-    public function index(){
+   public function index()
+    {
         // Fetch all technical support users excluding the current one
         $technicalSupports = User::where('account_type', 'technical_support')
             ->whereNotNull('session_id')  // Check if 'time_in' is not null
             ->get();
-    
+
         // Count tickets based on status
         $inProcessingCount = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
                     ->where('employee_id', Auth::user()->employee_id)
@@ -32,34 +35,60 @@ class EndUserController extends Controller
                     ->count();
         $inProgressRequests = Ticket::where('status', 'in-progress')->count();
         $resolvedTickets = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
-                                ->where('employee_id', Auth::user()->employee_id)
-                                ->whereHas('ratings')
-                                ->count();
-    
+                            ->where('employee_id', Auth::user()->employee_id)
+                            ->whereHas('ratings')
+                            ->count();
+
         // Get the current year for control number formatting
         $currentYear = now()->year;
         $lastTicket = Ticket::whereYear('created_at', $currentYear)
             ->orderBy('control_no', 'desc')
             ->first();
-    
+
         // Calculate the next control number
         $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
         $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
-    
+
+        // Fetch announcements
+        $announcements = Announcement::latest()->get();
+        // Call the private cleanup function to delete expired events
+        $this->cleanupExpiredEvents();
+
+        // Fetch events for the authenticated user
+        $events = Event::where('employee_id', auth()->user()->employee_id)->get();
+
+        // Fetch recent tickets
+        $recentTickets = \App\Models\Ticket::where('employee_id', auth()->user()->employee_id)
+                    ->latest('time_in')
+                    ->take(3)
+                    ->get();
+
         // Pass variables to the view
         return view('employee.home', compact(
             'technicalSupports', 
             'formattedControlNo', 
             'inProcessingCount', 
             'inProgressRequests', 
-            'resolvedTickets'
+            'resolvedTickets', 
+            'announcements',
+            'events', // Pass events to the view
+            'recentTickets'
         ));
+    }   
 
-        $recentTickets = \App\Models\Ticket::where('employee_id', auth()->user()->employee_id)
-                    ->latest('time_in')
-                    ->take(3)
-                    ->get();
-    }      
+    // Private cleanup function
+    private function cleanupExpiredEvents()
+    {
+        $now = now(); // Get the current date and time
+
+        // Find all events that have ended
+        $expiredEvents = Event::where('end', '<', $now)->get();
+
+        // Delete each expired event
+        foreach ($expiredEvents as $event) {
+            $event->delete();
+        }
+    }
     
     public function showEmployeeTicket()
     {

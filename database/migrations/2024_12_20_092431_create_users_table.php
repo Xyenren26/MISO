@@ -37,23 +37,58 @@ class CreateUsersTable extends Migration
             });
         }
 
-        // Insert administrator account
+       // Insert administrator and technical support accounts
         DB::table('users')->insert([
-            'employee_id' => 0000001,
-            'id' => 0000001,
-            'first_name' => 'TechTrack',
-            'last_name' => 'Admin',
-            'name' => 'TechTrack Admin',
-            'department' => 'Management Information Systems Office (MISO)',
-            'email' => 'techtrackesmms@gmail.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('M@lupetako123'),
-            'account_type' => 'administrator',
-            'status' => 'active',
-            'is_first_login' => 0,
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'employee_id' => 0000001,
+                'id' => 0000001,
+                'first_name' => 'TechTrack',
+                'last_name' => 'Admin',
+                'name' => 'TechTrack Admin',
+                'department' => 'Management Information Systems Office (MISO)',
+                'email' => 'techtrackesmms@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('M@lupetako123'),
+                'account_type' => 'administrator',
+                'status' => 'active',
+                'is_first_login' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'employee_id' => 1234567,
+                'id' => 1234567,
+                'first_name' => 'Jericho',
+                'last_name' => 'Tavera',
+                'name' => 'Jericho Tavera',
+                'department' => 'Management Information Systems Office (MISO)',
+                'email' => 'user136873080173@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('M@lupetako123'),
+                'account_type' => 'technical_support',
+                'status' => 'active',
+                'is_first_login' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'employee_id' => 7654321,
+                'id' => 1234567,
+                'first_name' => 'Enrico',
+                'last_name' => 'Dela Merced',
+                'name' => 'Enrico Dela Merced',
+                'department' => 'Community Relation and Information Office (CRIO)',
+                'email' => 'user136873080172@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('M@lupetako123'),
+                'account_type' => 'technical_support',
+                'status' => 'active',
+                'is_first_login' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
+
     }
 
     /**

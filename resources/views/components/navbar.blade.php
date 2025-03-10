@@ -45,7 +45,7 @@
 <body>
     <div class="navbar">
         <h1 class="navbar-title">
-            Welcome, 
+            WELCOME, 
             @if(Auth::check())
                 {{ strtoupper(Auth::user()->first_name) }} {{ strtoupper(Auth::user()->last_name) }}
             @else
@@ -74,13 +74,18 @@
             <div class="user-dropdown">
                 <i class="fas fa-user navbar-icon" onclick="toggleDropdown()"></i>
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <div class="last-name">
-                        @if(Auth::check())
+                    @if(Auth::check())
+                        <div class="profile-container">
+                            <img src="{{ Auth::user()->avatar ? asset('storage/users-avatar/'.Auth::user()->avatar) : asset('default-profile.png') }}" 
+                                alt="Profile Picture" 
+                                class="profile-image">
+                        </div>
+                        <div class="last-name">
                             {{ strtoupper(Auth::user()->last_name) }}
-                        @else
-                            GUEST
-                        @endif
-                    </div>
+                        </div>
+                    @else
+                        <div class="last-name">GUEST</div>
+                    @endif
                     <a class="dropdown-item" href="{{ route('profile.index') }}">
                         <i class="fas fa-user-circle"></i> My Account
                     </a>
@@ -96,6 +101,7 @@
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 <!-- EMAIL VERIFY ALERT MESSAGE -->

@@ -1,14 +1,5 @@
-/* General Styling */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-}
-
-
-
-.title {
+/* Audit Logs Section */
+.audit-logs h1 {
     color: #003067;
     font-size: 24px;
     margin-bottom: 20px;
@@ -26,104 +17,154 @@ body {
     flex-wrap: wrap;
     gap: 10px;
 }
-.search-form {
+
+.filters form {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     align-items: center;
 }
 
-.search-input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.filters label {
+    font-size: 14px;
+    color: #003067;
+    margin-right: 5px;
 }
 
-.search-button {
-    padding: 8px 15px;
-    margin-left: 10px;
-    border: none;
+.filters input,
+.filters select,
+.filters button {
+    padding: 8px;
+    border: 1px solid #003067;
     border-radius: 4px;
+    font-size: 14px;
+    color: #003067;
+    outline: none;
+}
+
+.filters button {
     background-color: #003067;
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.search-button:hover {
+.filters button:hover {
     background-color: white;
     color: #003067;
     border: 1px solid #003067;
 }
 
-.tickets-table {
+/* Audit Logs Table */
+.audit-logs-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.tickets-table th, .tickets-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.tickets-table th {
+.audit-logs-table thead {
     background-color: #003067;
     color: white;
 }
 
-.no-results {
-    text-align: center;
+.audit-logs-table th,
+.audit-logs-table td {
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.audit-logs-table tbody tr:hover {
+    background-color: #f2f2f2;
+}
+
+/* Action Icons */
+.action-icon {
+    font-size: 18px;
+    margin-right: 5px;
+}
+
+.no-result{
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
     color: #777;
 }
 
-.pagination-container {
+.pagination-buttons {
     display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+    justify-content: center;
+    margin-top: 15px;
 }
 
-.results-count {
-    font-size: 14px;
-    color: #555;
-}
-
+/* Style the pagination links */
 .pagination-buttons ul {
-    list-style: none;
     display: flex;
-    gap: 5px;
+    list-style: none;
     padding: 0;
+    margin: 0;
 }
 
-.pagination-buttons li {
-    display: inline;
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    background: #fff;
-    cursor: pointer;
+.pagination-buttons ul li {
+    margin: 0 5px;
+}
+
+/* Default pagination button style */
+.pagination-buttons ul li a,
+.pagination-buttons ul li span {
+    display: inline-block;
+    padding: 6px 12px;
     border-radius: 4px;
-}
-
-.pagination-buttons li.active {
-    background: #007bff;
-    color: white;
-    font-weight: bold;
-}
-
-.pagination-buttons li a {
     text-decoration: none;
-    color: #007bff;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-.pagination-buttons li a:hover {
-    text-decoration: underline;
+/* Hover effect for active links */
+.pagination-buttons ul li a:hover {
+    background: #007bff;
+    color: #fff;
 }
 
-.pagination-buttons li.disabled {
-    pointer-events: none;
-    color: #ccc;
-    border-color: #ccc;
+/* Style active page number */
+.pagination-buttons ul li.active span {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+/* Disable previous/next when not clickable */
+.pagination-buttons ul li.disabled span {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .filters form {
+        flex-direction: column;
+    }
 }

@@ -41,6 +41,7 @@
             <thead>
                 <tr>
                     <th>Control No</th>
+                    <th>Date and Time</th>
                     <th>Name</th>
                     <th>Department</th>
                     <th>Concern</th>
@@ -53,6 +54,7 @@
                 @foreach ($tickets as $ticket)
                     <tr>
                         <td>{{ $ticket->control_no }}</td>
+                        <td>{{ $ticket->created_at }}</td>
                         <td>{{ ucwords(strtolower($ticket->name)) }}</td>
                         <td>{{ ucwords(strtolower($ticket->department)) }}</td>
                         <td>{{ ucwords(strtolower($ticket->concern)) }}</td>
@@ -93,7 +95,7 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             @if ($ticket->status == 'technical-report' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)
-                                <button class="action-button" onclick="openTechnicalReportViewModal('{{ $ticket->control_no }}')">
+                                <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')">
                                     <i class="fas fa-file-alt"></i>
                                 </button>
                             @elseif ($ticket->status == 'endorsed' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)

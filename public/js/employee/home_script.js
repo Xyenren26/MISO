@@ -38,3 +38,69 @@ document.addEventListener("DOMContentLoaded", function() {
         var panel = document.getElementById("completedTicketsPanel");
         panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
     }
+
+    function toggleModal(modalId, show) {
+        let modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = show ? 'block' : 'none';
+        } else {
+            console.error('Modal not found:', modalId);
+        }
+    }
+
+    function openTicketFormModal() {
+        toggleModal('ticketFormModal', true);
+    }
+
+    function closeTicketFormModal() {
+        toggleModal('ticketFormModal', false);
+    }
+
+    // Function to open modal
+    function openModalHome(modalId) {
+        document.getElementById(modalId).style.display = "block";
+    }
+
+    // Function to close modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = "none";
+      }
+    }
+    // Slideshow Functionality
+    let slideIndex = 0;
+    const slidespower = document.querySelector('.slides');
+    const totalSlides = slidespower.children.length;
+
+    function showSlide(index) {
+        if (index >= totalSlides) slideIndex = 0;
+        if (index < 0) slideIndex = totalSlides - 1;
+        slidespower.style.transform = `translateX(${-slideIndex * 100}%)`;
+    }
+
+    function nextSlide() {
+        slideIndex++;
+        showSlide(slideIndex);
+    }
+
+    function prevSlide() {
+        slideIndex--;
+        showSlide(slideIndex);
+    }
+
+    // Auto-play the slideshow (optional)
+    setInterval(nextSlide, 5000);
+
+    // Calendar Functionality (Basic Example)
+    const calendarElement = document.getElementById('calendar');
+    const date = new Date();
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+
+
+    

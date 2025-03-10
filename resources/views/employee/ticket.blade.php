@@ -80,13 +80,6 @@
                 <input type="date" id="toDate" class="date-filter">
             </div>
 
-
-            <!-- Add New Ticket Button -->
-            <div class="add-ticket-section">
-                <button class="add-ticket" onclick="openTicketFormModal()">
-                    <span class="icon">➕</span> Request Support
-                </button>
-            </div>
         </div>
 
         <!-- Modal for Creating a New Ticket -->
