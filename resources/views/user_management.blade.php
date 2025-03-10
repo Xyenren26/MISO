@@ -45,6 +45,7 @@
                             <option value="">All Users</option>
                             <option value="end_user">End User</option>
                             <option value="technical_support">Technical Support</option>
+                            <option value="technical_support_head">Technical Support Head</option>
                             <option value="administrator">Administrator</option>
                         </select>
                     </div>
@@ -79,6 +80,8 @@
                             <td>
                                 @if ($user->account_type === 'technical_support')
                                     Technical Support
+                                @elseif ($user->account_type === 'technical_support_head')
+                                    Technical Support Head
                                 @elseif ($user->account_type === 'administrator')
                                     Administrator
                                 @elseif ($user->account_type === 'end_user')
@@ -232,6 +235,7 @@
             <select id="newRole" name="newRole" required>
                 <option value="end_user">End User</option>
                 <option value="technical_support">Technical Support</option>
+                <option value="technical_support_head">Technical Support Head</option>
                 <option value="administrator">Administrator</option>
             </select>
             <button type="submit" class="modal-button confirm-button">Confirm</button>

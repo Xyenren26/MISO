@@ -12,7 +12,7 @@ class EquipmentDescription extends Model
     use HasFactory;
 
     protected $fillable = [
-        'form_no', 'equipment_type', 'brand', 'remarks',
+        'form_no', 'equipment_type', 'brand', 'device','description','remarks',
     ];
 
     // Define the relationship to the EquipmentPart model

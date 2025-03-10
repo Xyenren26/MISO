@@ -40,6 +40,7 @@
         <thead>
             <tr>
                 <th>Control No</th>
+                <th>Date and Time</th>
                 <th>Name</th>
                 <th>Department</th>
                 <th>Concern</th>
@@ -52,13 +53,14 @@
             @foreach ($tickets as $ticket)
                 <tr>
                     <td>{{ $ticket->control_no }}</td>
+                    <td>{{ $ticket->created_at }}</td>
                     <td>{{ ucwords(strtolower($ticket->name)) }}</td>
                     <td>{{ ucwords(strtolower($ticket->department)) }}</td>
                     <td>{{ ucwords(strtolower($ticket->concern)) }}</td>
                     <td class="{{ getPriorityClass($ticket->priority) }}">{{ ucfirst($ticket->priority) }}</td>
                     <td class="{{ getStatusClass($ticket->status) }}">
                         @if ($ticket->isRemarksDone && !$ticket->isApproved && $ticket->existsInModels)
-                            <span style="color: red; font-weight: bold; font-size:15px;">Waiting for Admin Approval</span>
+                            <span style="color: red; font-weight: bold; font-size:15px;">Waiting for Technical Support Head Approval</span>
                         @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress'&& $ticket->status !== 'endorsed')  && $ticket->isRemarksDone && !$ticket->isApproved && !$ticket->formfillup)
                             <span style="color: red; font-weight: bold; font-size:15px;">Form is Required to fill up</span>
                         @elseif (($ticket->status !== 'completed' && $ticket->status !== 'in-progress')  && $ticket->isRemarksDone && !$ticket->isApproved && $ticket->formfillup)
@@ -74,7 +76,7 @@
                         @elseif ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired) 
                             <span style="color: red; font-weight: bold; font-size:15px;">Mark it as repaired</span>
                         @else
-                            {{ $ticket->status === 'pull-out' ? 'Equipment Handover' : ucfirst($ticket->status) }}
+                            {{ $ticket->status === 'pull-out' ? 'Turn-Over to MISO' : ucfirst($ticket->status) }}
                         @endif
                     </td>
 
@@ -133,9 +135,19 @@
                                         </button>
                                     @endif
                             @endif
-                            @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
+                            @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'technical_support_head' && $ticket->existsInModels)
                                 <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-check-circle"></i>
+                                    <i class="fas fa-check-circle"></i> 
+                                </button>
+                                <button class="action-button deny-button" onclick="denyTicket('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-times-circle"></i> 
+                                </button>
+                            @endif
+
+                            @if (($ticket->isRemarksDone && $ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
+                            || ($ticket->isRemarksDone && $ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels&& $ticket->isRepaired))
+                                <button class="action-button archive-btn" onclick="archiveTicket('{{ $ticket->control_no }}')">
+                                    <i class="fas fa-archive"></i>
                                 </button>
                             @endif
                             

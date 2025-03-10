@@ -5,11 +5,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\Signup_Controller;
 use App\Http\Controllers\AccountSecurityController;
 use App\Http\Controllers\Home_Controller;
 use App\Http\Controllers\EndUserController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\Ticket_Controller;
 use App\Http\Controllers\Device_Management_Controller;
 use App\Http\Controllers\DeploymentController;
@@ -88,6 +91,7 @@ Route::middleware(['web'])->group(function() {
 // Routes for technical-support and administrator (protected by 'auth' middleware)
 Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {
     // Routes that require authentication
+    Route::resource('announcements', AnnouncementController::class);
     Route::get('/notifications', [NotificationController::class, 'fetchNotifications']);
     Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
@@ -96,6 +100,11 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/employee/ticket', [EndUserController::class, 'showEmployeeTicket'])->name('employee.tickets');
     Route::get('/employee/filter', [EndUserController::class, 'filterEmployeeTickets']);
     Route::get('/track-device-status/{ticket_id}', [EndUserController::class, 'trackDeviceStatus']);
+
+    Route::get('/events', [EventController::class, 'index']); // Fetch events
+    Route::post('/events', [EventController::class, 'store']); // Create event
+    Route::put('/events/{id}', [EventController::class, 'update']); // Update event
+    Route::delete('/events/{id}', [EventController::class, 'destroy']); // Delete event
 
     Route::get('/home', [Home_Controller::class, 'showHome'])->middleware('CustomAuthenticate')->name('home');
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
@@ -113,6 +122,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/technical-reports/check/{control_no}', [Ticket_Controller::class, 'checkTechnicalReport']);
     Route::get('/get-ticket-details/{control_no}', [Ticket_Controller::class, 'getTechnicalReportDetails']);
     Route::get('/get-deployment-names/{control_no}', [Ticket_Controller::class, 'getDeploymentNames']);
+    Route::post('/tickets/{control_no}/archive', [Ticket_Controller::class, 'archiveTicket']);
     Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
     Route::get('/get-qr-code/{form_no}', [ServiceRequestController::class, 'getQrCode']);
 
@@ -136,11 +146,11 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/profile', [Profile_Controller::class, 'index'])->name('profile.index');
     // Update profile data
     Route::post('/profile/update', [Profile_Controller::class, 'update'])->name('profile.update');   
+    Route::post('/profile/update-avatar', [Profile_Controller::class, 'updateAvatar'])->name('profile.updateAvatar');
     Route::get('/account/security', [AccountSecurityController::class, 'index'])->name('account.security');
     Route::post('/account/security/change-password', [AccountSecurityController::class, 'changePassword'])->name('account.changePassword');
     Route::post('/account/security/change-email', [AccountSecurityController::class, 'changeEmail'])->name('account.changeEmail');
     Route::post('/account/verify-password', [AccountSecurityController::class, 'verifyPassword'])->name('account.verifyPassword');
-    
     Route::middleware(['auth', 'CheckAdmin'])->group(function () {
         Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
         Route::get('/user/management', [User_Management_Controller::class, 'showUser_Management'])->name('user.management');
@@ -150,11 +160,14 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
         Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
         Route::get('/export-technician-performance', [Report_Controller::class, 'exportTechnicianPerformance']);
     });
+    Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
+    Route::get('/archive/export', [ArchiveController::class, 'export'])->name('archive.export');
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');
 
     Route::post('/approve-ticket', [ApprovalController::class, 'approveTicket'])->name('approve.ticket');
+    Route::post('/deny-ticket', [ApprovalController::class, 'denyTicket'])->name('deny.ticket');
     Route::get('/get-approval-details', [ApprovalController::class, 'getApprovalDetails']);
-
+    
     Route::post('/send-message/{ticketId}', [EndUserController::class, 'sendMessageToTechnicalSupport']);
     Route::post('/send-message-technical/{ticketId}', [Ticket_Controller::class, 'sendMessageToEndUser']);
     Route::get('/message/{id}', [OtherMessagesController::class, 'index'])->name('chatify');

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit Logs</title>
+    <title>TechTrack Audit Logs</title>
+    <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ asset('css/Audit_Logs_Style.css') }}">
     <!-- Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -26,8 +27,8 @@
             <div class="filters">
                 <form action="{{ route('audit_logs') }}" method="GET">
                     <label for="date-range">Date Range:</label>
-                    <input type="date" name="start_date" value="{{ request('start_date') }}" placeholder="Start Date">
-                    <input type="date" name="end_date" value="{{ request('end_date') }}" placeholder="End Date">
+                    <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" placeholder="Start Date">
+                    <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" placeholder="End Date">
 
                     <label for="action-type">Action Type:</label>
                     <select name="action_type">
@@ -58,12 +59,12 @@
                         <th>Date & Time</th>
                         <th>Action Performed</th>
                         <th>Performed By</th>
-                        <th>Ticket ID / Device ID</th>
+                        <th>Ticket ID / Form No.</th>
                         <th>Remarks / Details</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($auditLogs as $log) <!-- Use $auditLogs instead of $logs -->
+                    @forelse ($auditLogs as $log) <!-- Use $auditLogs instead of $logs -->
                         <tr>
                             <td>{{ $log->date_time }}</td>
                             <td>
@@ -74,7 +75,7 @@
                                         🔵
                                     @elseif ($log->action_type == 'endorsed')
                                         🟠
-                                    @elseif ($log->action_type == 'unrepairable')
+                                    @elseif ($log->action_type == 'archived')
                                         🔴
                                     @endif
                                 </span>
@@ -84,7 +85,11 @@
                             <td>{{ $log->ticket_or_device_id }}</td>
                             <td>{{ $log->remarks }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="5" class="no-results">No archived tickets found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
 
@@ -145,5 +150,28 @@
 </div>
 
 <script src="{{ asset('js/Audit_logs_Script.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let today = new Date().toISOString().split("T")[0];
+
+    let startDate = document.getElementById("start_date");
+    let endDate = document.getElementById("end_date");
+
+    // Disable future dates for start_date and end_date
+    startDate.setAttribute("max", today);
+    endDate.setAttribute("max", today);
+
+    // Ensure end_date is not earlier than start_date
+    startDate.addEventListener("change", function () {
+        endDate.setAttribute("min", startDate.value);
+    });
+
+    endDate.addEventListener("change", function () {
+        if (endDate.value < startDate.value) {
+            endDate.value = startDate.value; // Reset end_date if it's before start_date
+        }
+    });
+});
+</script>
 </body>
 </html>

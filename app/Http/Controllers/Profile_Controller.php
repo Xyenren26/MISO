@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Profile_Controller extends Controller
 {
@@ -89,34 +90,54 @@ class Profile_Controller extends Controller
         }
     }
     public function update(Request $request)
-{
-    // Force Laravel to return JSON for debugging
-    if (!$request->expectsJson()) {
-        return response()->json(['error' => 'Invalid request type'], 400);
-    }
+    {
+        // Force Laravel to return JSON for debugging
+        if (!$request->expectsJson()) {
+            return response()->json(['error' => 'Invalid request type'], 400);
+        }
 
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'department' => 'required|string|max:255',
-        'phone_number' => 'nullable|string|max:15',
-    ]);
-
-    try {
-        $user = auth()->user();
-        $user->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'name' => $request->input('first-name') . ' ' . $request->input('last-name'),
-            'department' => $request->department,
-            'phone_number' => $request->phone_number,
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'phone_number' => 'nullable|string|max:15',
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        try {
+            $user = auth()->user();
+            $user->update([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'name' => $request->input('first-name') . ' ' . $request->input('last-name'),
+                'department' => $request->department,
+                'phone_number' => $request->phone_number,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
-}
 
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
+        $user = Auth::user();
+
+        // Delete old avatar if exists
+        if ($user->avatar) {
+            Storage::delete('public/storage/users-avatar/' . $user->avatar);
+        }
+
+        // Save new avatar
+        $fileName = time() . '.' . $request->avatar->extension();
+        $request->avatar->storeAs('public/storage/users-avatar/', $fileName);
+        $user->avatar = $fileName;
+        $user->save();
+
+        return response()->json(['success' => true, 'avatar' => asset('storage/chatify/' . $fileName)]);
+    }
 }

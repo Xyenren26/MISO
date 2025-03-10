@@ -214,47 +214,73 @@
     function downloadModalAsPDFDeployment() {
         const { jsPDF } = window.jspdf;
         const modal = document.getElementById("deploymentview");
+        const modalContent = modal.querySelector(".modal-content-deployment");
 
         // Ensure modal is visible before capturing
         const previousDisplay = modal.style.display;
-        modal.style.display = "block"; 
+        modal.style.display = "block";
 
-        // Store original background color
-        const originalBg = modal.style.backgroundColor;
+        // Hide buttons before capturing
+        const closeButton = modal.querySelector(".close");
+        const printButton = document.getElementById("ButtonDeployment");
 
-        // Change background to white before capturing
-        modal.style.backgroundColor = "white";
+        closeButton.style.display = "none";
+        printButton.style.display = "none";
 
-        html2canvas(modal, {
+        // Store original styles
+        const originalStyles = {
+            background: document.body.style.backgroundColor,
+            width: modalContent.style.width,
+            height: modalContent.style.height,
+            position: modalContent.style.position,
+            padding: modalContent.style.padding,
+            margin: modalContent.style.margin,
+        };
+
+        // Make modal full-page with white background
+        document.body.style.backgroundColor = "white";
+        modalContent.style.width = "100vw";
+        modalContent.style.height = "100vh";
+        modalContent.style.position = "fixed";
+        modalContent.style.padding = "20px";
+        modalContent.style.margin = "0";
+
+        html2canvas(modalContent, {
             scale: 3,
             backgroundColor: "#ffffff",
             useCORS: true,
-            windowWidth: modal.scrollWidth,
-            windowHeight: modal.scrollHeight
+            windowWidth: modalContent.scrollWidth,
+            windowHeight: modalContent.scrollHeight
         }).then(canvas => {
             const pdf = new jsPDF("p", "mm", "a4");
 
-            const pageWidth = 210; // A4 width in mm
-            const imgWidth = 250; // Set width for the modal in the PDF
+            const imgWidth = 210; // A4 width in mm
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            // Calculate x position to center the modal
-            const xPosition = (pageWidth - imgWidth) / 2;
-            let yPosition = 10; // Top margin
-
-            pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+            pdf.addImage(canvas, "PNG", 0, 0, imgWidth, imgHeight);
 
             // Handle multi-page PDFs if content is long
             let heightLeft = imgHeight;
+            let position = 0;
+
             while (heightLeft > 297) {
-                yPosition -= 297;
+                position -= 297;
                 pdf.addPage();
-                pdf.addImage(canvas, "PNG", xPosition, yPosition, imgWidth, imgHeight);
+                pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
                 heightLeft -= 297;
             }
 
-            // Restore original background color after capturing
-            modal.style.backgroundColor = originalBg;
+            // Restore original styles
+            document.body.style.backgroundColor = originalStyles.background;
+            modalContent.style.width = originalStyles.width;
+            modalContent.style.height = originalStyles.height;
+            modalContent.style.position = originalStyles.position;
+            modalContent.style.padding = originalStyles.padding;
+            modalContent.style.margin = originalStyles.margin;
+
+            // Show hidden buttons again
+            closeButton.style.display = "block";
+            printButton.style.display = "block";
 
             // Get control number for filename
             const controlNo = document.getElementById("control_number").value || "Deployment";
@@ -263,6 +289,9 @@
             modal.style.display = previousDisplay;
         });
     }
+
+
+
     function printQRCodeDeployment() {
         var qrCodeDiv = document.querySelector('.qr-code-deployment');
         var printWindow = window.open('', '_blank', 'width=600,height=400');

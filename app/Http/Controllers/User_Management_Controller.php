@@ -68,7 +68,7 @@ class User_Management_Controller extends Controller
         $user = User::where('employee_id', $employee_id)->firstOrFail();
 
         $request->validate([
-            'newRole' => 'required|in:end_user,technical_support,administrator',
+            'newRole' => 'required|in:end_user,technical_support,technical_support_head,administrator',
         ]);
 
         $user->account_type = $request->newRole;

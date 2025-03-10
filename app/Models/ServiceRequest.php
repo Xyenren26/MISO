@@ -34,6 +34,11 @@ class ServiceRequest extends Model
         return $this->belongsTo(Ticket::class, 'ticket_id', 'control_no');
     }
 
+    public function rating()
+    {
+        return $this->hasOne(Rating::class, 'control_no', 'ticket_id');
+    }
+    
     // 🔹 Model Events for Audit Logging
     protected static function boot()
     {
@@ -44,7 +49,7 @@ class ServiceRequest extends Model
                 'date_time' => now(),
                 'action_type' => 'created',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->form_no,
+                'ticket_or_device_id' => $request->ticket_id,
                 'remarks' => 'Service request created'
             ]);
         });

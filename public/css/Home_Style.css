@@ -215,6 +215,7 @@ canvas {
 .month-picker:hover {
     border-color: #0056b3;
 }
+
 /* Adjusting for screen size */
 @media (max-width: 768px) {
     .metrics-container {
@@ -232,5 +233,11 @@ canvas {
 
     .metrics-section {
         gap: 10px;
+    }
+}
+/* Mobile Devices (480px and below) */
+@media (max-width: 480px) {
+    .card {
+        width: 20%; /* Adjusted width */
     }
 }

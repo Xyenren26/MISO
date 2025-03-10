@@ -177,3 +177,22 @@ function setupDateFilters() {
         handleDateFilter();
     });
 }
+
+function archiveTicket(controlNo) {
+    if (confirm("Are you sure you want to archive this ticket?")) {
+        fetch(`/tickets/${controlNo}/archive`, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload(); // Refresh the page after archiving
+        })
+        .catch(error => console.error("Error:", error));
+    }
+}

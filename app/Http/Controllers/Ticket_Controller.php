@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TicketArchive;
 use App\Models\TicketHistory;
 use App\Models\Approval;
 use App\Models\Ticket;
@@ -29,7 +30,7 @@ class Ticket_Controller extends Controller
     {
         $user = auth()->user();
 
-        if (!in_array($user->account_type, ['technical_support', 'administrator'])) {
+        if (!in_array($user->account_type, ['technical_support', 'administrator','technical_support_head'])) {
             abort(403, 'Unauthorized access');
         }
 
@@ -38,9 +39,12 @@ class Ticket_Controller extends Controller
         $filterNotApproved = request('filter_not_approved'); // Check if filtering for non-approved tickets
 
         $tickets = Ticket::when($user->account_type === 'administrator', function ($query) {
-            return $query;
+            return $query; // Admin sees all tickets
         }, function ($query) use ($user) {
-            return $query->where('technical_support_id', $user->employee_id);
+            if ($user->account_type === 'technical_support_head') {
+                return $query; // Head sees all tickets
+            }
+            return $query->where('technical_support_id', $user->employee_id); // Regular technical support sees only their assigned tickets
         })
         ->when($status, function ($query, $status) {
             return $query->where('status', $status);
@@ -49,7 +53,6 @@ class Ticket_Controller extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(5)
         ->onEachSide(1);
-   
 
         // Fetch all active technical supports
         $technicalSupports = User::where('account_type', 'technical_support')
@@ -66,13 +69,22 @@ class Ticket_Controller extends Controller
         }
     
         $currentYear = now()->year;
+
+        // Get the last ticket from the Ticket model
         $lastTicket = Ticket::whereYear('created_at', $currentYear)
             ->orderBy('control_no', 'desc')
             ->first();
-
+        
         // Generate next control number
         $nextControlNo = $lastTicket ? (intval(substr($lastTicket->control_no, -4)) + 1) : 1;
         $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
+        
+        // Check if the generated control number already exists in the Archive model
+        while (TicketArchive::where('control_no', $formattedControlNo)->exists()) {
+            $nextControlNo++; // Increment control number if it exists in the archive
+            $formattedControlNo = 'TS-' . $currentYear . '-' . str_pad($nextControlNo, 4, '0', STR_PAD_LEFT);
+        }
+        
 
         // Generate next form number
         $latestFormNo = ServiceRequest::latest('form_no')->first();
@@ -91,33 +103,62 @@ class Ticket_Controller extends Controller
             ->where('technical_support_id', Auth::user()->employee_id) // Only count tickets assigned to the logged-in user
             ->count();
 
-            $endorsedCount = Ticket::where('status', 'endorsed')
-                ->where('technical_support_id', Auth::user()->employee_id)
-                ->whereDoesntHave('approval', function ($query) {
-                    $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
-                })
-                ->count();
-
-            $technicalReportCount = Ticket::where('status', 'technical-report')
-                ->where('technical_support_id', Auth::user()->employee_id)
-                ->whereDoesntHave('approval', function ($query) {
-                    $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
-                })
-                ->count();
-
-            $pullOutCount = Ticket::where('status', 'pull-out')
-                ->where('technical_support_id', Auth::user()->employee_id)
-                ->whereDoesntHave('approval', function ($query) {
-                    $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
-                })
-                ->count();
-
+        if (Auth::user()->account_type === 'technical_support_head') {
+                // Show all unapproved tickets (no filtering by technical_support_id)
+                $endorsedCount = Ticket::where('status', 'endorsed')
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            
+                $technicalReportCount = Ticket::where('status', 'technical-report')
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            
+                $pullOutCount = Ticket::where('status', 'pull-out')
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            
                 $deploymentCount = Ticket::where('status', 'deployment')
-                ->where('technical_support_id', Auth::user()->employee_id)
-                ->whereDoesntHave('approval', function ($query) {
-                    $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
-                })
-                ->count();
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            } else {
+                // Show only the unapproved tickets assigned to the logged-in technical support
+                $endorsedCount = Ticket::where('status', 'endorsed')
+                    ->where('technical_support_id', Auth::user()->employee_id)
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            
+                $technicalReportCount = Ticket::where('status', 'technical-report')
+                    ->where('technical_support_id', Auth::user()->employee_id)
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            
+                $pullOutCount = Ticket::where('status', 'pull-out')
+                    ->where('technical_support_id', Auth::user()->employee_id)
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            
+                $deploymentCount = Ticket::where('status', 'deployment')
+                    ->where('technical_support_id', Auth::user()->employee_id)
+                    ->whereDoesntHave('approval', function ($query) {
+                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
+                    })
+                    ->count();
+            }
+            
 
         // Add isApproved and existsInModels check for each ticket
         foreach ($tickets as $ticket) {
@@ -435,9 +476,10 @@ class Ticket_Controller extends Controller
 
             $statusFormatted = ucwords(str_replace('-', ' ', $ticket->status));
 
-            $message = "Hello, {$ticket->name} your ticket with Ticket No:{$ticket->control_no} has been 
-                        updated to Status: {$statusFormatted}, with Remarks: {$ticket->remarks}
-                        by {$ticket->technical_support_name} on {$ticket->updated_at}
+            $message = "Hello, {$ticket->name} your ticket with Ticket No:{$ticket->control_no} 
+                        has been updated to Status: {$statusFormatted}, with 
+                        Remarks: {$ticket->remarks} by {$ticket->technical_support_name} 
+                        on {$ticket->updated_at}
                         
                         If you have any question related to your Ticket Service Request Please fill free to Inquire.
                         
@@ -539,6 +581,7 @@ class Ticket_Controller extends Controller
 
             return response()->json([
                 'endorsement' => $endorsement,
+                'ticket' => $ticket,
                 'technical_support' => $technicalSupport ? [
                     'first_name' => $technicalSupport->first_name,
                     'last_name' => $technicalSupport->last_name,
@@ -560,8 +603,6 @@ class Ticket_Controller extends Controller
             'department' => 'required|string|max:255',
             'network' => 'nullable|array',
             'network_details' => 'nullable|array',
-            'user_account' => 'nullable|array',
-            'user_account_details' => 'nullable|array',
             'endorsed_to' => 'nullable|string|max:255',
             'endorsed_to_date' => 'nullable|date',
             'endorsed_to_time' => 'nullable|date_format:H:i',
@@ -579,9 +620,6 @@ class Ticket_Controller extends Controller
         // Convert arrays to JSON
         $validated['network'] = json_encode($request->input('network', []));
         $validated['network_details'] = json_encode($request->input('network_details', []));
-        $validated['user_account'] = json_encode($request->input('user_account', []));
-        $validated['user_account_details'] = json_encode($request->input('user_account_details', []));
-
         // Check if endorsement already exists
         $endorsement = Endorsement::where('control_no', $validated['control_no'])->first();
 
@@ -605,7 +643,7 @@ class Ticket_Controller extends Controller
             $message = 'Endorsement saved successfully!';
         }
         // Retrieve the administrator
-        $admin = User::where('account_type', 'administrator')->first();
+        $admin = User::where('account_type', 'technical_support_head')->first();
 
         if ($admin) {
             $notification = new SystemNotification(
@@ -650,8 +688,6 @@ class Ticket_Controller extends Controller
             'endorsed_by_remarks' => $endorsement->endorsed_by_remarks ?? "Not Available",
             'network' => $this->safeJsonDecode($endorsement->network),
             'network_details' => $this->safeJsonDecode($endorsement->network_details),
-            'user_account' => $this->safeJsonDecode($endorsement->user_account),
-            'user_account_details' => $this->safeJsonDecode($endorsement->user_account_details),
            
             // Approval details
             'approval' => [
@@ -756,7 +792,7 @@ class Ticket_Controller extends Controller
         ]);
 
          // Retrieve the administrator
-         $admin = User::where('account_type', 'administrator')->first();
+         $admin = User::where('account_type', 'technical_support_head')->first();
 
          if ($admin) {
              $notification = new SystemNotification(
@@ -817,5 +853,15 @@ class Ticket_Controller extends Controller
         }
     
         return response()->json(['success' => false, 'message' => 'Ticket is already marked as Remarks Done.']);
+    }
+
+    public function archiveTicket($control_no)
+    {
+        $ticket = Ticket::findOrFail($control_no);
+
+        // Archive the ticket
+        $ticket->archive();
+
+        return response()->json(['message' => 'Ticket archived successfully.']);
     }
 }

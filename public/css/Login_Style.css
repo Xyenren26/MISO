@@ -511,4 +511,16 @@
       padding: 10px;
       height: 50px; /* Set a fixed height for the top navigation */
     }
+    .login-container {
+      max-width: 80%;
+      padding: 20px;
+      height: auto; /* Ensure the login container adjusts based on content */
+    }
+  
+    .login-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      background-image: linear-gradient(#f9f9f9, #f9f9f9),
+        linear-gradient(to right, #0e2f66, #2575fc);
+    }
   }

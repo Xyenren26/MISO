@@ -63,19 +63,7 @@ return [
         'default' => 'avatar.png',
     ],
 
-    /*
-    |-------------------------------------
-    | Gravatar
-    |
-    | imageset property options:
-    | [ 404 | mp | identicon (default) | monsterid | wavatar ]
-    |-------------------------------------
-    */
-    'gravatar' => [
-        'enabled' => true,
-        'image_size' => 200,
-        'imageset' => 'identicon'
-    ],
+   
 
     /*
     |-------------------------------------

@@ -14,8 +14,6 @@ class CreateEndorsementsTable extends Migration
             $table->string('department')->nullable();
             $table->string('network')->nullable();
             $table->string('network_details')->nullable();
-            $table->string('user_account')->nullable();
-            $table->string('user_account_details')->nullable();
             $table->string('endorsed_to')->nullable();
             $table->date('endorsed_to_date')->nullable();  // Date type for endorsed_to_date
             $table->time('endorsed_to_time')->nullable();  // Time type for endorsed_to_time
