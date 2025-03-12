@@ -11,7 +11,7 @@
     <div class="content-wrapper-form">
         <div class="ticket-form-container">
             <button class="close-modal" onclick="closeTicketFormModal()">✖</button>
-            <h2>Technical Service Slip</h2> <!-- New heading added here -->
+            <h2>Technical Service Slip</h2>
             <form id="ticketForm" action="{{ route('ticket.store') }}" method="POST">
                 @csrf
                 <div class="control-number" id="controlNumber">
@@ -50,11 +50,11 @@
                         <div class="issue-dropdown">
                             <button class="issue-dropbtn" id="selectedConcerns">Select Concern</button>
                             <div class="issue-dropdown-content">
-                                <label><input type="checkbox" name="issues[]" value="Hardware Issue" onchange="updateSelectedConcerns(); toggleSubDropdown('hardwareDropdown', this)"> Hardware Issue</label>
-                                <label><input type="checkbox" name="issues[]" value="Software Issue" onchange="updateSelectedConcerns(); toggleSubDropdown('softwareDropdown', this)"> Software Issue</label>
-                                <label><input type="checkbox" name="issues[]" value="File Transfer" onchange="updateSelectedConcerns(); toggleSubDropdown('fileTransferDropdown', this)"> File Transfer</label>
-                                <label><input type="checkbox" name="issues[]" value="Network Connectivity" onchange="updateSelectedConcerns(); toggleSubDropdown('networkDropdown', this)"> Network Connectivity</label>
-                                <label><input type="checkbox" name="issues[]" value="Other" id="otherIssueCheckbox" onchange="toggleOtherInput(); updateSelectedConcerns()"> Other: Specify</label>
+                                <label><input type="checkbox" name="issues[]" value="Hardware Issue" onchange="updateSelectedConcerns(); toggleSubDropdown('hardwareDropdown', this); setPriority('urgent')"> Hardware Issue</label>
+                                <label><input type="checkbox" name="issues[]" value="Software Issue" onchange="updateSelectedConcerns(); toggleSubDropdown('softwareDropdown', this); setPriority('high')"> Software Issue</label>
+                                <label><input type="checkbox" name="issues[]" value="File Transfer" onchange="updateSelectedConcerns(); toggleSubDropdown('fileTransferDropdown', this); setPriority('low')"> File Transfer</label>
+                                <label><input type="checkbox" name="issues[]" value="Network Connectivity" onchange="updateSelectedConcerns(); toggleSubDropdown('networkDropdown', this); setPriority('medium')"> Network Connectivity</label>
+                                <label><input type="checkbox" name="issues[]" value="Other" id="otherIssueCheckbox" onchange="toggleOtherInput(); updateSelectedConcerns(); setPriority('medium')"> Other: Specify</label>
                             </div>
                         </div>
 
@@ -112,14 +112,17 @@
                             <input type="text" id="otherConcern" name="otherConcern" placeholder="Specify your concern" oninput="updateSelectedConcerns()">
                         </div>
 
-
                         <label for="category">Priority:</label>
-                        <select id="category" name="category" required>
+                        <select id="category" name="category" required onchange="setPriority(this.value)">
                             <option value="" disabled selected>Select Priority</option>
-                            <option value="urgent">Urgent</option>
-                            <option value="semi-urgent">Semi-Urgent</option>
-                            <option value="non-urgent">Non-Urgent</option>
+                            <option value="urgent">Urgent (1-3 days)</option>
+                            <option value="high">High (4-12 hours)</option>
+                            <option value="medium">Medium (30 min - 4 hours)</option>
+                            <option value="low">Low (10-30 min)</option>
                         </select>
+
+                        <!-- Priority Description -->
+                        <div id="priorityDescription" style="margin-top: 10px; font-style: italic; color: #555;"></div>
 
                         <label for="employeeId">Employee ID:</label>
                         <input type="text" id="employeeId" name="employeeId" required
@@ -157,7 +160,39 @@
         </div>
     </div>
 
-    <script>
+<script>
+    // Function to set priority and description based on the selected concern
+    function setPriority(priority) {
+        const priorityDropdown = document.getElementById('category');
+        const descriptionElement = document.getElementById('priorityDescription');
+
+        // Set the priority value in the dropdown
+        priorityDropdown.value = priority;
+
+        // Update the description based on the selected priority
+        let description = '';
+        switch (priority) {
+            case 'urgent':
+                description = 'Critical issues that need immediate attention, significantly impacting operations. (1-3 days)';
+                break;
+            case 'high':
+                description = 'Important issues that need to be addressed quickly but are not system-critical. (4-12 hours)';
+                break;
+            case 'medium':
+                description = 'Moderate impact issues that should be resolved soon but do not halt work. (30 min - 4 hours)';
+                break;
+            case 'low':
+                description = 'Minor issues or routine tasks that have minimal impact and can be scheduled later. (10-30 min)';
+                break;
+            default:
+                description = 'Please select a priority level.';
+        }
+
+        // Display the description
+        descriptionElement.textContent = description;
+    }
+
+
 // Employee ID Validation
 const employeeIdInput = document.getElementById('employeeId');
 const errorMessage = document.getElementById('error-message');

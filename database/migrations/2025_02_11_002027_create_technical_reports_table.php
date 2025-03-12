@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         if (!Schema::hasTable('technical_reports')) {
         Schema::create('technical_reports', function (Blueprint $table) {
-            $table->id();
+            $table->string('TR_id');
             $table->string('control_no'); // Reference to tickets table
             $table->foreign('control_no')->references('control_no')->on('tickets')->onDelete('cascade');
             $table->timestamp('date_time');
@@ -20,8 +20,6 @@ return new class extends Migration {
             $table->text('workdone');
             $table->text('findings');
             $table->text('recommendation');
-            $table->string('reported_by');
-            $table->timestamp('reported_date')->nullable();
             $table->string('inspected_by');
             $table->timestamp('inspected_date')->nullable();
             $table->timestamps();

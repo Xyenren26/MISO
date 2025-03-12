@@ -20,7 +20,7 @@ return new class extends Migration
                 $table->integer('technical_support_id')->nullable();
                 $table->string('name');
                 $table->string('department');
-                $table->enum('priority', ['urgent', 'semi-urgent', 'non-urgent']);
+                $table->enum('priority', ['urgent', 'high', 'medium','low']);
                 $table->text('concern');
                 $table->text('remarks')->nullable();
                 $table->string('technical_support_name')->nullable(); // Name of technical support (just a string)

@@ -22,3 +22,36 @@ function toggleSidebar() {
         toggleIcon.classList.add("fa-arrow-left");
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const requestSupportButton = document.getElementById('requestSupportButton');
+    const ticketMessage = document.getElementById('ticketMessage');
+
+    // Fetch data from the server
+    fetch('/check-pending-tickets') // Replace with your endpoint
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.hasPendingTickets) {
+                // If there are pending tickets, disable the button and show the message
+                requestSupportButton.disabled = true; // Disable the button
+                requestSupportButton.classList.add('disabled-button'); // Add a class for styling
+                ticketMessage.style.display = 'block';
+                ticketMessage.textContent = 'You cannot request support until your pending tickets are resolved.';
+            } else {
+                // If no pending tickets, enable the button and hide the message
+                requestSupportButton.disabled = false; // Enable the button
+                requestSupportButton.classList.remove('disabled-button'); // Remove the class for styling
+                ticketMessage.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching ticket data:', error);
+            ticketMessage.style.display = 'block';
+            ticketMessage.textContent = 'An error occurred while checking your tickets. Please try again later.';
+        });
+});

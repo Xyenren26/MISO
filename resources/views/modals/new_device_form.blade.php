@@ -145,7 +145,7 @@
         <div class="form-popup-form-container">
             <header class="form-popup-header">
                 <div class="form-popup-logo">
-                    <img src="images/systemlogo.png" alt="Logo">
+                    <img src="images/SystemLogo.png" alt="Logo">
                 </div>
                 <h1>ICT Equipment Service Request Form</h1>
                 <div class="form-popup-form-info">

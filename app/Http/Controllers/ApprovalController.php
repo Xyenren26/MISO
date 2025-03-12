@@ -11,7 +11,6 @@ use App\Models\Rating;
 use App\Models\User;
 use App\Models\ServiceRequest;
 use App\Models\Endorsement;
-use App\Models\Deployment;
 use App\Models\TechnicalReport;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -126,7 +125,6 @@ class ApprovalController extends Controller
 
         try {
             // Delete related records
-            Deployment::where('control_number', $controlNo)->delete();
             Endorsement::where('ticket_id', $controlNo)->delete();
             ServiceRequest::where('ticket_id', $controlNo)->delete();
             TechnicalReport::where('control_no', $controlNo)->delete();

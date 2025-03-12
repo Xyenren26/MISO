@@ -105,6 +105,7 @@
         <form id="technicalReportForm" action="{{ route('technical-reports.store') }}" method="POST">
             @csrf
             <input type="hidden" id="control_no" name="control_no">
+            <input type="hidden" id="TRcontrol_no" name="TR_id">
 
             <!-- System Generated Date and Time -->
             <div class="form-group">
@@ -128,11 +129,11 @@
             </div>
             <div class="form-group">
                 <label for="problem">Problem</label>
-                <textarea id="problem" name="problem" required></textarea>
+                <textarea id="problemtech" name="problem" required readonly></textarea>
             </div>
             <div class="form-group">
                 <label for="workdone">Work Done</label>
-                <textarea id="workdone" name="workdone" required></textarea>
+                <textarea id="workdonetech" name="workdone" required readonly></textarea>
             </div>
             <div class="form-group">
                 <label for="findings">Findings</label>
@@ -146,14 +147,8 @@
             <!-- Signatures -->
             <div class="signatures">
                 <div class="signature">
-                    <label for="reported">Reported By</label>
-                    <input type="text" id="reported" name="reported_by" required>
-                    <label for="reported-date">Date and Time</label>
-                    <input type="datetime-local" id="reported-date" name="reported_date" required readonly>
-                </div>
-                <div class="signature">
                     <label for="inspected">Inspected By</label>
-                    <input type="text" id="inspected" name="inspected_by" required>
+                    <input type="text" id="inspectedtech" name="inspected_by" required readonly>
                     <label for="inspected-date">Date and Time</label>
                     <input type="datetime-local" id="inspected-date" name="inspected_date" required readonly>
                 </div>

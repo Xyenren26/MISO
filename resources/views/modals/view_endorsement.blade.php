@@ -5,7 +5,7 @@
 <style>
       #endorsementViewModal{
         position: fixed;
-        z-index: 1;
+        z-index: 999;
         left: 0;
         top: 0;
         width: 100%;
@@ -35,6 +35,33 @@
         cursor: pointer;
         transition: 0.3s;
     }
+
+    #updateEndorsementButton{
+        margin-top: 20px;
+        width: 100%;
+        padding: 8px;
+        background: #007BFF;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #saveEndorsementButton{
+        margin-top: 20px;
+        width: 100%;
+        padding: 8px;
+        background: #007BFF;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
     .rating-container {
         position: absolute;
         top: 50px;
@@ -116,9 +143,9 @@
                     <div class="modal-checkbox-group">
                         @foreach(['Network diagnostics', 'Connectivity and access issues', 'Account creation and management', 'File sharing and folder permissions', 'Others'] as $networkItem)
                             <div>
-                                <input type="checkbox" name="network[]" value="{{ $networkItem }}" disabled>
+                                <input type="checkbox" name="network[]" value="{{ $networkItem }}" id="network_{{ $loop->index }}" disabled>
                                 <label>{{ $networkItem }}</label>
-                                <input type="text" name="network_details[{{ $networkItem }}]" placeholder="" readonly disabled>
+                                <input type="text" name="network_details[{{ $networkItem }}]" id="network_details_{{ $loop->index }}" placeholder="" disabled>
                             </div>
                         @endforeach
                     </div>
@@ -131,7 +158,7 @@
             <h3>Endorsed To</h3>
             <div class="modal-form-section">
                 <label for="endorsed_to">Endorsed To:</label>
-                <input type="text" id="endorsed_to" name="endorsed_to" class="modal-input-box" readonly disabled>
+                <input type="text" id="endorsed_to" name="endorsed_to" class="modal-input-box" disabled>
             </div>
             <div class="modal-stacked-date-time">
                 <div>
@@ -145,9 +172,10 @@
             </div>
             <div class="modal-form-section">
                 <label for="endorsed_to_remarks">Remarks:</label>
-                <input type="text" id="endorsed_to_remarks" name="endorsed_to_remarks" class="modal-input-box" readonly disabled>
+                <input type="text" id="endorsed_to_remarks" name="endorsed_to_remarks" class="modal-input-box" disabled>
             </div>
         </div>
+
         <!-- Endorsed By Section -->
         <div class="modal-footer">
             <h3>Endorsed By</h3>
@@ -185,11 +213,91 @@
             </div>
         </section>
 
+        <!-- Update and Save Button -->
+        <button type="button" id="updateEndorsementButton" onclick="enableEditing()">Update</button>
+        <button type="button" id="saveEndorsementButton" onclick="saveEndorsement()" style="display: none;">Save</button>
         <button type="button" id="ButtonEndorsement" onclick="downloadModalAsPDF()">Download PDF</button>
-
     </div>
 </div>
 <script>
+function enableEditing() {
+    // Enable Concern Checkbox and Fields
+    document.querySelectorAll('input[name="network[]"]').forEach(checkbox => {
+        checkbox.disabled = false;
+    });
+    document.querySelectorAll('input[name^="network_details"]').forEach(input => {
+        input.disabled = false;
+    });
+
+    // Enable Endorsed To and Remarks
+    document.getElementById("endorsed_to").disabled = false;
+    document.getElementById("endorsed_to_remarks").disabled = false;
+
+    // Switch buttons
+    document.getElementById("updateEndorsementButton").style.display = "none";
+    document.getElementById("saveEndorsementButton").style.display = "inline-block";
+}
+
+function saveEndorsement() {
+    const controlNo = document.getElementById("ViewEndorsementcontrol_no").value;
+    const endorsedTo = document.getElementById("endorsed_to").value;
+    const endorsedToRemarks = document.getElementById("endorsed_to_remarks").value;
+
+    // Collect Concern Checkbox and Fields
+    const concerns = [];
+    document.querySelectorAll('input[name="network[]"]').forEach((checkbox, index) => {
+        if (checkbox.checked) {
+            const detailInput = document.getElementById(`network_details_${index}`);
+            if (detailInput) { // Check if the input exists
+                const detail = detailInput.value;
+                concerns.push({
+                    concern: checkbox.value,
+                    detail: detail
+                });
+            } else {
+                console.error(`Detail input for network item ${index} not found.`);
+            }
+        }
+    });
+
+    // Prepare the data for the AJAX request
+    const requestData = {
+        control_no: controlNo,
+        endorsed_to: endorsedTo,
+        endorsed_to_remarks: endorsedToRemarks,
+        concerns: concerns
+    };
+
+    // Send the request via Fetch API
+    fetch("/tickets/update-endorsement", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok.");
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert("Endorsement updated successfully!");
+            closeEndorsementViewModal();
+            location.reload(); // Reload the page to reflect changes
+        } else {
+            alert("Error updating endorsement. Please try again.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+    });
+}
+
 function downloadModalAsPDF() {
     const { jsPDF } = window.jspdf;
     const modal = document.getElementById("endorsementViewModal");
@@ -268,5 +376,4 @@ function downloadModalAsPDF() {
         modal.style.display = previousDisplay;
     });
 }
-
 </script>

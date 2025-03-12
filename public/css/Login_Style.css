@@ -139,14 +139,21 @@
   
   
   
-  .logo {
-    position: relative;
-    width: 275px;
+  .logo-container {
+    display: flex;
+    align-items: center; /* Aligns images vertically */
+    justify-content: center; /* Centers the images horizontally */
+    gap: 20px; /* Adds space between logos */
+}
+
+.logo {
+    width: 275px; /* Keeps your set width */
     height: auto;
+    position: relative;
     z-index: 10;
-    mix-blend-mode: multiply; /* Blends the white logo into the background */
-  }
-  
+    mix-blend-mode: multiply;
+}
+
   /* Left Screen Styling */
   .left-screen {
     width: 50%;
@@ -380,10 +387,6 @@
         background-color: #ffffff;
       }
   
-  .pasig-logo img {
-    display: none;
-  }
-  
   
 .alert-box {
   padding: 10px;
@@ -485,14 +488,6 @@
   /* Style for the first logo (Electronic Service Queuing) */
   .logo {
     width: 200px; /* Adjust the width as needed */
-    height: auto; /* Keep aspect ratio intact */
-    object-fit: contain; /* Ensure the image fits within its container */
-  }
-  
-  /* Style for the Pasig logo */
-  .pasig-logo img {
-    display:inline;
-    width: 140px; /* Adjust the width for the Pasig logo */
     height: auto; /* Keep aspect ratio intact */
     object-fit: contain; /* Ensure the image fits within its container */
   }

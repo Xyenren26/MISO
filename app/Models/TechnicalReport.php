@@ -11,11 +11,14 @@ class TechnicalReport extends Model
 
     protected $table = 'technical_reports';
 
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'TR_id'; // Ensure this matches your database
+    protected $keyType = 'string'; // If TR_id is a string
+    public $incrementing = false;
 
     public $timestamps = true;
 
     protected $fillable = [
+        'TR_id',
         'control_no',
         'date_time',
         'department',
@@ -25,14 +28,11 @@ class TechnicalReport extends Model
         'workdone',
         'findings',
         'recommendation',
-        'reported_by',
-        'reported_date',
         'inspected_by',
         'inspected_date',
     ];
     protected $casts = [
         'date_time' => 'datetime',
-        'reported_date' => 'datetime',
         'inspected_date' => 'datetime',
     ];
     /**

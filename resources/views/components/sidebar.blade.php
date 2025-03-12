@@ -24,11 +24,14 @@
             
             @if(auth()->user()->account_type == 'end_user')
                 <div class="employeeticketssection">
-                    <button class="employeetickets" onclick="openTicketFormModal()">
+                    <button class="employeetickets" id="requestSupportButton" onclick="openTicketFormModal()">
                         <span class="employeeticketsicon">➕</span> 
                         <span class="employeeticketstext">Request Support</span>
                     </button>
+                    <!-- Message placeholder -->
+                    <p id="ticketMessage" style="display: none; color: red; margin-top: 10px;"></p>
                 </div>
+
                 <li class="{{ Request::is('employee/home') ? 'active' : '' }}">
                     <a href="{{ route('employee.home') }}"><i class="fas fa-home"></i><span class="menu-label">Dashboard</span></a>
                 </li>

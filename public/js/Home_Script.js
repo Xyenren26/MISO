@@ -1,7 +1,7 @@
 // Labels and colors
-const labels = ['Urgent', 'Semi-Urgent', 'Non-Urgent'];
-const backgroundColors = ['#FF0000', '#FFA500', '#008000']; // Red, Orange, Green
-const borderColors = ['#FF0000', '#FFA500', '#008000']; // Red, Orange, Green
+const labels = ['Urgent', 'High', 'Medium', 'Low']; // Updated priority levels
+const backgroundColors = ['#FF0000', '#FFA500', '#FFFF00', '#008000']; // Red, Orange, Yellow, Green
+const borderColors = ['#FF0000', '#FFA500', '#FFFF00', '#008000']; // Red, Orange, Yellow, Green
 
 // Initialize charts
 createVerticalBarChart(document.getElementById('pendingTicketGraph'), pendingData, labels, backgroundColors, borderColors);
@@ -163,3 +163,109 @@ const ticketPerformanceGraph = new Chart(ctxPerformance, {
         }
     }
 });
+
+function toggleFilters() {
+    const filter = document.getElementById('filter').value;
+    const monthFilter = document.getElementById('monthFilter');
+    const yearFilter = document.getElementById('yearFilter');
+
+    if (filter === 'monthly') {
+        monthFilter.style.display = 'block';
+        yearFilter.style.display = 'block';
+    } else if (filter === 'annually') {
+        monthFilter.style.display = 'none';
+        yearFilter.style.display = 'block';
+    } else {
+        monthFilter.style.display = 'none';
+        yearFilter.style.display = 'none';
+    }
+}
+
+// Function to fetch and filter tickets based on the selected criteria
+function fetchTickets() {
+    console.log("Fetching tickets..."); // Debugging line
+    const filter = document.getElementById('filter').value;
+    const month = document.getElementById('monthFilter').value;
+    const year = document.getElementById('yearFilter').value;
+
+    // Send an AJAX request to the server to fetch filtered tickets
+    fetch(`/fetch-tickets?filter=${filter}&month=${month}&year=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            updateTable(data);
+        })
+        .catch(error => console.error('Error fetching tickets:', error));
+}
+
+function capitalizeWords(str) {
+    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+}
+
+// Function to update the table with the filtered tickets
+function updateTable(tickets) {
+    const tableBody = document.getElementById('ticketTableBody');
+    tableBody.innerHTML = ''; // Clear the current table rows
+
+    tickets.forEach(ticket => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50 transition duration-200';
+        row.innerHTML = `
+            <td class="px-6 py-4">${ticket.control_no}</td>
+            <td class="px-6 py-4">${ticket.date_time}</td>
+            <td class="px-6 py-4">${ticket.name}</td>
+            <td class="px-6 py-4">${ticket.department}</td>
+            <td class="px-6 py-4">${ticket.concern}</td>
+            <td class="px-6 py-4">${capitalizeWords(ticket.priority)}</td>
+            <td class="px-6 py-4">${capitalizeWords(ticket.status)}</td>
+            <td class="px-6 py-4">${ticket.remarks}</td>
+            <td class="px-6 py-4">${ticket.rating_percentage ? ticket.rating_percentage + '%' : 'N/A'}</td>
+            <td class="px-6 py-4">${ticket.remark ?? 'N/A'}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Initialize the filters on page load
+document.addEventListener('DOMContentLoaded', toggleFilters);
+
+function exportTickets() {
+    const filter = document.getElementById('filter').value;
+    const monthFilter = document.getElementById('monthFilter').value;
+    const yearFilter = document.getElementById('yearFilter').value;
+    const userName = document.getElementById('userName').value; // Get the user's name
+
+    let fileName = '';
+    if (filter === 'weekly') {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - startDate.getDay());
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
+        fileName = `${userName}_weekly_report_${startDate.toISOString().split('T')[0]}_to_${endDate.toISOString().split('T')[0]}.csv`;
+    } else if (filter === 'monthly') {
+        fileName = `${userName}_monthly_report_${monthFilter}_${yearFilter}.csv`;
+    } else if (filter === 'annually') {
+        fileName = `${userName}_annual_report_${yearFilter}.csv`;
+    }
+
+    const rows = document.querySelectorAll('#ticketTableBody tr');
+    let csvContent = "data:text/csv;charset=utf-8,";
+
+    // Add headers
+    const headers = Array.from(document.querySelectorAll('#ticketTable thead th')).map(header => header.innerText);
+    csvContent += headers.join(',') + '\n';
+
+    // Add rows
+    rows.forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td')).map(col => col.innerText);
+        csvContent += cols.join(',') + '\n';
+    });
+
+    // Create a link and trigger the download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}

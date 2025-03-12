@@ -50,41 +50,5 @@ class PDFController extends Controller
         ]);
 
         return $pdf->stream("ServiceRequest_$form_no.pdf");
-    }
-
-    // Function to generate the PDF for new device deployment
-    public function generateDeploymentPDF($control_number)
-    {
-        $deployment = Deployment::where('control_number', $control_number)->firstOrFail();
-
-        // Get related equipment items for the deployment
-        $equipmentItems = $deployment->equipmentItems;
-
-        // Prepare the components and software as comma-separated strings
-        $components = is_array($deployment->components) ? implode(', ', $deployment->components) : 'No Components';
-        $software = is_array($deployment->software) ? implode(', ', $deployment->software) : 'No Software';
-
-        // Pass data to the PDF view
-        $pdf = Pdf::loadView('pdf.deployment', [
-            'control_number' => $deployment->control_number,
-            'purpose' => $deployment->purpose,
-            'status' => $deployment->status,
-            'components' => $components,
-            'software' => $software,
-            'brand_name' =>  $deployment->brand_name,
-            'specification' =>  $deployment->specification,
-            'received_by' => $deployment->received_by,
-            'received_date' => $deployment->received_date,
-            'issued_by' => $deployment->issued_by,
-            'issued_date' => $deployment->issued_date,
-            'noted_by' => $deployment->noted_by,
-            'noted_date' => $deployment->noted_date,
-            'equipmentItems' => $equipmentItems, // Pass the equipment items data
-        ]);
-
-        // Return the PDF as a stream or force download
-        return $pdf->stream("Deployment_$control_number.pdf");
-    }
-
-    
+    }    
 }    

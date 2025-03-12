@@ -14,8 +14,6 @@ use App\Http\Controllers\Home_Controller;
 use App\Http\Controllers\EndUserController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Ticket_Controller;
-use App\Http\Controllers\Device_Management_Controller;
-use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\Profile_Controller;
 use App\Http\Controllers\User_Management_Controller;
 use App\Http\Controllers\Audit_logs_Controller;
@@ -51,8 +49,6 @@ Route::get('/generate-qr-deployment/{control_number}', function ($control_number
 });
 
 Route::get('/generate-pdf/{form_no}', [PDFController::class, 'generatePDF'])->name('generate.pdf');
-Route::get('/generate-deployment-pdf/{control_number}', [PDFController::class, 'generateDeploymentPDF'])->name('generate.deployment.pdf');
-
 Route::post('verification/send', [VerificationController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
@@ -99,7 +95,6 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/employee/home', [EndUserController::class, 'index'])->name('employee.home');
     Route::get('/employee/ticket', [EndUserController::class, 'showEmployeeTicket'])->name('employee.tickets');
     Route::get('/employee/filter', [EndUserController::class, 'filterEmployeeTickets']);
-    Route::get('/track-device-status/{ticket_id}', [EndUserController::class, 'trackDeviceStatus']);
 
     Route::get('/events', [EventController::class, 'index']); // Fetch events
     Route::post('/events', [EventController::class, 'store']); // Create event
@@ -107,6 +102,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::delete('/events/{id}', [EventController::class, 'destroy']); // Delete event
 
     Route::get('/home', [Home_Controller::class, 'showHome'])->middleware('CustomAuthenticate')->name('home');
+    Route::get('/fetch-tickets', [Home_Controller::class, 'fetchTickets']);
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
     Route::post('/ticket', [Ticket_Controller::class, 'store'])->name('ticket.store'); // POST request for submitting the form
     Route::get('/tickets/filter', [Ticket_Controller::class, 'filterTickets'])->name('tickets.filter');
@@ -119,17 +115,16 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/endorsements/store', [Ticket_Controller::class, 'endorseStore'])->name('endorsements.store');
     Route::get('/endorsement-details/{ticketId}', [Ticket_Controller::class, 'getEndorsementDetails']);
     Route::get('/endorsement/details/{ticketId}', [Ticket_Controller::class, 'getTicketDetails']);
+    Route::post('/tickets/update-endorsement', [Ticket_Controller::class, 'updateEndorsement']);
     Route::get('/technical-reports/check/{control_no}', [Ticket_Controller::class, 'checkTechnicalReport']);
     Route::get('/get-ticket-details/{control_no}', [Ticket_Controller::class, 'getTechnicalReportDetails']);
-    Route::get('/get-deployment-names/{control_no}', [Ticket_Controller::class, 'getDeploymentNames']);
+    Route::post('/reports/{controlNo}', [Ticket_Controller::class, 'updateTechnicalReport']);
     Route::post('/tickets/{control_no}/archive', [Ticket_Controller::class, 'archiveTicket']);
+    Route::get('/check-pending-tickets', [Ticket_Controller::class, 'checkPendingTickets']);
     Route::post('/submit-rating', [RatingController::class, 'store'])->name('rating.store');
     Route::get('/get-qr-code/{form_no}', [ServiceRequestController::class, 'getQrCode']);
 
     Route::post('/technical-reports/store', [Ticket_Controller::class, 'storeTechnicalReport'])->name('technical-reports.store');
-    Route::get('/device_management', [Device_Management_Controller::class, 'showDevice_Management'])->name('device_management');
-    Route::get('/fetch/records', [Device_Management_Controller::class, 'getFilteredRecords'])->name('fetch.records');
-
     Route::get('/service-request/{form_no}', [ServiceRequestController::class, 'getServiceRequest']);
 
     // In web.php
@@ -137,9 +132,6 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/service-request', [ServiceRequestController::class, 'store'])->name('service.request.store');
     Route::post('/update-status/{form_no}', [ServiceRequestController::class, 'updateStatus']);
     Route::post('/update-service-request', [ServiceRequestController::class, 'update']);
-    Route::post('/deployments', [DeploymentController::class, 'store'])->name('deployments.store');
-    Route::get('/check-deployment/{control_no}', [DeploymentController::class, 'checkDeployment']);
-    Route::get('/deployment/view/{control_no}', [DeploymentController::class, 'showDeployment']);
 
     Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
     Route::post('/profile/complete', [Profile_Controller::class, 'completeProfile'])->name('profile.complete');
@@ -159,9 +151,9 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
         Route::patch('/user/toggle-status/{employee_id}', [User_Management_Controller::class, 'toggleStatus'])->name('user.toggleStatus');
         Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
         Route::get('/export-technician-performance', [Report_Controller::class, 'exportTechnicianPerformance']);
+        Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
+        Route::get('/archive/export', [ArchiveController::class, 'export'])->name('archive.export');
     });
-    Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
-    Route::get('/archive/export', [ArchiveController::class, 'export'])->name('archive.export');
     Route::get('/audit_logs', [Audit_logs_Controller::class, 'showAudit_logs'])->name('audit_logs');
 
     Route::post('/approve-ticket', [ApprovalController::class, 'approveTicket'])->name('approve.ticket');

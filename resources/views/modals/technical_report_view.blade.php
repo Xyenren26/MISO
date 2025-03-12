@@ -36,10 +36,23 @@
         cursor: pointer;
         transition: 0.3s;
     }
+
+    #ButtonEditTechnical{
+        margin-top: 20px;
+        width: 100%;
+        padding: 8px;
+        background: #007BFF;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
     .rating-container {
         position: absolute;
-        top: 40px;
-        right: 40px;
+        top: 22px;
+        right: 60px;
         background: #f8f9fa; /* Light background */
         padding: 5px 10px;
         border-radius: 5px;
@@ -73,6 +86,12 @@
         </div>
         <div class="form-header">Technical Report Details</div>
 
+        <!-- Non-Editable Fields -->
+        <div class="form-group">
+            <label>Technical Report No.</label>
+            <input type="text" id="view-TR_id" readonly disabled>
+        </div>
+
         <div class="form-group">
             <label>Date and Time</label>
             <input type="datetime-local" id="view-date-time" readonly disabled>
@@ -89,38 +108,33 @@
         </div>
 
         <div class="form-group">
-            <label>Specification</label>
-            <textarea id="view-specification" readonly onkeydown="return false;"></textarea>
-        </div>
-
-        <div class="form-group">
             <label>Problem</label>
-            <textarea id="view-problem" readonly onkeydown="return false;"></textarea>
+            <textarea id="view-problem" readonly disabled></textarea>
         </div>
 
         <div class="form-group">
             <label>Work Done</label>
-            <textarea id="view-workdone" readonly onkeydown="return false;"></textarea>
+            <textarea id="view-workdone" readonly disabled></textarea>
+        </div>
+
+        <!-- Editable Fields -->
+        <div class="form-group">
+            <label>Specification</label>
+            <textarea id="view-specification" readonly></textarea>
         </div>
 
         <div class="form-group">
             <label>Findings</label>
-            <textarea id="view-findings" readonly onkeydown="return false;"></textarea>
+            <textarea id="view-findings" readonly></textarea>
         </div>
 
         <div class="form-group">
             <label>Recommendation</label>
-            <textarea id="view-recommendation" readonly onkeydown="return false;"></textarea>
+            <textarea id="view-recommendation" readonly></textarea>
         </div>
 
-        <!-- Signatures Section -->
+        <!-- Non-Editable Signatures Section -->
         <div class="signatures">
-            <div class="signature">
-                <label>Reported By</label>
-                <input type="text" id="view-reported-by" readonly disabled>
-                <label>Reported Date</label>
-                <input type="datetime-local" id="view-reported-date" readonly disabled>
-            </div>
             <div class="signature">
                 <label>Inspected By</label>
                 <input type="text" id="view-inspected-by" readonly disabled>
@@ -128,6 +142,8 @@
                 <input type="datetime-local" id="view-inspected-date" readonly disabled>
             </div>
         </div>
+
+        <!-- Non-Editable Approval Details -->
         <section class="form-popup-section" id="approvalSection">
             <h3 class="form-popup-title">Approval Details</h3>
 
@@ -142,14 +158,13 @@
             </div>
         </section>
 
+        <!-- Buttons -->
         <button type="button" id="ButtonDownloadTechnical" onclick="downloadModalAsPDFTechnical()">Download PDF</button>
-
+        <button type="button" id="ButtonEditTechnical" onclick="toggleEditMode()">Edit</button>
     </div>
 </div>
 
-
 <script>
-    
     function downloadModalAsPDFTechnical() {
         const { jsPDF } = window.jspdf;
         const modal = document.getElementById("technicalReportViewModal");
@@ -229,4 +244,74 @@
         });
     }
 
+    let isEditMode = false;
+
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const button = document.getElementById('ButtonEditTechnical');
+
+        // Toggle editable fields
+        const editableFields = [
+            'view-specification',
+            'view-findings',
+            'view-recommendation'
+        ];
+
+        editableFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            field.readOnly = !isEditMode;
+        });
+
+        // Update button text
+        button.textContent = isEditMode ? 'Save' : 'Edit';
+
+        // Save logic when exiting edit mode
+        if (!isEditMode) {
+            saveReport();
+        }
+    }
+
+    function saveReport() {
+        const controlNo = document.getElementById('viewTechnicalReportControlNo').value;
+        const data = {
+            specification: document.getElementById('view-specification').value,
+            findings: document.getElementById('view-findings').value,
+            recommendation: document.getElementById('view-recommendation').value,
+        };
+
+        fetch(`/reports/${controlNo}`, {
+            method: 'POST', // Ensure your backend route supports POST
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // CSRF token
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Handle non-JSON responses (e.g., HTML error pages)
+                return response.text().then(text => {
+                    throw new Error(`Server returned ${response.status}: ${text}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Changes saved successfully!');
+            } else {
+                alert(`Failed to save changes: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving changes. Check the console for details.');
+        });
+    }
+
+    function closeTechnicalReportViewModal() {
+        document.getElementById('technicalReportViewModal').style.display = 'none';
+    }
+
+        
 </script>

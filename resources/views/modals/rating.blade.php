@@ -121,6 +121,12 @@
             <i class="fas fa-star star" data-value="5"></i>
         </div>
         <input type="hidden" id="ratingValue">
+
+        <!-- Remark Field -->
+        <div class="form-group mt-3">
+            <label for="remark"><strong>Remarks:</strong></label>
+            <textarea class="form-control" id="remark" rows="3" placeholder="Add any additional feedback or comments..."></textarea>
+        </div>
     </div>
     <div class="modal-footer text-center">
         <button type="button" class="btn btn-secondary" onclick="hideRating()">Cancel</button>
@@ -174,11 +180,11 @@
         });
     }
 
-    // Submit rating function
     function submitRating() {
         let rating = document.getElementById("ratingValue").value;
         let ticketId = document.getElementById("ticketControlNo").textContent;
         let techId = document.getElementById("technicalSupportName").getAttribute("data-tech-id");
+        let remark = document.getElementById("remark").value; // Get remark value
 
         if (!rating || rating === "0") {
             alert("Please select a rating before submitting.");
@@ -194,7 +200,8 @@
             body: JSON.stringify({
                 control_no: ticketId,
                 technical_support_id: techId,
-                rating: rating
+                rating: rating,
+                remark: remark // Include remark in the request
             })
         })
         .then(response => response.json())

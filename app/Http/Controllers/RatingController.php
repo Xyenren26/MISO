@@ -11,6 +11,7 @@ class RatingController extends Controller {
             'control_no' => 'required|exists:tickets,control_no',
             'technical_support_id' => 'required|exists:users,employee_id',
             'rating' => 'required|integer|min:1|max:5',
+            'remark' => 'nullable|string|max:500', // Validate remark field
         ]);
 
         // Check if rating already exists
@@ -26,9 +27,9 @@ class RatingController extends Controller {
             'control_no' => $request->control_no,
             'technical_support_id' => $request->technical_support_id,
             'rating' => $request->rating,
+            'remark' => $request->remark, // Save remark
         ]);
 
         return response()->json(['success' => true, 'message' => 'Rating submitted successfully.']);
     }
 }
-

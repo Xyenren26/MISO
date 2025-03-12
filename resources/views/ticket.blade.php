@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechTrack</title>
     <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ticket_style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -31,7 +31,7 @@
                 </button>
 
                 {{-- Show counts based on user role --}}
-                @if(in_array(auth()->user()->account_type, ['technical_support', 'administrator', 'technical_support_head']))
+                @if(in_array(auth()->user()->account_type, ['technical_support', 'administrator']))
                     <button class="tab-button" data-status="endorsed" onclick="filterTickets('endorsed', event)">
                         <i class="fas fa-share"></i> Endorsed
                         @if(isset($endorsedCount) && $endorsedCount > 0)
@@ -48,12 +48,6 @@
                         <i class="fas fa-undo"></i> Turn-Over to MISO
                         @if(isset($pullOutCount) && $pullOutCount > 0)
                             <span class="notifcounter">{{ $pullOutCount }}</span>
-                        @endif
-                    </button>
-                    <button class="tab-button" data-status="deployment" onclick="filterTickets('deployment', event)">
-                        <i class="fas fa-truck"></i> New Device Deployment
-                        @if(isset($deploymentCount) && $deploymentCount > 0)
-                            <span class="notifcounter">{{ $deploymentCount }}</span>
                         @endif
                     </button>
                 @elseif(auth()->user()->account_type === 'technical_support_head')
@@ -73,12 +67,6 @@
                         <i class="fas fa-undo"></i> Turn-Over to MISO
                         @if(isset($pullOutCount ) && $pullOutCount > 0)
                             <span class="notifcounter">{{ $pullOutCount }}</span>
-                        @endif
-                    </button>
-                    <button class="tab-button" data-status="deployment" onclick="filterTickets('deployment', event)">
-                        <i class="fas fa-truck"></i> New Device Deployment
-                        @if(isset($deploymentCount) && $deploymentCount > 0)
-                            <span class="notifcounter">{{ $deploymentCount }}</span>
                         @endif
                     </button>
                 @endif
@@ -109,8 +97,9 @@
             <div class="dropdown-content">
                 <a href="javascript:void(0);" onclick="filterByPriority(null)">All Priorities</a>
                 <a href="javascript:void(0);" onclick="filterByPriority('urgent')">Urgent</a>
-                <a href="javascript:void(0);" onclick="filterByPriority('semi-urgent')">Semi-Urgent</a>
-                <a href="javascript:void(0);" onclick="filterByPriority('non-urgent')">Non-Urgent</a>
+                <a href="javascript:void(0);" onclick="filterByPriority('high')">High</a>
+                <a href="javascript:void(0);" onclick="filterByPriority('medium')">Medium</a>
+                <a href="javascript:void(0);" onclick="filterByPriority('low')">Low</a>
             </div>
         </div>
     </div>

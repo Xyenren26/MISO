@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechTrack</title>
     <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ticket_style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 </head>
 <body>

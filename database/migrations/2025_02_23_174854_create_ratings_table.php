@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('control_no')->index();
             $table->integer('technical_support_id')->index();
+            $table->text('remark')->nullable(); // Add remark column
             $table->integer('rating');
             $table->timestamps();
 

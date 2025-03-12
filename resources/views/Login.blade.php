@@ -16,10 +16,8 @@
     <div class="left-screen">
       <!-- Logo Container -->
       <div class="logo-container">
-        <img src="{{ asset('images/systemLogo.png') }}" alt="Logo" class="logo">
-        <div class="pasig-logo">
-          <img src="{{ asset('images/pasiglogo.png') }}" alt="Pasig Logo">
-        </div>
+        <img src="{{ asset('images/SystemLogo.png') }}" alt="Logo" class="logo">
+        <img src="images/pasiglogo.png" alt="Pasig Logo" class="logo">
       </div>
       <div class="login-container">
         <h2>Login</h2>

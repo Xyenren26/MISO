@@ -45,7 +45,7 @@ class Profile_Controller extends Controller
         $user = Auth::user();
 
         // Set account type based on department
-        $accountType = $request->department === 'Management Information Systems Office (MISO)' 
+        $accountType = $request->department === 'Technical Support Division (MISO)' 
             ? 'technical_support' 
             : 'end_user';
 
@@ -124,20 +124,23 @@ class Profile_Controller extends Controller
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         $user = Auth::user();
-
-        // Delete old avatar if exists
-        if ($user->avatar) {
-            Storage::delete('public/storage/users-avatar/' . $user->avatar);
+    
+        // Check if the user already has an avatar and it's NOT named 'avatar'
+        if ($user->avatar && $user->avatar !== 'avatar') {
+            Storage::delete('public/users-avatar/' . $user->avatar);
         }
-
+    
         // Save new avatar
         $fileName = time() . '.' . $request->avatar->extension();
-        $request->avatar->storeAs('public/storage/users-avatar/', $fileName);
+        $request->avatar->storeAs('public/users-avatar/', $fileName);
         $user->avatar = $fileName;
         $user->save();
-
-        return response()->json(['success' => true, 'avatar' => asset('storage/chatify/' . $fileName)]);
-    }
+    
+        return response()->json([
+            'success' => true,
+            'avatar' => asset('storage/users-avatar/' . $fileName)
+        ]);
+    }    
 }

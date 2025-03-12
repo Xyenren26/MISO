@@ -253,19 +253,23 @@
     text-align: center; /* Horizontally center text */
 }
 
-/* Priority color classes */
 .priority-urgent {
     color: #ff0000; /* Red for urgent */
     font-weight: bold;
 }
 
-.priority-semi-urgent {
-    color: #ff9900; /* Orange for semi-urgent */
+.priority-high {
+    color: #ff4500; /* Orange-red for high */
     font-weight: bold;
 }
 
-.priority-non-urgent {
-    color: #32cd32; /* Green for non-urgent */
+.priority-medium {
+    color: #ffa500; /* Orange for medium */
+    font-weight: bold;
+}
+
+.priority-low {
+    color: #32cd32; /* Green for low */
     font-weight: bold;
 }
 

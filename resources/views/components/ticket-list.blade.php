@@ -3,14 +3,32 @@
         switch (strtolower($priority)) {
             case 'urgent':
                 return 'priority-urgent';
-            case 'semi-urgent':
-                return 'priority-semi-urgent';
-            case 'non-urgent':
-                return 'priority-non-urgent';
+            case 'high':
+                return 'priority-high';
+            case 'medium':
+                return 'priority-medium';
+            case 'low':
+                return 'priority-low';
             default:
                 return '';
         }
     }
+
+    $priorities = [
+        'Urgent' => '1-3 days',
+        'High' => '4-12 hours',
+        'Medium' => '30 min - 4 hours',
+        'Low' => '10-30 min'
+    ];
+
+    echo "<div style='display: flex; gap: 20px;'>"; // Flex container for horizontal alignment
+
+    foreach ($priorities as $priority => $duration) {
+        $priorityClass = getPriorityClass($priority);
+        echo "<div class='$priorityClass'><strong>$priority</strong> ($duration)</div>";
+    }
+
+    echo "</div>";
 
     function getStatusClass($status) {
         switch (strtolower($status)) {
@@ -20,8 +38,6 @@
                 return 'status-completed';
             case 'pull-out':
                 return 'status-pull-out';
-            case 'deployment':
-                return 'status-pull-out';        
 
             case 'in-progress':
                 return 'status-in-progress';
@@ -32,7 +48,7 @@
         }
     }
 @endphp
-<link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/ticket_components_style.css') }}">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 @if ($tickets->isNotEmpty())
@@ -72,7 +88,7 @@
                                 ||
                                 ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && $ticket->isRepaired) 
                             )
-                            <span style="color: orange; font-weight: bold; font-size:15px;">User is rating your service</span>
+                            <span style="color: orange; font-weight: bold; font-size:15px;">User is rating the ticket service</span>
                         @elseif ($ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && !$ticket->isRated && $ticket->status === 'pull-out' && !$ticket->isRepaired) 
                             <span style="color: red; font-weight: bold; font-size:15px;">Mark it as repaired</span>
                         @else
@@ -86,12 +102,17 @@
                             <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
                                 <i class="fas fa-eye"></i>
                             </button>
-
-                            @if ($ticket->status == 'technical-report')
+                            @if (
+                                (Auth::user()->employee_id === $ticket->technical_support_id || Auth::user()->account_type === 'technical_support_head') &&
+                                $ticket->status == 'technical-report'
+                            )
                                 <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')">
                                     <i class="fas fa-file-alt"></i>
                                 </button>
-                            @elseif ($ticket->status == 'endorsed')
+                            @elseif (
+                                (Auth::user()->employee_id === $ticket->technical_support_id || Auth::user()->account_type === 'technical_support_head') &&
+                                $ticket->status == 'endorsed'
+                            )
                                 @php
                                     $endorsement = \App\Models\Endorsement::where('ticket_id', $ticket->control_no)->first();
                                     $isSubmitted = $endorsement && $endorsement->endorsed_to;
@@ -106,36 +127,49 @@
                                         <i class="fas fa-file-alt"></i>
                                     </button>
                                 @endif
-                            @elseif ($ticket->status == 'pull-out')
+                            @elseif (
+                                (Auth::user()->employee_id === $ticket->technical_support_id || Auth::user()->account_type === 'technical_support_head') &&
+                                $ticket->status == 'pull-out'
+                            )
                                 <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
                                     <i class="fas fa-laptop"></i>
                                 </button>
-                            @elseif ($ticket->status == 'deployment')                
-                                <button class="action-button" onclick="checkDeploymentAndOpenPopup('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-laptop"></i>
+                            @elseif (
+                                Auth::user()->employee_id === $ticket->technical_support_id &&
+                                !$ticket->isRemarksDone
+                            )
+                                <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
+                                        id="remarks-btn-{{ $ticket->control_no }}">
+                                    <i class="fas fa-sticky-note"></i>
                                 </button>
-                            @else
-                                @if (!$ticket->isRemarksDone)
-                                    <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
-                                            id="remarks-btn-{{ $ticket->control_no }}">
-                                        <i class="fas fa-sticky-note"></i>
-                                    </button>
-                                @endif
                             @endif
 
-                            @if (!$ticket->isRemarksDone)
+                            @if (
+                                Auth::user()->employee_id === $ticket->technical_support_id &&
+                                !$ticket->isRemarksDone
+                            )
                                 <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" onclick="sendMessageTechnical('{{ $ticket->control_no }}')">
-                                        <i class="fas fa-comments"></i> 
+                                    <i class="fas fa-comments"></i> 
                                 </button>
-
-                                    @if (!$ticket->isAssistDone)
-                                        <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
-                                                id="assist-btn-{{ $ticket->control_no }}">
-                                            <i class="fas fa-handshake"></i> 
-                                        </button>
-                                    @endif
                             @endif
-                            @if ($ticket->isRemarksDone && !$ticket->isApproved && auth()->user()->account_type === 'technical_support_head' && $ticket->existsInModels)
+
+                            @if (
+                                (Auth::user()->employee_id === $ticket->technical_support_id || Auth::user()->account_type === 'technical_support_head') &&
+                                !$ticket->isRemarksDone &&
+                                !$ticket->isAssistDone
+                            )
+                                <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
+                                        id="assist-btn-{{ $ticket->control_no }}">
+                                    <i class="fas fa-handshake"></i> 
+                                </button>
+                            @endif
+
+                            @if (
+                                $ticket->isRemarksDone &&
+                                !$ticket->isApproved &&
+                                Auth::user()->account_type === 'technical_support_head' &&
+                                $ticket->existsInModels
+                            )
                                 <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
                                     <i class="fas fa-check-circle"></i> 
                                 </button>
@@ -144,32 +178,34 @@
                                 </button>
                             @endif
 
-                            @if (($ticket->isRemarksDone && $ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels)
-                            || ($ticket->isRemarksDone && $ticket->isApproved && auth()->user()->account_type === 'administrator' && $ticket->existsInModels&& $ticket->isRepaired))
+                            @if (
+                                $ticket->isRemarksDone &&
+                                $ticket->isApproved &&
+                                Auth::user()->account_type === 'administrator' &&
+                                $ticket->existsInModels &&
+                                $ticket->isRepaired
+                            )
                                 <button class="action-button archive-btn" onclick="archiveTicket('{{ $ticket->control_no }}')">
                                     <i class="fas fa-archive"></i>
                                 </button>
                             @endif
-                            
+
                             @if (
-                                Auth::user()->employee_id === $ticket->technical_support_id &&  // Only assigned technical support
-                                $ticket->isRemarksDone && 
-                                $ticket->isApproved && 
-                                $ticket->existsInModels && 
-                                $ticket->formfillup && 
-                                !$ticket->isRated && 
-                                $ticket->status === 'pull-out' && 
+                                Auth::user()->employee_id === $ticket->technical_support_id &&
+                                $ticket->isRemarksDone &&
+                                $ticket->isApproved &&
+                                $ticket->existsInModels &&
+                                $ticket->formfillup &&
+                                !$ticket->isRated &&
+                                $ticket->status === 'pull-out' &&
                                 !$ticket->isRepaired
                             )
                                 <button class="status-button" 
-                                    onclick="openConfirmationModal('{{ $ticket->serviceRequest->form_no ?? '' }}')"
-                                    @if(optional($ticket->serviceRequest)->status === 'repaired') disabled @endif>
+                                        onclick="openConfirmationModal('{{ $ticket->serviceRequest->form_no ?? '' }}')"
+                                        @if(optional($ticket->serviceRequest)->status === 'repaired') disabled @endif>
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
                             @endif
-
-                          
-
                         </div>
                     </td>
                 </tr>
@@ -235,8 +271,6 @@
 @include('modals.assist')
 @include('modals.remarks')
 @include('modals.status_change')
-@include('modals.new_device_deployment')
-@include('modals.view_deployment')
 @include('modals.technical_report')
 @include('modals.view_endorsement')
 @include('modals.view_device')

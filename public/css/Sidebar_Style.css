@@ -116,7 +116,6 @@ body {
     padding: 15px 20px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: left;
     display: flex;
     align-items: center;
@@ -144,6 +143,7 @@ body {
 
 .employeeticketssection {
     display: flex;
+    flex-direction: column; /* Stack children vertically */
     justify-content: center;
     align-items: center;
 }
@@ -161,7 +161,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 40px;
+    margin-bottom: 10px; /* Reduced margin to bring the message closer */
 }
 
 .employeeticketsicon {
@@ -172,6 +172,21 @@ body {
     background-color: white;
     color: #003067;
     border: 2px solid #003067;
+}
+
+#ticketMessage {
+    font-size: 14px;
+    color: red;
+    margin-top: 10px; /* Space between button and message */
+    text-align: center;
+}
+
+/* Style for the disabled button */
+.disabled-button {
+    opacity: 0.6; /* Make the button look faded */
+    cursor: not-allowed; /* Change cursor to not-allowed */
+    background-color: #ccc; /* Optional: Change background color */
+    border-color: #ccc; /* Optional: Change border color */
 }
 
 /* Minimized Sidebar Styling */

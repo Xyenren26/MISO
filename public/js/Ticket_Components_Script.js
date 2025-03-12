@@ -241,8 +241,8 @@ function formatDateTimeForInput(datetime) {
 }
 
 function openTechnicalReportViewModal(report) {
+  document.getElementById("view-TR_id").value = report.TR_id;
   document.getElementById("view-date-time").value = formatDateTimeForInput(report.date_time);
-  document.getElementById("view-reported-date").value = formatDateTimeForInput(report.reported_date);
   document.getElementById("view-inspected-date").value = formatDateTimeForInput(report.inspected_date);
   document.getElementById("viewTechnicalReportControlNo").value = report.control_no;
   document.getElementById("view-department").value = report.department;
@@ -252,7 +252,6 @@ function openTechnicalReportViewModal(report) {
   document.getElementById("view-workdone").value = report.workdone;
   document.getElementById("view-findings").value = report.findings;
   document.getElementById("view-recommendation").value = report.recommendation;
-  document.getElementById("view-reported-by").value = report.reported_by;
   document.getElementById("view-inspected-by").value = report.inspected_by;
 
   document.getElementById("technicalReportViewModal").style.display = "block";
@@ -269,15 +268,18 @@ function openTechnicalReportModal(controlNo) {
   let now = new Date();
   let formattedDate = now.toISOString().slice(0, 16);
   document.getElementById('date-time').value = formattedDate;
-  document.getElementById('reported-date').value = formattedDate;
   document.getElementById('inspected-date').value = formattedDate;
 
   // Fetch department and end user from the tickets table
   fetch(`/get-ticket-details/${controlNo}`)
       .then(response => response.json())
       .then(data => {
+          document.getElementById('TRcontrol_no').value = data.tr_id;
           document.getElementById('TechnicalReportDepartment').value = data.department;
           document.getElementById('enduser').value = data.enduser;
+          document.getElementById('problemtech').value = data.concern;
+          document.getElementById('workdonetech').value = data.remarks;
+          document.getElementById('inspectedtech').value = data.technical_name;
       })
       .catch(error => console.error('Error fetching ticket details:', error));
 
@@ -511,166 +513,6 @@ function closeModal() {
     document.getElementById('confirmationModal').style.display = 'none';
 }
 
-function checkDeploymentAndOpenPopup(controlNo) {
-    fetch(`/check-deployment/${controlNo}`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.exists) {
-            openDeploymentView(controlNo);  // Deployment already exists
-        } else {
-            openDeploymentModal(controlNo); // Open deployment modal for a new entry
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while checking deployment status.');
-    });
-}
-
-
-function openDeploymentModal(control_no) {
-    document.getElementById("deploymentModal").style.display = "block";
-    document.getElementById("deploymentControlNo").value = control_no;
-
-    // Get today's date in local time (not UTC)
-    let today = new Date();
-    let localDate = today.getFullYear() + '-' + 
-                    String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                    String(today.getDate()).padStart(2, '0'); // Format: YYYY-MM-DD
-
-    document.querySelector('input[name="received_date"]').value = localDate;
-    document.querySelector('input[name="issued_date"]').value = localDate;
-
-    // Fetch names for receive_by and assign_by
-    fetchDeploymentNames(control_no);
-}
-
-function fetchDeploymentNames(control_no) {
-    fetch(`/get-deployment-names/${control_no}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Set receive_by from the ticket's "receive_by" field
-                document.getElementById("received_by").value = data.receive_by_name;
-
-                // Set assign_by from the technical_support_id (User table)
-                document.getElementById("issued_by").value = data.assign_by_name;
-            } else {
-                alert("Error retrieving deployment details.");
-            }
-        })
-        .catch(error => console.error("Error fetching deployment names:", error));
-}
-
-
-function openDeploymentView(control_no) {               
-    // Show the modal
-    document.getElementById("deploymentview").style.display = "block";
-
-    // Fetch data from the server
-    fetch(`/deployment/view/${control_no}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Populate approval details
-            console.log("Form No:", data ? data.control_no : 'No Service Request');
-            document.getElementById("viewNotedByDeployment").value = data.approval.name;
-            document.getElementById("viewApproveDateDeployment").value = data.approval.approve_date;            
-
-             // Show or hide the waiting approval message
-                if (data.approval.name === "Not Available" || data.approval.approve_date === "Not Available") {
-                    document.getElementById("waitingForApprovalDeployment").style.display = "block";
-                    document.getElementById("ButtonDeployment").style.display = "none"; // Hide Download button
-                    document.getElementById("rating-container").style.display = "none";
-                } else {
-                    document.getElementById("waitingForApproval").style.display = "none";
-                    document.getElementById("ButtonDeployment").style.display = "block"; // Show Download button
-                    document.getElementById("rating-container").style.display = "block";
-                } 
-            if (data) {
-                // Populate basic fields
-                document.getElementById('purpose').value = data.purpose || '';
-                document.getElementById('control_number').value = data.control_number || '';    
-                document.getElementById("qrCodeImageDeployment").src = `/generate-qr-deployment/${data.control_number}`; 
-                
-                // Display rating (if exists)
-                if (data.rating) {
-                    document.getElementById('starRatingDeployment').value = data.rating; // Numeric display
-                    displayStars(data.rating); // Star display
-                } else {
-                    document.getElementById('starRatingDeployment').innerHTML = "";
-                }
-
-                // Set the correct status radio button
-                if (data.status === 'new') {
-                    document.getElementById('status_new').checked = true;
-                } else if (data.status === 'used') {
-                    document.getElementById('status_used').checked = true;
-                } else {
-                    // If no status is provided, uncheck both radio buttons
-                    document.getElementById('status_new').checked = false;
-                    document.getElementById('status_used').checked = false;
-                }
-
-                // Populate components
-                document.querySelectorAll('[id^="component_"]').forEach(el => el.checked = false);
-                (data.components || []).forEach(component => {
-                    const componentCheckbox = document.getElementById(`component_${component.toLowerCase()}`);
-                    if (componentCheckbox) {
-                        componentCheckbox.checked = true;
-                    }
-                });
-
-                // Populate software
-                const softwareSection = document.getElementById('software');
-                softwareSection.innerHTML = ''; // Clear existing content
-                (data.software || []).forEach(soft => {
-                    softwareSection.innerHTML += `<input type="checkbox" checked disabled> ${soft} <br>`;
-                });
-
-                // Populate equipment items (only the first item)
-                if (data.equipment_items && data.equipment_items.length > 0) {
-                    const firstItem = data.equipment_items[0];
-                    document.getElementById("equipment_description").value = firstItem.description || "";
-                    document.getElementById("equipment_serial_number").value = firstItem.serial_number || "";
-                    document.getElementById("equipment_quantity").value = firstItem.quantity || "";
-                } else {
-                    // Clear equipment fields if no items are available
-                    document.getElementById("equipment_description").value = "";
-                    document.getElementById("equipment_serial_number").value = "";
-                    document.getElementById("equipment_quantity").value = "";
-                }
-
-                // Populate other fields
-                document.getElementById('brand_name').value = data.brand_name || '';
-                document.getElementById('specification').value = data.specification || '';
-                document.getElementById('received_view_by').value = data.received_by || '';
-                document.getElementById('issued_view_by').value = data.issued_by || '';
-                document.getElementById('received_date').value = data.received_date || '';
-                document.getElementById('issued_date').value = data.issued_date || '';
-            } else {
-                throw new Error("Invalid data received from server.");
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('There was an error loading the data. Please try again later.');
-        });
-}
-
-function closeDeploymentview() {
-    document.getElementById("deploymentview").style.display = "none";
-}
-
 // Function to display stars
 function displayStars(rating) {
     let starHtml = "";
@@ -679,6 +521,5 @@ function displayStars(rating) {
     }
     document.getElementById('starRatingEndorsement').innerHTML = starHtml;
     document.getElementById('starRatingPullOut').innerHTML = starHtml;
-    document.getElementById('starRatingDeployment').innerHTML = starHtml;
     document.getElementById('starRatingTechnical').innerHTML = starHtml;
 }

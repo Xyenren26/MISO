@@ -11,7 +11,6 @@ use App\Models\Rating;
 use App\Models\User;
 use App\Models\ServiceRequest;
 use App\Models\Endorsement;
-use App\Models\Deployment;
 use App\Models\TechnicalReport;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\SystemNotification;
@@ -49,9 +48,9 @@ class Ticket_Controller extends Controller
         ->when($status, function ($query, $status) {
             return $query->where('status', $status);
         })
-        ->with(['history', 'serviceRequest', 'deployment', 'ratings']) // Include ServiceRequest relationship
+        ->with(['history', 'serviceRequest', 'ratings']) // Include ServiceRequest relationship
         ->orderBy('created_at', 'desc')
-        ->paginate(5)
+        ->paginate(4)
         ->onEachSide(1);
 
         // Fetch all active technical supports
@@ -122,12 +121,6 @@ class Ticket_Controller extends Controller
                         $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
                     })
                     ->count();
-            
-                $deploymentCount = Ticket::where('status', 'deployment')
-                    ->whereDoesntHave('approval', function ($query) {
-                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
-                    })
-                    ->count();
             } else {
                 // Show only the unapproved tickets assigned to the logged-in technical support
                 $endorsedCount = Ticket::where('status', 'endorsed')
@@ -150,13 +143,6 @@ class Ticket_Controller extends Controller
                         $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
                     })
                     ->count();
-            
-                $deploymentCount = Ticket::where('status', 'deployment')
-                    ->where('technical_support_id', Auth::user()->employee_id)
-                    ->whereDoesntHave('approval', function ($query) {
-                        $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
-                    })
-                    ->count();
             }
             
 
@@ -164,9 +150,7 @@ class Ticket_Controller extends Controller
         foreach ($tickets as $ticket) {
             $ticket->isApproved = Approval::where('ticket_id', $ticket->control_no)->exists();
 
-            $ticket->existsInModels = Deployment::where('control_number', $ticket->control_no)
-                                    ->whereNotNull('issued_by')
-                                    ->exists() ||
+            $ticket->existsInModels = 
                           Endorsement::where('ticket_id', $ticket->control_no)
                                     ->whereNotNull('endorsed_to')
                                     ->exists() ||
@@ -174,10 +158,9 @@ class Ticket_Controller extends Controller
                                     ->whereNotNull('employee_id')
                                     ->exists() ||
                           TechnicalReport::where('control_no', $ticket->control_no)
-                                    ->whereNotNull('reported_by')
+                                    ->whereNotNull('inspected_by')
                                     ->exists();
             $ticket->formfillup = $ticket->status !== 'completed' && (
-                                        Deployment::where('control_number', $ticket->control_no)->exists() ||
                                         Endorsement::where('ticket_id', $ticket->control_no)->exists() ||
                                         ServiceRequest::where('ticket_id', $ticket->control_no)->exists() ||
                                         TechnicalReport::where('control_no', $ticket->control_no)->exists());    
@@ -196,7 +179,7 @@ class Ticket_Controller extends Controller
         return view('ticket', compact(
             'tickets', 'technicalAssistSupports', 'technicalSupports', 
             'formattedControlNo', 'nextFormNo', 'inProgressCount', 'endorsedCount' ,
-            'technicalReportCount','pullOutCount', 'deploymentCount'
+            'technicalReportCount','pullOutCount'
         ));
     }
 
@@ -250,17 +233,15 @@ class Ticket_Controller extends Controller
         }
 
         // Fetch tickets with pagination
-        $tickets = $query->with('history', 'serviceRequest', 'ratings')->paginate(5)->onEachSide(1);
+        $tickets = $query->with('history', 'serviceRequest', 'ratings')->paginate(4)->onEachSide(1);
 
         // Process each ticket for additional attributes
         foreach ($tickets as $ticket) {
             $ticket->isAssistDone = $ticket->history->where('ticket_id', $ticket->control_no)->count() > 0;
-            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out','deployment']);
+            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out']);
             $ticket->isApproved = Approval::where('ticket_id', $ticket->control_no)->exists();
 
-            $ticket->existsInModels = Deployment::where('control_number', $ticket->control_no)
-                                    ->whereNotNull('issued_by')
-                                    ->exists() ||
+            $ticket->existsInModels =
                           Endorsement::where('ticket_id', $ticket->control_no)
                                     ->whereNotNull('endorsed_to')
                                     ->exists() ||
@@ -268,10 +249,9 @@ class Ticket_Controller extends Controller
                                     ->whereNotNull('employee_id')
                                     ->exists() ||
                           TechnicalReport::where('control_no', $ticket->control_no)
-                                    ->whereNotNull('reported_by')
+                                    ->whereNotNull('inspected_by')
                                     ->exists();
             $ticket->formfillup = $ticket->status !== 'completed' && (
-                                        Deployment::where('control_number', $ticket->control_no)->exists() ||
                                         Endorsement::where('ticket_id', $ticket->control_no)->exists() ||
                                         ServiceRequest::where('ticket_id', $ticket->control_no)->exists() ||
                                         TechnicalReport::where('control_no', $ticket->control_no)->exists());
@@ -461,7 +441,7 @@ class Ticket_Controller extends Controller
         $request->validate([
             'control_no' => 'required|string|exists:tickets,control_no',
             'remarks' => 'required|string|max:255',
-            'status' => 'required|in:completed,endorsed,technical-report,pull-out,deployment',
+            'status' => 'required|in:completed,endorsed,technical-report,pull-out',
         ]);
 
         try {
@@ -708,7 +688,42 @@ class Ticket_Controller extends Controller
         return json_last_error() === JSON_ERROR_NONE ? $decoded : $value; // Return original value if not JSON
     }
 
-
+    public function updateEndorsement(Request $request) {
+        try {
+            // Log the incoming request data
+            Log::info('Update Endorsement Request:', $request->all());
+    
+            $request->validate([
+                'control_no' => 'required|string',
+                'endorsed_to' => 'required|string',
+                'endorsed_to_remarks' => 'nullable|string',
+                'concerns' => 'nullable|array',
+            ]);
+    
+            // Update or create the endorsement
+            $endorsement = Endorsement::updateOrCreate(
+                ['control_no' =>  $request->control_no], 
+                [
+                    'endorsed_to' => $request->endorsed_to,
+                    'endorsed_to_remarks' => $request->endorsed_to_remarks,
+                    'network' => json_encode($request->concerns), // Store concerns as JSON
+                ]
+            );
+    
+            // Log the endorsement being updated or created
+            Log::info('Endorsement updated/created:', ['endorsement' => $endorsement]);
+    
+            return response()->json(['success' => true, 'message' => 'Endorsement updated successfully.']);
+        } catch (\Exception $e) {
+            // Log the exception
+            Log::error('Error updating endorsement:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(), // Log the full stack trace
+            ]);
+    
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
 
     public function checkTechnicalReport($control_no)
     {
@@ -718,7 +733,6 @@ class Ticket_Controller extends Controller
         $approval = Approval::where('ticket_id', $control_no)->first();
 
         if ($report) {
-              // Fetch rating based on control_no
                 $rating = Rating::where('control_no', $report->control_no)->first();
 
             return response()->json([
@@ -737,7 +751,7 @@ class Ticket_Controller extends Controller
             ]);
         }
     }
-
+    
     public function getTechnicalReportDetails($control_no)
     {
         $ticket = Ticket::where('control_no', $control_no)->first();
@@ -745,21 +759,46 @@ class Ticket_Controller extends Controller
         if (!$ticket) {
             return response()->json(['error' => 'Ticket not found'], 404);
         }
-
+    
+       
+        $controlNo = $this->generateTechnicalReportControlNumber();
         
-
+    
+        // Return the ticket details and generated control number
         return response()->json([
+            'tr_id' => $controlNo, // Generated or existing control number
             'name' => $ticket->name,
             'employee_id' => $ticket->employee_id,
             'department' => $ticket->department,
-            'enduser' => $ticket->name, // Assuming 'name' is the end user field
+            'remarks' => $ticket->remarks,
+            'enduser' => $ticket->name, 
+            'concern' => $ticket->concern,
+            'technical_name' => $ticket->technical_support_name,
             'success' => true // To check if it's found
         ]);
+    }
+
+    private function generateTechnicalReportControlNumber()
+    {
+        $year = date('Y');
+        $lastReport = TechnicalReport::where('control_no', 'like', "TR-{$year}-%")
+                                    ->orderBy('control_no', 'desc')
+                                    ->first();
+
+        if ($lastReport) {
+            $lastNumber = (int) substr($lastReport->control_no, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+
+        return "TR-{$year}-{$newNumber}";
     }
     
     public function storeTechnicalReport(Request $request)
     {
         $request->validate([
+            'TR_id' => 'required|string|max:255',
             'control_no' => 'required|string|exists:tickets,control_no', // ✅ Validate control_no
             'date_time' => 'required|date',
             'department' => 'required|string|max:255',
@@ -769,13 +808,14 @@ class Ticket_Controller extends Controller
             'workdone' => 'required|string',
             'findings' => 'required|string',
             'recommendation' => 'required|string',
-            'reported_by' => 'required|string|max:255',
-            'reported_date' => 'nullable|date',
             'inspected_by' => 'required|string|max:255',
             'inspected_date' => 'nullable|date',
         ]);
 
+        Log::info('Validation passed.');
+
         TechnicalReport::create([
+            'TR_id' => $request->TR_id,
             'control_no' => $request->control_no, // ✅ Ensure control_no is included
             'date_time' => $request->date_time,
             'department' => $request->department,
@@ -785,8 +825,6 @@ class Ticket_Controller extends Controller
             'workdone' => $request->workdone,
             'findings' => $request->findings,
             'recommendation' => $request->recommendation,
-            'reported_by' => $request->reported_by,
-            'reported_date' => $request->reported_date,
             'inspected_by' => $request->inspected_by,
             'inspected_date' => $request->inspected_date,
         ]);
@@ -808,30 +846,48 @@ class Ticket_Controller extends Controller
 
         return redirect()->back()->with('success', 'Technical Report saved successfully.');
     }
-    public function getDeploymentNames($control_no)
+    
+    public function updateTechnicalReport(Request $request, $controlNo)
     {
-        // Find the ticket by control_no
-        $ticket = Ticket::where('control_no', $control_no)->first();
-
-        if (!$ticket) {
-            return response()->json(['success' => false, 'message' => 'Ticket not found.']);
+        try {
+            // Validate only the editable fields
+            $request->validate([
+                'specification' => 'required|string',
+                'findings' => 'required|string',
+                'recommendation' => 'required|string',
+            ]);
+    
+            // Find the report by control number
+            $report = TechnicalReport::where('control_no', $controlNo)->first();
+    
+            if (!$report) {
+                return response()->json(['success' => false, 'message' => 'Report not found.'], 404);
+            }
+    
+            // Update only the editable fields
+            $report->update([
+                'specification' => $request->specification,
+                'findings' => $request->findings,
+                'recommendation' => $request->recommendation,
+            ]);
+    
+            return response()->json(['success' => true, 'message' => 'Report updated successfully.']);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the report.',
+            ], 500);
         }
-
-        // Get receive_by name from the ticket (assuming it's stored as a full name)
-        $receiveByName = $ticket->name ?? 'Not Assigned';
-
-        // Get assign_by (technical support) based on technical_support_id
-        $assignBy = User::where('employee_id', $ticket->technical_support_id)->first();
-
-        return response()->json([
-            'success' => true,
-            'receive_by_name' => $receiveByName,
-            'assign_by_name' => $assignBy ? ($assignBy->first_name . ' ' . $assignBy->last_name) : 'Not Assigned'
-        ]);
     }
+
     public function sendMessageToEndUser($ticketId)
     {
-        \Log::info('Sending message for ticket ID: ' . $ticketId); // Log the ticket ID
     
         // Retrieve the ticket using the control number (ticketId)
         $ticket = Ticket::where('control_no', $ticketId)->first();
@@ -863,5 +919,21 @@ class Ticket_Controller extends Controller
         $ticket->archive();
 
         return response()->json(['message' => 'Ticket archived successfully.']);
+    }
+
+    public function checkPendingTickets() {
+        $userId = auth()->id(); // Get the logged-in user's ID
+    
+        // Check if there are tickets with the same employee_id and no corresponding rating record
+        $hasPendingTickets = DB::table('tickets')
+            ->where('employee_id', $userId)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('ratings')
+                      ->whereColumn('ratings.control_no', 'tickets.control_no');
+            })
+            ->exists();
+    
+        return response()->json(['hasPendingTickets' => $hasPendingTickets]);
     }
 }

@@ -122,7 +122,7 @@ class Report_Controller extends Controller
 }
 
     
-    public function exportTechnicianPerformancePDF(Request $request) {
+    /*public function exportTechnicianPerformancePDF(Request $request) {
         $selectedMonth = $request->query('month', now()->format('Y-m'));
     
         $technicians = User::with([
@@ -135,7 +135,8 @@ class Report_Controller extends Controller
         $pdf = Pdf::loadView('pdf.technician_performance', compact('technicians', 'selectedMonth'));
     
         return $pdf->download("TechnicianPerformance_{$selectedMonth}.pdf");
-    }
+    }*/
+
     public function exportTechnicianPerformance(Request $request) {
         $selectedMonth = $request->query('month', now()->format('Y-m')); // Default to current month
     

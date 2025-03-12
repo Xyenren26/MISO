@@ -9,7 +9,6 @@ use App\Models\Announcement;
 use App\Models\ServiceRequest;
 use App\Models\Endorsement;
 use App\Models\Event;
-use App\Models\Deployment;
 use App\Models\TechnicalReport;
 use App\Models\Ticket;
 use App\Models\Rating;
@@ -29,12 +28,12 @@ class EndUserController extends Controller
             ->get();
 
         // Count tickets based on status
-        $inProcessingCount = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+        $inProcessingCount = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out'])
                     ->where('employee_id', Auth::user()->employee_id)
                     ->whereDoesntHave('ratings')
                     ->count();
         $inProgressRequests = Ticket::where('status', 'in-progress')->count();
-        $resolvedTickets = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+        $resolvedTickets = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out'])
                             ->where('employee_id', Auth::user()->employee_id)
                             ->whereHas('ratings')
                             ->count();
@@ -173,14 +172,7 @@ class EndUserController extends Controller
                     $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
                 })
                 ->count();
-
-                $deploymentCount = Ticket::where('status', 'deployment')
-                ->where('technical_support_id', Auth::user()->employee_id)
-                ->whereDoesntHave('approval', function ($query) {
-                    $query->whereColumn('approvals.ticket_id', 'tickets.control_no');
-                })
-                ->count();
-            $inProcessingCount = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+            $inProcessingCount = Ticket::whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out'])
                 ->where('employee_id', Auth::user()->employee_id)
                 ->whereDoesntHave('ratings')
                 ->count();
@@ -190,9 +182,7 @@ class EndUserController extends Controller
         foreach ($tickets as $ticket) {
             $ticket->isApproved = Approval::where('ticket_id', $ticket->control_no)->exists();
 
-            $ticket->existsInModels = Deployment::where('control_number', $ticket->control_no)
-                                    ->whereNotNull('issued_by')
-                                    ->exists() ||
+            $ticket->existsInModels =
                           Endorsement::where('ticket_id', $ticket->control_no)
                                     ->whereNotNull('endorsed_by')
                                     ->exists() ||
@@ -200,10 +190,9 @@ class EndUserController extends Controller
                                     ->whereNotNull('employee_id')
                                     ->exists() ||
                           TechnicalReport::where('control_no', $ticket->control_no)
-                                    ->whereNotNull('reported_by')
+                                    ->whereNotNull('inspected_by')
                                     ->exists();
             $ticket->formfillup = $ticket->status !== 'completed' && (
-                Deployment::where('control_number', $ticket->control_no)->exists() ||
                 Endorsement::where('ticket_id', $ticket->control_no)->exists() ||
                 ServiceRequest::where('ticket_id', $ticket->control_no)->exists() ||
                 TechnicalReport::where('control_no', $ticket->control_no)->exists()
@@ -223,7 +212,7 @@ class EndUserController extends Controller
         return view('employee.ticket', compact(
             'tickets', 'technicalAssistSupports', 'technicalSupports', 
             'formattedControlNo', 'nextFormNo', 'inProgressCount', 'endorsedCount' ,
-            'technicalReportCount','pullOutCount', 'deploymentCount','inProcessingCount'
+            'technicalReportCount','pullOutCount','inProcessingCount'
         ));
     }
 
@@ -261,10 +250,10 @@ class EndUserController extends Controller
         if ($status === 'recent') {
             $query->orderBy('created_at', 'desc');
         } elseif ($status === 'processing') {
-            $query->whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+            $query->whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out'])
                 ->whereDoesntHave('ratings'); // Tickets with NO rating
         } elseif ($status === 'closed') {
-            $query->whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment'])
+            $query->whereIn('status', ['completed', 'endorsed', 'technical-report', 'pull-out'])
                 ->whereHas('ratings'); // Tickets WITH a rating
         } elseif (!empty($status)) {
             $query->where('status', $status);
@@ -283,7 +272,6 @@ class EndUserController extends Controller
 
         // Fetch related records for all tickets at once
         $approvals = Approval::whereIn('ticket_id', $controlNumbers)->pluck('ticket_id')->toArray();
-        $deployments = Deployment::whereIn('control_number', $controlNumbers)->get();
         $endorsements = Endorsement::whereIn('ticket_id', $controlNumbers)->get();
         $serviceRequests = ServiceRequest::whereIn('ticket_id', $controlNumbers)->get();
         $technicalReports = TechnicalReport::whereIn('control_no', $controlNumbers)->get();
@@ -292,16 +280,16 @@ class EndUserController extends Controller
         // Process each ticket for additional attributes
         foreach ($tickets as $ticket) {
             $ticket->isAssistDone = $ticket->history->where('ticket_id', $ticket->control_no)->count() > 0;
-            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out', 'deployment']);
+            $ticket->isRemarksDone = in_array($ticket->status, ['completed', 'endorsed', 'technical-report', 'pull-out']);
             $ticket->isApproved = in_array($ticket->control_no, $approvals);
             
             // Check if ticket exists in related models
-            $ticket->existsInModels = $deployments->where('control_number', $ticket->control_no)->whereNotNull('issued_by')->isNotEmpty() ||
+            $ticket->existsInModels = 
                                     $endorsements->where('ticket_id', $ticket->control_no)->whereNotNull('endorsed_to')->isNotEmpty() ||
                                     $serviceRequests->where('ticket_id', $ticket->control_no)->whereNotNull('employee_id')->isNotEmpty() ||
-                                    $technicalReports->where('control_no', $ticket->control_no)->whereNotNull('reported_by')->isNotEmpty();
+                                    $technicalReports->where('control_no', $ticket->control_no)->whereNotNull('inspected_by')->isNotEmpty();
                                     
-            $ticket->formfillup = $deployments->where('control_number', $ticket->control_no)->isNotEmpty() ||
+            $ticket->formfillup =
                                 $endorsements->where('ticket_id', $ticket->control_no)->isNotEmpty() ||
                                 $serviceRequests->where('ticket_id', $ticket->control_no)->isNotEmpty() ||
                                 $technicalReports->where('control_no', $ticket->control_no)->isNotEmpty();

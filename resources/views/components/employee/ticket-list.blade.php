@@ -1,12 +1,14 @@
 @php
-    function getPriorityClass($priority) {
+function getPriorityClass($priority) {
         switch (strtolower($priority)) {
             case 'urgent':
                 return 'priority-urgent';
-            case 'semi-urgent':
-                return 'priority-semi-urgent';
-            case 'non-urgent':
-                return 'priority-non-urgent';
+            case 'high':
+                return 'priority-high';
+            case 'medium':
+                return 'priority-medium';
+            case 'low':
+                return 'priority-low';
             default:
                 return '';
         }
@@ -20,8 +22,6 @@
                 return 'status-completed';
             case 'pull-out':
                 return 'status-pull-out';
-            case 'deployment':
-                return 'status-pull-out';        
 
             case 'in-progress':
                 return 'status-in-progress';
@@ -32,7 +32,7 @@
         }
     }
 @endphp
-<link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/ticket_components_style.css') }}">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <div id="ticket-container">
@@ -79,7 +79,6 @@
                             @else
                                 @switch($ticket->status)
                                     @case('pull-out')
-                                    @case('deployment')
                                     @case('endorsed')
                                     @case('technical-report')
                                         Closed
@@ -104,10 +103,6 @@
                                     </button>
                             @elseif ($ticket->status == 'pull-out' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated) 
                                 <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-laptop"></i>
-                                </button>
-                            @elseif ($ticket->status == 'deployment' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)               
-                                <button class="action-button" onclick="openDeploymentView('{{ $ticket->control_no }}')">
                                     <i class="fas fa-laptop"></i>
                                 </button>
                             @endif
@@ -191,12 +186,10 @@
     @endif
 </div>
 
-@include('modals.rating')
 @include('modals.view')
+@include('modals.assist')
 @include('modals.remarks')
 @include('modals.status_change')
-@include('modals.new_device_deployment')
-@include('modals.view_deployment')
 @include('modals.technical_report')
 @include('modals.view_endorsement')
 @include('modals.view_device')

@@ -41,8 +41,8 @@ class Endorsement extends Model
         'endorsed_by_date' => 'date',
     ];
 
-    public function ticket()
+    public function endorsement()
     {
-        return $this->belongsTo(Ticket::class);
+        return $this->hasOne(Endorsement::class, 'ticket_id', 'control_no');
     }
 }
