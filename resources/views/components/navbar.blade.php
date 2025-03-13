@@ -76,10 +76,12 @@
                 <div class="dropdown-menu" id="dropdownMenu">
                     @if(Auth::check())
                         <div class="profile-container">
-                            <img src="{{ Auth::user()->avatar ? asset('storage/users-avatar/'.Auth::user()->avatar) : asset('default-profile.png') }}" 
+                            <!-- Profile Picture -->
+                            <img src="{{ Auth::user()->avatar && Storage::disk('public')->exists('users-avatar/'.Auth::user()->avatar) ? asset('storage/users-avatar/'.Auth::user()->avatar) : asset('avatar.png') }}" 
                                 alt="Profile Picture" 
                                 class="profile-image">
                         </div>
+                        <!-- Last Name -->
                         <div class="last-name">
                             {{ strtoupper(Auth::user()->last_name) }}
                         </div>

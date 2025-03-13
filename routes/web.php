@@ -138,8 +138,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/profile/complete', [Profile_Controller::class, 'showCompleteProfileForm'])->name('profile.complete.form');
     Route::post('/profile/complete', [Profile_Controller::class, 'completeProfile'])->name('profile.complete');
     Route::get('/profile', [Profile_Controller::class, 'index'])->name('profile.index');
-    // Update profile data
-    Route::post('/profile/update', [Profile_Controller::class, 'update'])->name('profile.update');   
+    Route::post('/profile/update', [Profile_Controller::class, 'update'])->name('profile.update');
     Route::post('/profile/update-avatar', [Profile_Controller::class, 'updateAvatar'])->name('profile.updateAvatar');
     Route::get('/account/security', [AccountSecurityController::class, 'index'])->name('account.security');
     Route::post('/account/security/change-password', [AccountSecurityController::class, 'changePassword'])->name('account.changePassword');

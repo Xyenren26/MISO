@@ -371,4 +371,23 @@ canvas {
     #ticketTable th, #ticketTable td {
         padding: 8px;
     }
+    /* Ticket Performance Graph (Large Graph) */
+#ticketPerformanceGraph {
+    display:none;
+}
+
+/* Canvas Styling for Donut Chart */
+#deviceManagementGraph {
+    display:none;
+}
+
+/* Styling for the label */
+.month-label {
+    display:none;
+}
+
+/* Styling for the month picker input */
+.month-picker {
+   display:none;
+}
 }

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Profile_Controller extends Controller
 {
@@ -118,29 +120,68 @@ class Profile_Controller extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
-
+    
     public function updateAvatar(Request $request)
     {
+        // Validate the request
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
+        // Get the authenticated user
         $user = Auth::user();
     
-        // Check if the user already has an avatar and it's NOT named 'avatar'
-        if ($user->avatar && $user->avatar !== 'avatar') {
-            Storage::delete('public/users-avatar/' . $user->avatar);
+        // Debug: Log uploaded file details
+        \Log::info('Uploaded file:', [
+            'name' => $request->avatar->getClientOriginalName(),
+            'size' => $request->avatar->getSize(),
+            'mime' => $request->avatar->getMimeType(),
+        ]);
+    
+        // Get configuration values with fallbacks
+        $avatarFolder = Config::get('chatify.user_avatar.folder', 'public/users-avatar');
+        $defaultAvatar = Config::get('chatify.user_avatar.default', 'avatar.png');
+        $disk = Config::get('chatify.user_avatar.disk', 'public');
+    
+        // Debug: Log configuration values
+        \Log::info('Configuration:', [
+            'folder' => $avatarFolder,
+            'default' => $defaultAvatar,
+            'disk' => $disk,
+        ]);
+    
+        // Check if the user already has an avatar and it's NOT the default 'avatar'
+        if ($user->avatar && $user->avatar !== $defaultAvatar) {
+            // Delete the old avatar
+            Storage::disk($disk)->delete($avatarFolder . '/' . $user->avatar);
         }
     
-        // Save new avatar
-        $fileName = time() . '.' . $request->avatar->extension();
-        $request->avatar->storeAs('public/users-avatar/', $fileName);
+        // Ensure the directory exists
+        if (!Storage::disk($disk)->exists($avatarFolder)) {
+            Storage::disk($disk)->makeDirectory($avatarFolder);
+        }
+    
+        // Save the new avatar
+        $fileName = Str::uuid() . '.' . $request->avatar->extension();
+        try {
+            $path = $request->avatar->storeAs($avatarFolder, $fileName, $disk);
+            \Log::info('File saved at: ' . Storage::disk($disk)->path($path));
+        } catch (\Exception $e) {
+            \Log::error('Error saving file: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error saving avatar.'], 500);
+        }
+    
+        // Update the user's avatar
         $user->avatar = $fileName;
         $user->save();
     
+        // Debug: Log the updated user avatar
+        \Log::info('User avatar updated:', ['avatar' => $user->avatar]);
+    
+        // Return JSON response with the new avatar URL
         return response()->json([
             'success' => true,
-            'avatar' => asset('storage/users-avatar/' . $fileName)
+            'avatar' => Storage::disk($disk)->url($avatarFolder . '/' . $fileName),
         ]);
-    }    
+    }
 }

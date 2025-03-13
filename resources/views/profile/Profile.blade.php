@@ -390,5 +390,10 @@
         @csrf
     </form>
 </body>
+<script>
+    window.updateAvatarUrl = "{{ route('profile.updateAvatar') }}";
+    window.csrfToken = "{{ csrf_token() }}";
+    window.userDepartment = "{{ Auth::user()->department }}";
+</script>
 <script src="{{ asset('js/profile.js') }}"></script>
 </html>
