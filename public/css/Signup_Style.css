@@ -40,27 +40,28 @@ body {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  min-height: 100vh;
+  min-height: 70vh;
   padding: 15px; /* Reduced padding for smaller screens */
 }
 
 /* Sign-Up Container Styles */
 .sign-up-container {
   width: 100%;
-  max-width: 500px; /* Reduced for a better fit */
-  background-color: rgba(255, 255, 255, 0.95); /* Slightly more opaque */
-  border-radius: 8px; /* Softer corners */
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-  padding: 20px; /* Even padding */
+  max-width: 400px; /* Reduced from 500px */
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 6.4px; /* Reduced from 8px */
+  box-shadow: 0 2.4px 4px rgba(0, 0, 0, 0.1); /* Reduced from 3px 5px */
+  padding: 16px; /* Reduced from 20px */
   font-family: 'Arial', sans-serif;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  border: 2px solid transparent;
+  border: 1.6px solid transparent; /* Reduced from 2px */
   background-image: linear-gradient(#fff, #fff),
-    linear-gradient(to right, #118df1, #2575fc); /* Gradient border */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    linear-gradient(to right, #118df1, #2575fc);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Reduced from 10px 30px */
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }
+
 .modal-content h2 {
   font-size: 1.8em;
   font-weight: bold;

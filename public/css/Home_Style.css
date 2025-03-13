@@ -158,33 +158,31 @@ canvas {
 
 /* Styling for the label */
 .month-label {
-    font-size: 1.1rem;
+    font-size: 0.88rem; /* Adjusted for 80% zoom */
     font-weight: 500;
-    color: #003067; /* A deep blue color */
-    margin-right: 10px; /* Spacing between the label and the input */
+    color: #003067;
+    margin-right: 8px; /* Adjusted for 80% zoom */
     display: inline-block;
 }
 
 /* Styling for the month picker input */
 .month-picker {
-    padding: 10px;
-    font-size: 1rem;
-    border: 2px solid #003067; /* Deep blue border */
-    border-radius: 5px;
-    background-color: #f7f7f7; /* Light background for the input */
-    color: #003067; /* Matching text color */
+    padding: 8px; /* Adjusted for 80% zoom */
+    font-size: 0.8rem; /* Adjusted for 80% zoom */
+    border: 2px solid #003067;
+    border-radius: 4px; /* Adjusted for 80% zoom */
+    background-color: #f7f7f7;
+    color: #003067;
     transition: border-color 0.3s ease-in-out;
-    margin-bottom: 10px;
+    margin-bottom: 8px; /* Adjusted for 80% zoom */
 }
 
-/* Focus state for the month picker input */
 .month-picker:focus {
     outline: none;
-    border-color: #0056b3; /* Lighter blue on focus */
-    background-color: #ffffff; /* White background when focused */
+    border-color: #0056b3;
+    background-color: #ffffff;
 }
 
-/* Hover effect for the input */
 .month-picker:hover {
     border-color: #0056b3;
 }
@@ -192,43 +190,43 @@ canvas {
 /* Ticket Table Container */
 .ticket-table-container {
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    border-radius: 6.4px; /* Adjusted for 80% zoom */
+    box-shadow: 0 3.2px 6.4px rgba(0, 0, 0, 0.1); /* Adjusted for 80% zoom */
+    padding: 16px; /* Adjusted for 80% zoom */
 }
 
 .ticket-table-wrapper h3 {
-    font-size: 1.5rem;
+    font-size: 1.2rem; /* Adjusted for 80% zoom */
     font-weight: bold;
     color: #003067;
-    margin-bottom: 20px;
+    margin-bottom: 16px; /* Adjusted for 80% zoom */
 }
 
 .filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px; /* Adjusted for 80% zoom */
+    margin-bottom: 16px; /* Adjusted for 80% zoom */
 }
 
 .filters label {
-    font-size: 1rem;
+    font-size: 0.8rem; /* Adjusted for 80% zoom */
     color: #003067;
 }
 
 .filters select, .filters input {
-    padding: 8px;
+    padding: 6.4px; /* Adjusted for 80% zoom */
     border: 1px solid #003067;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 4px; /* Adjusted for 80% zoom */
+    font-size: 0.8rem; /* Adjusted for 80% zoom */
 }
 
 .filters button {
     background-color: #003067;
     color: white;
-    padding: 8px 16px;
+    padding: 6.4px 12.8px; /* Adjusted for 80% zoom */
     border: none;
-    border-radius: 5px;
+    border-radius: 4px; /* Adjusted for 80% zoom */
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -244,21 +242,90 @@ canvas {
 #ticketTable {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px; /* Adjusted for 80% zoom */
+    box-shadow: 0 3.2px 12px rgba(0, 0, 0, 0.1); /* Adjusted for 80% zoom */
+    border-radius: 8px; /* Adjusted for 80% zoom */
+    overflow: hidden;
 }
 
 #ticketTable th, #ticketTable td {
-    padding: 12px;
+    padding: 9.6px; /* Adjusted for 80% zoom */
+    border: 1px solid #ddd;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    font-size: 13.2px; /* Adjusted for 80% zoom */
 }
 
 #ticketTable th {
     background-color: #003067;
     color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px; /* Adjusted for 80% zoom */
+}
+
+#ticketTable tbody tr {
+    transition: background-color 0.3s ease;
 }
 
 #ticketTable tr:hover {
-    background-color: #f1f1f1;
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+    box-shadow: 0 3.2px 8px rgba(0, 0, 0, 0.1); /* Adjusted for 80% zoom */
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.results-count {
+    font-size: 14px;
+    color: #555;
+}
+
+.pagination-buttons ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination-buttons ul li {
+    margin: 0 5px;
+}
+
+.pagination-buttons ul li a,
+.pagination-buttons ul li span {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.pagination-buttons ul li a:hover {
+    background: #007bff;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.pagination-buttons ul li.active span {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.pagination-buttons ul li.disabled span {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
 }
 
 /* Responsive Design */

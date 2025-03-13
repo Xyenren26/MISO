@@ -50,42 +50,59 @@
                     <a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
                 </li>
             @endif
+            <li class="{{ Request::is('audit_logs') ? 'active' : '' }}">
+                <a href="{{ route('audit_logs') }}"><i class="fas fa-file-alt"></i><span class="menu-label"> Audit Logs</span></a>
+            </li>
         </ul>
 
         @if(in_array(auth()->user()->account_type, ['administrator', 'technical_support', 'technical_support_head']))
             <!-- Administrative Section -->
             <ul class="menu">
-                <li class="label">Administrative</li>
-                <li class="{{ Request::is('user_management') ? 'active' : '' }}">
-                    <a href="{{ route('user_management') }}">
-                        <i class="fas fa-users"></i><span class="menu-label">User Management</span>
-                    </a>
+                <!-- Toggle Button for Administrative Section -->
+                <li class="administrative-label collapsed" onclick="toggleAdministrativeMenu()">
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-caret-down"></i>
+                        <span>Administrative</span>
+                    </div>
                 </li>
-                <li class="{{ Request::is('report') ? 'active' : '' }}">
-                    <a href="{{ route('report') }}">
-                        <i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span>
-                    </a>
-                </li>
-                <!-- Announcements Button -->
-                <li class="{{ Request::is('announcements*') ? 'active' : '' }}">
-                    <a href="{{ route('announcements.index') }}">
-                        <i class="fas fa-bullhorn"></i><span class="menu-label">Announcements</span>
-                    </a>
-                </li>
-                <li class="{{ Request::is('archive') ? 'active' : '' }}">
-                    <a href="{{ route('archive.index') }}">
-                        <i class="fas fa-archive"></i><span class="menu-label">Archived Tickets</span>
-                    </a>
-                </li>
-                <li class="{{ Request::is('audit_logs') ? 'active' : '' }}">
-                    <a href="{{ route('audit_logs') }}">
-                        <i class="fas fa-file-alt"></i><span class="menu-label">Audit Logs</span>
-                    </a>
-                </li>
+
+                <!-- Collapsible Administrative Menu -->
+                <div id="administrative-menu" class="collapsible-menu collapsed">
+                    <li class="{{ Request::is('user_management') ? 'active' : '' }}">
+                        <a href="{{ route('user_management') }}"><i class="fas fa-users"></i><span class="menu-label">User Management</span></a>
+                    </li>
+                    <li class="{{ Request::is('report') ? 'active' : '' }}">
+                        <a href="{{ route('report') }}"><i class="fas fa-chart-line"></i><span class="menu-label">Reports and Analytics</span></a>
+                    </li>
+                    <li class="{{ Request::is('department') ? 'active' : '' }}">
+                        <a href="{{ route('department.index') }}"><i class="fas fa-building"></i><span class="menu-label">Departments</span></a>
+                    </li>
+                    <li class="{{ Request::is('archive') ? 'active' : '' }}">
+                        <a href="{{ route('archive.index') }}"><i class="fas fa-archive"></i><span class="menu-label">Archived Tickets</span></a>
+                    </li>
+                    <li class="{{ Request::is('announcements*') ? 'active' : '' }}">
+                        <a href="{{ route('announcements.index') }}"><i class="fas fa-bullhorn"></i><span class="menu-label">Announcements</span></a>
+                    </li>
+                </div>
             </ul>
         @endif
     </div>
 
     <script src="{{ asset('js/Sidebar_Script.js') }}"></script>
+    <script>
+        // Toggle Administrative Menu
+        function toggleAdministrativeMenu() {
+        const administrativeMenu = document.getElementById('administrative-menu');
+        const label = document.querySelector('.administrative-label'); // Use a more specific selector
+
+        if (administrativeMenu && label) {
+            // Toggle the collapsed class
+            administrativeMenu.classList.toggle('collapsed');
+            label.classList.toggle('collapsed');
+        } else {
+            console.error("Elements not found!");
+        }
+        }
+        </script>
 </body>
 </html>

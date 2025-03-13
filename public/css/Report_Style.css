@@ -168,6 +168,170 @@
     margin-bottom: 10px;
 }
 
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* 5% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Adjusted for 80% zoom */
+    margin-bottom: 16px; /* Adjusted for 80% zoom */
+}
+
+.filters label {
+    font-size: 0.8rem; /* Adjusted for 80% zoom */
+    color: #003067;
+}
+
+.filters select, .filters input {
+    padding: 6.4px; /* Adjusted for 80% zoom */
+    border: 1px solid #003067;
+    border-radius: 4px; /* Adjusted for 80% zoom */
+    font-size: 0.8rem; /* Adjusted for 80% zoom */
+}
+
+.filters button {
+    background-color: #003067;
+    color: white;
+    padding: 6.4px 12.8px; /* Adjusted for 80% zoom */
+    border: none;
+    border-radius: 4px; /* Adjusted for 80% zoom */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filters button:hover {
+    background-color: #002855;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+#ticketTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px; /* Adjusted for 80% zoom */
+    box-shadow: 0 3.2px 12px rgba(0, 0, 0, 0.1); /* Adjusted for 80% zoom */
+    border-radius: 8px; /* Adjusted for 80% zoom */
+    overflow: hidden;
+}
+
+#ticketTable th, #ticketTable td {
+    padding: 9.6px; /* Adjusted for 80% zoom */
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 13.2px; /* Adjusted for 80% zoom */
+}
+
+#ticketTable th {
+    background-color: #003067;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px; /* Adjusted for 80% zoom */
+}
+
+#ticketTable tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+#ticketTable tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+    box-shadow: 0 3.2px 8px rgba(0, 0, 0, 0.1); /* Adjusted for 80% zoom */
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.results-count {
+    font-size: 14px;
+    color: #555;
+}
+
+.pagination-buttons ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination-buttons ul li {
+    margin: 0 5px;
+}
+
+.pagination-buttons ul li a,
+.pagination-buttons ul li span {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.pagination-buttons ul li a:hover {
+    background: #007bff;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.pagination-buttons ul li.active span {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.pagination-buttons ul li.disabled span {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+
 /* Responsive Design for Table */
 @media (max-width: 768px) {
     .performance-details table {

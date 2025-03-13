@@ -11,9 +11,8 @@
 <body>
 <div class="container">
     @include('components.sidebar')
+    @include('components.navbar')
     <div class="main-content">
-        @include('components.navbar')
-
         <!-- Header Section -->
         <div class="header">
             <!-- Tabs Section -->

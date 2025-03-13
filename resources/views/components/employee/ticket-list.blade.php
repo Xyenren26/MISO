@@ -92,18 +92,22 @@ function getPriorityClass($priority) {
                             <div class="button-container">
                                 <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
                                     <i class="fas fa-eye"></i>
+                                    <span class="tooltip">Show</span>
                                 </button>
                             @if ($ticket->status == 'technical-report' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)
                                 <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')">
                                     <i class="fas fa-file-alt"></i>
+                                    <span class="tooltip">Form</span>
                                 </button>
                             @elseif ($ticket->status == 'endorsed' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated)
                                     <button class="action-button" onclick="openViewEndorsementModal('{{ $ticket->control_no }}')">
                                         <i class="fas fa-book"></i>
+                                        <span class="tooltip">Form</span>
                                     </button>
                             @elseif ($ticket->status == 'pull-out' && $ticket->isRemarksDone && $ticket->isApproved && $ticket->existsInModels && $ticket->formfillup && $ticket->isRated) 
                                 <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
                                     <i class="fas fa-laptop"></i>
+                                    <span class="tooltip">Form</span>
                                 </button>
                             @endif
 
@@ -111,6 +115,7 @@ function getPriorityClass($priority) {
                                 @if (!$ticket->isRated)
                                     <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" onclick="sendMessage('{{ $ticket->control_no }}')">
                                             <i class="fas fa-comments"></i> 
+                                            <span class="tooltip">Message</span>
                                     </button>
                                 @endif
                                 @if (
@@ -122,6 +127,7 @@ function getPriorityClass($priority) {
                             )
                                     <button class="status-button btn btn-primary" onclick="showRating('{{ $ticket->control_no }}', '{{ $ticket->technical_support_id }}', '{{ $ticket->technical_support_name }}')">
                                         <i class="fas fa-star"></i> 
+                                        <span class="tooltip">Rate</span>
                                     </button>
                                 @endif
                             </div>

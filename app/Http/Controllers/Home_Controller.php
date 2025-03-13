@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Ticket;
-use App\Models\DeviceManagement;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Models\ServiceRequest;
@@ -143,7 +142,6 @@ class Home_Controller extends Controller
         $startOfWeek = now()->startOfWeek()->toDateTimeString(); // Start of the week (Monday)
         $endOfWeek = now()->endOfWeek()->toDateTimeString();     // End of the week (Sunday)
 
-        // Fetch ticket records with ratings for the current week
         $ticketRecords = DB::table('tickets')
             ->leftJoin('ratings', 'tickets.control_no', '=', 'ratings.control_no')
             ->select(
@@ -155,13 +153,22 @@ class Home_Controller extends Controller
                 'tickets.priority',
                 'tickets.status',
                 'tickets.remarks',
+                'tickets.time_in',
+                'tickets.time_out',
                 'ratings.rating',
                 'ratings.remark',
-                \DB::raw('(ratings.rating * 20) as rating_percentage')
+                \DB::raw('(ratings.rating * 20) as rating_percentage'),
+                \DB::raw('TIMESTAMPDIFF(SECOND, tickets.time_in, tickets.time_out) as duration_seconds') // Calculate duration in seconds
             )
             ->whereBetween('tickets.created_at', [$startOfWeek, $endOfWeek]) // Filter for the current week
             ->where('tickets.technical_support_id', Auth::user()->employee_id)
-            ->get();
+            ->paginate(10);
+
+        // Format the duration for each ticket
+        $ticketRecords->transform(function ($ticket) {
+            $ticket->duration = $this->formatDuration($ticket->duration_seconds);
+            return $ticket;
+        });
 
         // Return the view with all the data
         return view('home', compact(
@@ -197,44 +204,118 @@ class Home_Controller extends Controller
         return array_values($dataByDay);
     }
 
+    private function formatDuration($seconds) {
+        if (!$seconds) {
+            return 'N/A';
+        }
+    
+        $days = floor($seconds / (3600 * 24));
+        $hours = floor(($seconds % (3600 * 24)) / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+    
+        $duration = '';
+        if ($days > 0) {
+            $duration .= "{$days} day" . ($days > 1 ? 's ' : ' ');
+        }
+        if ($hours > 0) {
+            $duration .= "{$hours} hour" . ($hours > 1 ? 's ' : ' ');
+        }
+        if ($minutes > 0) {
+            $duration .= "{$minutes} minute" . ($minutes > 1 ? 's' : '');
+        }
+    
+        return $duration ? trim($duration) : '0 minutes';
+    }
+
     public function fetchTickets(Request $request)
     {
         $filter = $request->query('filter');
         $month = $request->query('month');
         $year = $request->query('year');
+        $page = $request->query('page', 1); // Default to page 1 if not provided
 
         // Start the query with a join to the ratings table
         $query = Ticket::leftJoin('ratings', 'tickets.control_no', '=', 'ratings.control_no')
-                    ->select(
-                        'tickets.control_no',
-                        'tickets.time_in as date_time',
-                        'tickets.name',
-                        'tickets.department',
-                        'tickets.concern',
-                        'tickets.priority',
-                        'tickets.status',
-                        'tickets.remarks',
-                        'ratings.rating',
-                        'ratings.remark',
-                        \DB::raw('(ratings.rating * 20) as rating_percentage')
-                    );
+            ->select(
+                'tickets.control_no',
+                'tickets.created_at as date_time',
+                'tickets.name',
+                'tickets.department',
+                'tickets.concern',
+                'tickets.priority',
+                'tickets.status',
+                'tickets.remarks',
+                'tickets.time_in',
+                'tickets.time_out',
+                'ratings.rating',
+                'ratings.remark',
+                \DB::raw('(ratings.rating * 20) as rating_percentage'),
+                \DB::raw('TIMESTAMPDIFF(SECOND, tickets.time_in, tickets.time_out) as duration_seconds')
+            );
 
+        // Apply filtering based on the selected option
         if ($filter === 'weekly') {
-            // Filter tickets for the current week
-            $query->whereBetween('tickets.time_in', [
-                now()->startOfWeek(),
-                now()->endOfWeek()
-            ]);
+            $query->whereBetween('tickets.time_in', [now()->startOfWeek(), now()->endOfWeek()]);
         } elseif ($filter === 'monthly') {
-            // Filter tickets for the selected month and year
-            $query->whereYear('tickets.time_in', $year)
-                ->whereMonth('tickets.time_in', $month);
+            $query->whereYear('tickets.time_in', $year)->whereMonth('tickets.time_in', $month);
         } elseif ($filter === 'annually') {
-            // Filter tickets for the selected year
             $query->whereYear('tickets.time_in', $year);
         }
 
+        // Fetch results with pagination
+        $tickets = $query->paginate(10);
+
+        // Format the duration for each ticket
+        $tickets->transform(function ($ticket) {
+            $ticket->duration = $this->formatDuration($ticket->duration_seconds);
+            return $ticket;
+        });
+
+        return response()->json($tickets);
+    } 
+
+    public function exportTickets(Request $request)
+    {
+        $filter = $request->query('filter');
+        $month = $request->query('month');
+        $year = $request->query('year');
+
+        $query = Ticket::leftJoin('ratings', 'tickets.control_no', '=', 'ratings.control_no')
+            ->select(
+                'tickets.control_no',
+                'tickets.created_at as date_time',
+                'tickets.name',
+                'tickets.department',
+                'tickets.concern',
+                'tickets.priority',
+                'tickets.status',
+                'tickets.remarks',
+                'tickets.time_in',
+                'tickets.time_out',
+                'ratings.rating',
+                'ratings.remark',
+                \DB::raw('(ratings.rating * 20) as rating_percentage'),
+                \DB::raw('TIMESTAMPDIFF(SECOND, tickets.time_in, tickets.time_out) as duration_seconds')
+            );
+
+        // Apply filtering
+        if ($filter === 'weekly') {
+            $query->whereBetween('tickets.time_in', [now()->startOfWeek(), now()->endOfWeek()]);
+        } elseif ($filter === 'monthly') {
+            $query->whereYear('tickets.time_in', $year)->whereMonth('tickets.time_in', $month);
+        } elseif ($filter === 'annually') {
+            $query->whereYear('tickets.time_in', $year);
+        }
+
+        // Fetch all records (no pagination)
         $tickets = $query->get();
+
+        // Format duration
+        $tickets->transform(function ($ticket) {
+            $ticket->duration = $this->formatDuration($ticket->duration_seconds);
+            unset($ticket->duration_seconds); // Remove unnecessary field
+            return $ticket;
+        });
 
         return response()->json($tickets);
     }

@@ -19,8 +19,8 @@
         @include('components.greetings', ['accountType' => auth()->user()->account_type])
     @endauth
     @include('components.sidebar')
+    @include('components.navbar')
     <div class="main-content">
-        @include('components.navbar')
         <div id="ticketFormModal" class="modal" style="display: none;">
             <div class="modal-content">
                 @include('components.ticket-form', ['technicalSupports' => $technicalSupports, 'formattedControlNo' => $formattedControlNo])

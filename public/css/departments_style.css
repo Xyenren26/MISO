@@ -1,5 +1,5 @@
-/* Title Section */
-.title {
+/* Departments Section */
+.departments h1 {
     color: #003067;
     font-size: 28px;
     margin-bottom: 25px;
@@ -10,7 +10,7 @@
     position: relative;
 }
 
-.title::after {
+.departments h1::after {
     content: '';
     display: block;
     width: 60px;
@@ -37,7 +37,7 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.search-form {
+.filters form {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
@@ -45,8 +45,9 @@
     width: 100%;
 }
 
-.search-input {
-    flex: 1;
+.filters input,
+.filters select,
+.filters button {
     padding: 10px;
     border: 1px solid #003067;
     border-radius: 6px;
@@ -56,15 +57,13 @@
     transition: all 0.3s ease;
 }
 
-.search-input:focus {
+.filters input:focus,
+.filters select:focus {
     border-color: #007bff;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
 }
 
-.search-button, .create-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
+.filters button {
     background-color: #003067;
     color: white;
     cursor: pointer;
@@ -73,13 +72,13 @@
     transition: all 0.3s ease;
 }
 
-.search-button:hover, .create-button:hover {
+.filters button:hover {
     background-color: #002147;
     transform: translateY(-2px);
 }
 
-/* Announcements Table */
-.announcements-table {
+/* Departments Table */
+.departments-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 25px;
@@ -88,40 +87,33 @@
     overflow: hidden;
 }
 
-.announcements-table th,
-.announcements-table td {
+.departments-table thead {
+    background-color: #003067;
+    color: white;
+}
+
+.departments-table th,
+.departments-table td {
+    text-align: left;
     padding: 12px;
     border: 1px solid #ddd;
-    text-align: left;
     font-size: 14px;
 }
 
-.announcements-table th {
-    background-color: #003067;
-    color: white;
+.departments-table th {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.announcements-table tbody tr {
+.departments-table tbody tr {
     transition: background-color 0.3s ease;
 }
 
-.announcements-table tbody tr:hover {
+.departments-table tbody tr:hover {
     background-color: #f8f9fa;
     transform: scale(1.02);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.no-results {
-    padding: 15px;
-    border: 1px solid #ddd;
-    text-align: center;
-    color: #777;
-    font-size: 16px;
-    background-color: #f8f9fa;
-    border-radius: 6px;
 }
 
 /* Action Buttons */
@@ -130,7 +122,7 @@
     gap: 8px;
 }
 
-.edit-button, .delete-button {
+.actions button {
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
@@ -141,24 +133,35 @@
     transition: all 0.3s ease;
 }
 
-.edit-button {
+.actions .edit-button {
     background-color: #28a745;
     color: white;
 }
 
-.edit-button:hover {
+.actions .edit-button:hover {
     background-color: #218838;
     transform: translateY(-2px);
 }
 
-.delete-button {
+.actions .delete-button {
     background-color: #dc3545;
     color: white;
 }
 
-.delete-button:hover {
+.actions .delete-button:hover {
     background-color: #c82333;
     transform: translateY(-2px);
+}
+
+/* No Results Message */
+.no-results {
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
 }
 
 /* Pagination */
@@ -167,11 +170,6 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 25px;
-}
-
-.results-count {
-    font-size: 14px;
-    color: #555;
 }
 
 .pagination-buttons ul {
@@ -217,7 +215,7 @@
     cursor: not-allowed;
 }
 
-/* Modal Styles */
+/* Modals */
 .modal {
     display: none;
     position: fixed;
@@ -259,7 +257,7 @@
     }
 }
 
-.modal .close {
+.modal-content .close {
     position: absolute;
     top: 15px;
     right: 15px;
@@ -269,11 +267,11 @@
     transition: color 0.3s ease;
 }
 
-.modal .close:hover {
+.modal-content .close:hover {
     color: #002147;
 }
 
-.modal h2 {
+.modal-content h2 {
     color: #003067;
     margin-bottom: 20px;
     font-size: 22px;
@@ -281,11 +279,11 @@
     text-align: center;
 }
 
-.modal .form-group {
+.modal-content .form-group {
     margin-bottom: 20px;
 }
 
-.modal .form-group label {
+.modal-content .form-group label {
     display: block;
     font-size: 14px;
     color: #003067;
@@ -293,8 +291,8 @@
     font-weight: 500;
 }
 
-.modal .form-group input,
-.modal .form-group textarea {
+.modal-content .form-group input,
+.modal-content .form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #003067;
@@ -305,20 +303,20 @@
     transition: all 0.3s ease;
 }
 
-.modal .form-group input:focus,
-.modal .form-group textarea:focus {
+.modal-content .form-group input:focus,
+.modal-content .form-group textarea:focus {
     border-color: #007bff;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
 }
 
-.modal .form-actions {
+.modal-content .form-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 25px;
 }
 
-.modal .btn {
+.modal-content .form-actions button {
     padding: 10px 20px;
     border: none;
     border-radius: 6px;
@@ -329,33 +327,23 @@
     transition: all 0.3s ease;
 }
 
-.modal .btn-primary {
+.modal-content .form-actions .btn-primary {
     background-color: #003067;
     color: white;
 }
 
-.modal .btn-primary:hover {
+.modal-content .form-actions .btn-primary:hover {
     background-color: #002147;
     transform: translateY(-2px);
 }
 
-.modal .btn-secondary {
+.modal-content .form-actions .btn-secondary {
     background-color: #6c757d;
     color: white;
 }
 
-.modal .btn-secondary:hover {
+.modal-content .form-actions .btn-secondary:hover {
     background-color: #5a6268;
-    transform: translateY(-2px);
-}
-
-.modal .btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.modal .btn-danger:hover {
-    background-color: #c82333;
     transform: translateY(-2px);
 }
 
@@ -373,18 +361,18 @@
         padding: 12px;
     }
 
-    .announcements-table {
+    .departments-table {
         display: block;
         overflow-x: auto;
     }
 
-    .announcements-table th,
-    .announcements-table td {
+    .departments-table th,
+    .departments-table td {
         padding: 8px;
         font-size: 12px;
     }
 
-    .announcements-table th {
+    .departments-table th {
         font-size: 13px;
     }
 
@@ -423,13 +411,13 @@
         font-size: 18px;
     }
 
-    .modal .form-group input,
-    .modal .form-group textarea {
+    .modal-content .form-group input,
+    .modal-content .form-group textarea {
         padding: 8px;
         font-size: 12px;
     }
 
-    .modal .form-actions button {
+    .modal-content .form-actions button {
         padding: 8px 16px;
         font-size: 12px;
     }

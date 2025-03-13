@@ -13,11 +13,9 @@
 <div class="container">
     <!-- Sidebar -->
     @include('components.sidebar')
-
+    @include('components.navbar')
     <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Navbar -->
-        @include('components.navbar')
 
         <!-- Audit Logs Section -->
         <section class="audit-logs">
@@ -35,8 +33,7 @@
                         <option value="">All</option>
                         <option value="created" {{ request('action_type') == 'created' ? 'selected' : '' }}>Created</option>
                         <option value="updated" {{ request('action_type') == 'updated' ? 'selected' : '' }}>Updated</option>
-                        <option value="endorsed" {{ request('action_type') == 'endorsed' ? 'selected' : '' }}>Endorsed</option>
-                        <option value="unrepairable" {{ request('action_type') == 'unrepairable' ? 'selected' : '' }}>Marked Unrepairable</option>
+                        <option value="endorsed" {{ request('action_type') == 'archived' ? 'selected' : '' }}>Archived</option>
                     </select>
 
                     <label for="user">User:</label>

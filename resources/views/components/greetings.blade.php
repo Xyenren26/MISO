@@ -34,8 +34,59 @@
         ];
     }
 @endphp
+<style>
+    /* Greetings Popup Styling */
+    .greetings-popup {
+        position: fixed; /* Fixed position to stay in place */
+        bottom: 20px; /* Stick to the bottom */
+        right: 20px; /* Stick to the right */
+        z-index: 1000; /* Ensure it's above other content */
+        background-color: #003067; /* Background color */
+        color: white; /* Text color */
+        padding: 25px; /* Padding */
+        border-radius: 15px; /* Rounded corners */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Shadow */
+        font-family: 'Roboto', sans-serif; /* Font */
+        max-width: 350px; /* Maximum width */
+        width: 90%; /* Responsive width */
+        animation: slideIn 0.5s ease-out; /* Slide-in animation */
+        transform: translateX(0); /* Ensure it stays in place */
+        transition: all 0.3s ease; /* Smooth transitions */
+    }
 
-<div id="greetingPopup" class="greetings-popup" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; background-color: #003067; color: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); font-family: 'Roboto', sans-serif; max-width: 350px; animation: slideIn 0.5s ease-out;">
+    /* Slide-in Animation */
+    @keyframes slideIn {
+        from {
+            transform: translateY(100%); /* Start from below */
+            opacity: 0; /* Fade in */
+        }
+        to {
+            transform: translateY(0); /* Slide up to position */
+            opacity: 1; /* Fully visible */
+        }
+    }
+
+    /* Responsive Design for Smaller Screens */
+    @media screen and (max-width: 768px) {
+        .greetings-popup {
+            max-width: 300px; /* Slightly smaller width for smaller screens */
+            padding: 20px; /* Slightly less padding */
+            bottom: 10px; /* Move closer to the bottom */
+            right: 10px; /* Move closer to the right */
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .greetings-popup {
+            max-width: 250px; /* Even smaller width for mobile */
+            padding: 15px; /* Less padding */
+            bottom: 5px; /* Very close to the bottom */
+            right: 5px; /* Very close to the right */
+        }
+    }
+</style>
+
+<div id="greetingPopup" class="greetings-popup">
     <!-- Greeting Section -->
     <div class="greetings-text" style="text-align: center;">
         <h3 style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #ffffff;">{{ $greeting }}, {{ auth()->user()->name }}!</h3>

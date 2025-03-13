@@ -179,9 +179,7 @@
 
         <div class="form-group">
             <label for="department">Department</label>
-            <select id="department" name="department" class="department-select" required>
-                @include('components.list_department')
-            </select>
+            <select id="department" name="department" class="department-select" required></select>
         </div>
 
         <div class="form-group">
@@ -197,7 +195,65 @@
 </div>
 
 <script>
+// Function to fetch departments and populate the dropdown
+async function populateDepartments() {
+    try {
+        // Fetch departments from the API
+        const response = await fetch('/departments');
+        if (!response.ok) throw new Error('Failed to fetch departments');
+        const departments = await response.json();
 
+        // Get all select elements with the class 'department-select'
+        const selectElements = document.querySelectorAll('.department-select');
+
+        // Loop through each select element
+        selectElements.forEach(select => {
+            // Clear any existing options
+            select.innerHTML = '';
+
+            // Add the default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.text = 'Select Department';
+            select.appendChild(defaultOption);
+
+            // Loop through the grouped departments
+            for (const [groupName, groupDepartments] of Object.entries(departments)) {
+                // Create an optgroup element
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = groupName;
+
+                // Loop through the departments in the group
+                groupDepartments.forEach(department => {
+                    // Create an option element
+                    const option = document.createElement('option');
+                    option.value = department.name;
+                    option.text = department.name;
+
+                    // Preselect the user's department (if applicable)
+                    if (department.name === "{{ Auth::user()->department }}") {
+                        option.selected = true;
+                    }
+
+                    // Append the option to the optgroup
+                    optgroup.appendChild(option);
+                });
+
+                // Append the optgroup to the select element
+                select.appendChild(optgroup);
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching departments:', error);
+        // Display a user-friendly error message in all select elements
+        document.querySelectorAll('.department-select').forEach(select => {
+            select.innerHTML = '<option value="">Failed to load departments. Please try again later.</option>';
+        });
+    }
+}
+
+// Call the function to populate the dropdown when the page loads
+document.addEventListener('DOMContentLoaded', populateDepartments);
 function validatePhoneNumber(input) {
     let phoneError = document.getElementById('phone-error');
     let phoneRegex = /^[0-9\s\-()]{10,15}$/; // Allows digits, spaces, dashes, and parentheses

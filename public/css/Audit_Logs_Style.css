@@ -1,21 +1,40 @@
 /* Audit Logs Section */
 .audit-logs h1 {
     color: #003067;
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 28px;
+    margin-bottom: 25px;
     text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    position: relative;
+}
+
+.audit-logs h1::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: #003067;
+    margin: 10px auto 0;
+    border-radius: 2px;
 }
 
 /* Filters Section */
 .filters {
     background-color: #ffffff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.filters:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .filters form {
@@ -23,44 +42,49 @@
     flex-wrap: wrap;
     gap: 15px;
     align-items: center;
-}
-
-.filters label {
-    font-size: 14px;
-    color: #003067;
-    margin-right: 5px;
+    width: 100%;
 }
 
 .filters input,
 .filters select,
 .filters button {
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #003067;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 14px;
     color: #003067;
     outline: none;
+    transition: all 0.3s ease;
+}
+
+.filters input:focus,
+.filters select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
 }
 
 .filters button {
     background-color: #003067;
     color: white;
     cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     transition: all 0.3s ease;
 }
 
 .filters button:hover {
-    background-color: white;
-    color: #003067;
-    border: 1px solid #003067;
+    background-color: #002147;
+    transform: translateY(-2px);
 }
 
 /* Audit Logs Table */
 .audit-logs-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .audit-logs-table thead {
@@ -71,35 +95,62 @@
 .audit-logs-table th,
 .audit-logs-table td {
     text-align: left;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
     font-size: 14px;
 }
 
+.audit-logs-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.audit-logs-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
 .audit-logs-table tbody tr:hover {
-    background-color: #f2f2f2;
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.no-results {
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+    color: #777;
+    font-size: 16px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
 }
 
 /* Action Icons */
 .action-icon {
     font-size: 18px;
     margin-right: 5px;
+    color: #003067;
+    transition: color 0.3s ease;
 }
 
-.no-result{
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-    color: #777;
+.action-icon:hover {
+    color: #002147;
 }
 
-.pagination-buttons {
+/* Pagination */
+.pagination-container {
     display: flex;
-    justify-content: center;
-    margin-top: 15px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
 }
 
-/* Style the pagination links */
+.results-count {
+    font-size: 14px;
+    color: #555;
+}
+
 .pagination-buttons ul {
     display: flex;
     list-style: none;
@@ -111,60 +162,79 @@
     margin: 0 5px;
 }
 
-/* Default pagination button style */
 .pagination-buttons ul li a,
 .pagination-buttons ul li span {
     display: inline-block;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
     text-decoration: none;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 500;
     color: #333;
     background: #f8f9fa;
     border: 1px solid #ddd;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-/* Hover effect for active links */
 .pagination-buttons ul li a:hover {
     background: #007bff;
     color: #fff;
+    transform: translateY(-2px);
 }
 
-/* Style active page number */
 .pagination-buttons ul li.active span {
     background: #007bff;
     color: #fff;
     border-color: #007bff;
 }
 
-/* Disable previous/next when not clickable */
 .pagination-buttons ul li.disabled span {
     background: #e9ecef;
     color: #6c757d;
     cursor: not-allowed;
 }
 
-
-/* Responsive Design */
+/* Responsive Design for Mobile */
 @media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-    }
-
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
-
     .filters form {
         flex-direction: column;
+        gap: 10px;
+    }
+
+    .filters input,
+    .filters select,
+    .filters button {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .audit-logs-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .audit-logs-table th,
+    .audit-logs-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .audit-logs-table th {
+        font-size: 13px;
+    }
+
+    .pagination-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .pagination-buttons ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination-buttons ul li {
+        margin: 5px;
     }
 }

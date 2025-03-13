@@ -89,7 +89,7 @@
             <!-- Ticket Management Records -->
             <div class="ticket-table-container">
                 <div class="ticket-table-wrapper">
-                    <h3>Ticket Management Records</h3>
+                    <h3>Ticket Summary Record</h3>
                     
                     <!-- Filters -->
                     <div class="filters">
@@ -136,25 +136,79 @@
                                     <th>Remarks</th>
                                     <th>Rating</th>
                                     <th>Rating Remark</th>
+                                    <th>Duration</th> <!-- New Column -->
                                 </tr>
                             </thead>
                             <tbody id="ticketTableBody">
                                 @foreach ($ticketRecords as $ticket)
                                     <tr>
-                                        <td>{{ ucwords(strtolower($ticket->control_no)) }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->date_time)) }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->name)) }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->department)) }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->concern)) }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->priority)) }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->status)) }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->remarks)) }}</td>
-                                        <td>{{ $ticket->rating_percentage ? $ticket->rating_percentage . '%' : 'N/A' }}</td>
-                                        <td>{{ ucwords(strtolower($ticket->remark ?? 'N/A')) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->control_no)) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->date_time)) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->name)) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->department)) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->concern)) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->priority)) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->status)) }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->remarks)) }}</td>
+                                        <td class="px-6 py-4">{{ $ticket->rating_percentage ? $ticket->rating_percentage . '%' : 'N/A' }}</td>
+                                        <td class="px-6 py-4">{{ ucwords(strtolower($ticket->remark ?? 'N/A')) }}</td>
+                                        <td class="px-6 py-4">{{ $ticket->duration }}</td> <!-- Display Duration -->
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination-container" id="pagination-container">
+                        <div class="results-count">
+                            @if ($ticketRecords->count() > 0)
+                                Showing {{ $ticketRecords->firstItem() }} to {{ $ticketRecords->lastItem() }} of {{ $ticketRecords->total() }} results
+                            @else
+                                Showing 1 to 0 of 0 results
+                            @endif
+                        </div>
+
+                        @if ($ticketRecords->hasPages())
+                            <div class="pagination-buttons">
+                                <ul class="flex space-x-2">
+                                    {{-- Previous Page Link --}}
+                                    <li class="{{ $ticketRecords->onFirstPage() ? 'disabled opacity-50' : '' }}">
+                                        @if ($ticketRecords->onFirstPage())
+                                            <span class="px-3 py-1">&lsaquo;</span>
+                                        @else
+                                            <a href="{{ $ticketRecords->previousPageUrl() }}" data-page="{{ $ticketRecords->currentPage() - 1 }}" class="px-3 py-1 border rounded">&lsaquo;</a>
+                                        @endif
+                                    </li>
+
+                                    {{-- Page Numbers (show current page, one before, one after) --}}
+                                    @for ($i = max(1, $ticketRecords->currentPage() - 1); $i <= min($ticketRecords->lastPage(), $ticketRecords->currentPage() + 1); $i++)
+                                        <li class="{{ $i == $ticketRecords->currentPage() ? 'active font-bold' : '' }}">
+                                            @if ($i == $ticketRecords->currentPage())
+                                                <span class="px-3 py-1 border rounded bg-gray-200">{{ $i }}</span>
+                                            @else
+                                                <a href="{{ $ticketRecords->url($i) }}" data-page="{{ $i }}" class="px-3 py-1 border rounded">{{ $i }}</a>
+                                            @endif
+                                        </li>
+                                    @endfor
+
+                                    {{-- Ellipsis for large page numbers --}}
+                                    @if ($ticketRecords->currentPage() < $ticketRecords->lastPage() - 2)
+                                        <li><span>...</span></li>
+                                        <li><a href="{{ $ticketRecords->url($ticketRecords->lastPage()) }}" data-page="{{ $ticketRecords->lastPage() }}" class="px-3 py-1 border rounded">{{ $ticketRecords->lastPage() }}</a></li>
+                                    @endif
+
+                                    {{-- Next Page Link --}}
+                                    <li class="{{ $ticketRecords->hasMorePages() ? '' : 'disabled opacity-50' }}">
+                                        @if ($ticketRecords->hasMorePages())
+                                            <a href="{{ $ticketRecords->nextPageUrl() }}" data-page="{{ $ticketRecords->currentPage() + 1 }}" class="px-3 py-1 border rounded">&rsaquo;</a>
+                                        @else
+                                            <span class="px-3 py-1">&rsaquo;</span>
+                                        @endif
+                                    </li>
+                                </ul>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

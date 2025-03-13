@@ -35,9 +35,7 @@
                         </div>
                         <div class="personal-info-field">
                             <label for="department">Department</label>
-                            <select id="department" name="department" class="department-select" required>
-                                @include('components.list_department')
-                            </select>
+                            <select id="department" name="department" class="department-select" required></select>
                         </div>
                     </div>
                 </fieldset>
@@ -161,6 +159,80 @@
     </div>
 
 <script>
+    document.addEventListener('scroll', function() {
+        const formContainer = document.querySelector('.ticket-form-container');
+        const scrollY = window.scrollY || window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        const formHeight = formContainer.offsetHeight;
+
+        // Adjust the top position based on scroll position
+        if (scrollY > windowHeight / 2) {
+            // If user is scrolling towards the bottom, move the form up
+            formContainer.style.top = `${Math.max(20, windowHeight - formHeight - 20)}px`;
+        } else {
+            // If user is at the top, center the form
+            formContainer.style.top = '50%';
+        }
+    });
+    // Function to fetch departments and populate the dropdown
+    async function populateDepartments() {
+        try {
+            // Fetch departments from the API
+            const response = await fetch('/departments');
+            if (!response.ok) throw new Error('Failed to fetch departments');
+            const departments = await response.json();
+
+            // Get all select elements with the class 'department-select'
+            const selectElements = document.querySelectorAll('.department-select');
+
+            // Loop through each select element
+            selectElements.forEach(select => {
+                // Clear any existing options
+                select.innerHTML = '';
+
+                // Add the default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = 'Select Department';
+                select.appendChild(defaultOption);
+
+                // Loop through the grouped departments
+                for (const [groupName, groupDepartments] of Object.entries(departments)) {
+                    // Create an optgroup element
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = groupName;
+
+                    // Loop through the departments in the group
+                    groupDepartments.forEach(department => {
+                        // Create an option element
+                        const option = document.createElement('option');
+                        option.value = department.name;
+                        option.text = department.name;
+
+                        // Preselect the user's department (if applicable)
+                        if (department.name === "{{ Auth::user()->department }}") {
+                            option.selected = true;
+                        }
+
+                        // Append the option to the optgroup
+                        optgroup.appendChild(option);
+                    });
+
+                    // Append the optgroup to the select element
+                    select.appendChild(optgroup);
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching departments:', error);
+            // Display a user-friendly error message in all select elements
+            document.querySelectorAll('.department-select').forEach(select => {
+                select.innerHTML = '<option value="">Failed to load departments. Please try again later.</option>';
+            });
+        }
+    }
+
+    // Call the function to populate the dropdown when the page loads
+    document.addEventListener('DOMContentLoaded', populateDepartments);
     // Function to set priority and description based on the selected concern
     function setPriority(priority) {
         const priorityDropdown = document.getElementById('category');

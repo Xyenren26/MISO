@@ -1,17 +1,18 @@
-/* General Styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f9;
     color: #003067;
+    zoom: 0.8; /* 80% zoom */
 }
+
 /* Sidebar Styles */
 .sidebar {
     position: fixed;
     top: 0;
     width: 250px;
-    height: 90vh;
+    height: 112vh;
     background-color: #ffffff;
     color: black;
     margin-top: 50px;
@@ -20,7 +21,7 @@ body {
     box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
     border-radius: 15px;
-    overflow: hidden;
+    overflow: hidden;/* Ensure the transform scales from the top-left corner */
 }
 
 /* Sidebar Background Image */
@@ -101,6 +102,33 @@ body {
     list-style-type: none;
     padding: 0;
     margin-top: 0;
+    margin-bottom:0;
+}
+
+/* Collapsible Menu Styling */
+.collapsible-menu {
+    max-height: 500px; /* Adjust based on content height */
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.collapsible-menu.collapsed {
+    display: none;
+}
+
+/* Caret Icon Styling */
+.administrative-label .fa-caret-down {
+    transition: transform 0.3s ease;
+}
+
+.administrative-label.collapsed .fa-caret-down {
+    transform: rotate(-90deg);
+}
+
+/* Ensure the label is clickable */
+.administrative-label {
+    cursor: pointer; /* Show pointer cursor on hover */
+    pointer-events: auto; /* Ensure it's clickable */
 }
 
 /* Menu Items */
@@ -193,6 +221,11 @@ body {
 .sidebar.minimized .menu .label {
     display: none;
 }
+
+.sidebar.minimized .menu .administrative-label span {
+    display: none;
+}
+
 
 .sidebar.minimized .sidebar-logo {
     width: 60px;
@@ -306,16 +339,19 @@ body {
 @media screen and (max-width: 480px) {
     .sidebar {
         width: 60px; /* Minimized by default */
+        height: 112vh;
     }
-
+    .sidebar .sidebar-logo {
+        width: 60px;
+        margin-bottom: 10px;
+    }
     .main-content {
         margin-left: 60px;
     }
 
     /* Adjust Sidebar Toggle Button */
     .sidebar-toggle-btn {
-        top: 10px;
-        left: 10px;
+       display:none;
     }
 
     .sidebar .menu-label {
@@ -327,9 +363,16 @@ body {
         display: none;
     }
 
+    .sidebar .menu .administrative-label span {
+        display: none;
+    }
+
     .sidebar .sidebar-logo {
         width: 60px;
-        margin-bottom: 100px;
+        margin-bottom: 10px;
+    }
+    .sidebar .sidebar-toggle-btn {
+        margin-bottom: 10px;
     }
 
     /* Center Menu Items in Minimized Sidebar */

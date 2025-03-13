@@ -182,23 +182,59 @@ function toggleFilters() {
 }
 
 // Function to fetch and filter tickets based on the selected criteria
-function fetchTickets() {
-    console.log("Fetching tickets..."); // Debugging line
+function fetchTickets(page = 1) {
     const filter = document.getElementById('filter').value;
     const month = document.getElementById('monthFilter').value;
     const year = document.getElementById('yearFilter').value;
 
     // Send an AJAX request to the server to fetch filtered tickets
-    fetch(`/fetch-tickets?filter=${filter}&month=${month}&year=${year}`)
+    fetch(`/fetch-tickets?filter=${filter}&month=${month}&year=${year}&page=${page}`)
         .then(response => response.json())
         .then(data => {
-            updateTable(data);
+            updateTable(data.data); // Update the table with the paginated data
+            updatePagination(data); // Update the pagination controls
         })
         .catch(error => console.error('Error fetching tickets:', error));
 }
 
 function capitalizeWords(str) {
     return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function calculateDuration(timeIn, timeOut) {
+    if (!timeIn || !timeOut) {
+        return 'N/A'; // Return 'N/A' if either time_in or time_out is missing
+    }
+
+    // Convert time strings to Date objects
+    const startTime = new Date(timeIn);
+    const endTime = new Date(timeOut);
+
+    // Calculate the difference in milliseconds
+    const durationMs = endTime - startTime;
+
+    // Convert milliseconds to seconds
+    const durationSeconds = Math.floor(durationMs / 1000);
+
+    // Calculate days, hours, minutes, and seconds
+    const days = Math.floor(durationSeconds / (3600 * 24));
+    const hours = Math.floor((durationSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((durationSeconds % 3600) / 60);
+
+    // Format the duration
+    let duration = '';
+    if (days > 0) {
+        duration += `${days} day${days > 1 ? 's' : ''} `;
+    }
+    if (hours > 0) {
+        duration += `${hours} hour${hours > 1 ? 's' : ''} `;
+    }
+    if (minutes > 0) {
+        duration += `${minutes} minute${minutes > 1 ? 's' : ''}`;
+    }
+
+    // If duration is empty (e.g., less than a minute), return "0 minutes"
+    return duration.trim() || '0 minutes';
 }
 
 // Function to update the table with the filtered tickets
@@ -220,15 +256,90 @@ function updateTable(tickets) {
             <td class="px-6 py-4">${ticket.remarks}</td>
             <td class="px-6 py-4">${ticket.rating_percentage ? ticket.rating_percentage + '%' : 'N/A'}</td>
             <td class="px-6 py-4">${ticket.remark ?? 'N/A'}</td>
+            <td class="px-6 py-4">${calculateDuration(ticket.time_in, ticket.time_out)}</td> <!-- Duration Column -->
         `;
         tableBody.appendChild(row);
     });
 }
 
+// Function to update the pagination controls
+function updatePagination(data) {
+    const paginationContainer = document.getElementById('pagination-container');
+    if (!paginationContainer) return;
+
+    const currentPage = data.current_page;
+    const lastPage = data.last_page;
+
+    let paginationHTML = `
+        <div class="results-count">
+            Showing ${data.from} to ${data.to} of ${data.total} results
+        </div>
+        <div class="pagination-buttons">
+            <ul class="flex space-x-2">
+    `;
+
+    // Previous Page Button
+    if (currentPage > 1) {
+        paginationHTML += `
+            <li>
+                <a href="#" onclick="fetchTickets(${currentPage - 1})" class="px-3 py-1 border rounded">&lsaquo;</a>
+            </li>
+        `;
+    } else {
+        paginationHTML += `
+            <li class="disabled opacity-50">
+                <span class="px-3 py-1">&lsaquo;</span>
+            </li>
+        `;
+    }
+
+    // Page Numbers
+    for (let i = 1; i <= lastPage; i++) {
+        if (i === currentPage) {
+            paginationHTML += `
+                <li class="active font-bold">
+                    <span class="px-3 py-1 border rounded bg-gray-200">${i}</span>
+                </li>
+            `;
+        } else {
+            paginationHTML += `
+                <li>
+                    <a href="#" onclick="fetchTickets(${i})" class="px-3 py-1 border rounded">${i}</a>
+                </li>
+            `;
+        }
+    }
+
+    // Next Page Button
+    if (currentPage < lastPage) {
+        paginationHTML += `
+            <li>
+                <a href="#" onclick="fetchTickets(${currentPage + 1})" class="px-3 py-1 border rounded">&rsaquo;</a>
+            </li>
+        `;
+    } else {
+        paginationHTML += `
+            <li class="disabled opacity-50">
+                <span class="px-3 py-1">&rsaquo;</span>
+            </li>
+        `;
+    }
+
+    paginationHTML += `
+            </ul>
+        </div>
+    `;
+
+    paginationContainer.innerHTML = paginationHTML;
+}
+
 // Initialize the filters on page load
 document.addEventListener('DOMContentLoaded', toggleFilters);
+document.addEventListener('DOMContentLoaded', function () {
+    fetchTickets(); // Fetch the first page of tickets
+});
 
-function exportTickets() {
+async function exportTickets() {
     const filter = document.getElementById('filter').value;
     const monthFilter = document.getElementById('monthFilter').value;
     const yearFilter = document.getElementById('yearFilter').value;
@@ -247,25 +358,39 @@ function exportTickets() {
         fileName = `${userName}_annual_report_${yearFilter}.csv`;
     }
 
-    const rows = document.querySelectorAll('#ticketTableBody tr');
-    let csvContent = "data:text/csv;charset=utf-8,";
+    try {
+        // Fetch all records from the server (ignoring pagination)
+        const response = await fetch(`/tickets/export?filter=${filter}&month=${monthFilter}&year=${yearFilter}`);
+        const data = await response.json();
 
-    // Add headers
-    const headers = Array.from(document.querySelectorAll('#ticketTable thead th')).map(header => header.innerText);
-    csvContent += headers.join(',') + '\n';
+        if (!data.length) {
+            alert('No records found to export.');
+            return;
+        }
 
-    // Add rows
-    rows.forEach(row => {
-        const cols = Array.from(row.querySelectorAll('td')).map(col => col.innerText);
-        csvContent += cols.join(',') + '\n';
-    });
+        // Create CSV content
+        let csvContent = "data:text/csv;charset=utf-8,";
 
-    // Create a link and trigger the download
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        // Add headers
+        const headers = Object.keys(data[0]);
+        csvContent += headers.join(',') + '\n';
+
+        // Add rows
+        data.forEach(row => {
+            const cols = headers.map(header => row[header]);
+            csvContent += cols.join(',') + '\n';
+        });
+
+        // Trigger download
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error('Error exporting tickets:', error);
+        alert('Failed to export tickets. Please try again.');
+    }
 }

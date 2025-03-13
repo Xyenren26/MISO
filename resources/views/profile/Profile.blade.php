@@ -23,6 +23,7 @@
             background-position: bottom center; /* Position the image at the bottom */
             background-attachment: fixed; /* Keep the background fixed while scrolling */
             position: relative;
+            zoom: 0.8; /* 80% zoom */
         }
         /* Vertical Navigation Container */
         .vertical-nav {
@@ -351,9 +352,7 @@
                 <div class="info-item" id="department-container">
                     <label for="department">Department:</label>
                     <input type="text" id="current-department" name="department" value="{{ $user->department }}" disabled /> <!-- Non-editable input initially -->
-                    <select id="department" name="department" class="department-select" style="display: none;" >
-                        @include('components.list_department')
-                    </select>
+                    <select id="department" name="department" class="department-select" style="display: none;"></select>
                 </div>
                 <div class="info-item">
                     <label for="role">Account Role:</label>

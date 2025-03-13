@@ -101,6 +101,7 @@
                         <div class="button-container">
                             <button class="action-button" onclick="showTicketDetails('{{ $ticket->control_no }}')">
                                 <i class="fas fa-eye"></i>
+                                <span class="tooltip">Show</span>
                             </button>
                             @if (
                                 (Auth::user()->employee_id === $ticket->technical_support_id || Auth::user()->account_type === 'technical_support_head') &&
@@ -108,6 +109,7 @@
                             )
                                 <button class="action-button" onclick="checkTechnicalReport('{{ $ticket->control_no }}')">
                                     <i class="fas fa-file-alt"></i>
+                                    <span class="tooltip">Technical Report Form</span>
                                 </button>
                             @elseif (
                                 (Auth::user()->employee_id === $ticket->technical_support_id || Auth::user()->account_type === 'technical_support_head') &&
@@ -121,10 +123,12 @@
                                 @if ($isSubmitted)
                                     <button class="action-button" onclick="openViewEndorsementModal('{{ $ticket->control_no }}')">
                                         <i class="fas fa-book"></i>
+                                        <span class="tooltip">Endorsement Form</span>
                                     </button>
                                 @else
                                     <button class="action-button" onclick="openEndorsementModal('{{ $ticket->control_no }}')">
                                         <i class="fas fa-file-alt"></i>
+                                        <span class="tooltip">Endorsement Form</span>
                                     </button>
                                 @endif
                             @elseif (
@@ -133,6 +137,7 @@
                             )
                                 <button class="action-button" onclick="checkAndOpenPopup('{{ $ticket->control_no }}')">
                                     <i class="fas fa-laptop"></i>
+                                    <span class="tooltip">Turn Over to MISO Form</span>
                                 </button>
                             @elseif (
                                 Auth::user()->employee_id === $ticket->technical_support_id &&
@@ -141,6 +146,7 @@
                                 <button class="action-button" onclick="openRemarksModal('{{ $ticket->control_no }}')" 
                                         id="remarks-btn-{{ $ticket->control_no }}">
                                     <i class="fas fa-sticky-note"></i>
+                                    <span class="tooltip">Remark</span>
                                 </button>
                             @endif
 
@@ -150,6 +156,7 @@
                             )
                                 <button class="action-button" id="chat-btn-{{ $ticket->control_no }}" onclick="sendMessageTechnical('{{ $ticket->control_no }}')">
                                     <i class="fas fa-comments"></i> 
+                                    <span class="tooltip">Message</span>
                                 </button>
                             @endif
 
@@ -161,6 +168,7 @@
                                 <button class="action-button" onclick="showAssistModal('{{ $ticket->control_no }}')" 
                                         id="assist-btn-{{ $ticket->control_no }}">
                                     <i class="fas fa-handshake"></i> 
+                                    <span class="tooltip">Pass Ticket</span>
                                 </button>
                             @endif
 
@@ -172,9 +180,11 @@
                             )
                                 <button class="action-button" onclick="approveTicket('{{ $ticket->control_no }}')">
                                     <i class="fas fa-check-circle"></i> 
+                                    <span class="tooltip">Approved</span>
                                 </button>
                                 <button class="action-button deny-button" onclick="denyTicket('{{ $ticket->control_no }}')">
                                     <i class="fas fa-times-circle"></i> 
+                                    <span class="tooltip">Denied</span>
                                 </button>
                             @endif
 
@@ -183,11 +193,12 @@
                                 $ticket->isApproved &&
                                 Auth::user()->account_type === 'administrator' &&
                                 $ticket->existsInModels &&
-                                $ticket->isRepaired
+                                $ticket->isRated 
                             )
-                                <button class="action-button archive-btn" onclick="archiveTicket('{{ $ticket->control_no }}')">
-                                    <i class="fas fa-archive"></i>
-                                </button>
+                            <button class="action-button archive-btn" onclick="archiveTicket('{{ $ticket->control_no }}')">
+                                <i class="fas fa-archive"></i>
+                                <span class="tooltip">Archive</span>
+                            </button>
                             @endif
 
                             @if (
@@ -204,6 +215,7 @@
                                         onclick="openConfirmationModal('{{ $ticket->serviceRequest->form_no ?? '' }}')"
                                         @if(optional($ticket->serviceRequest)->status === 'repaired') disabled @endif>
                                     <i class="fas fa-sync-alt"></i>
+                                    <span class="tooltip">Mark as Repaired</span>
                                 </button>
                             @endif
                         </div>

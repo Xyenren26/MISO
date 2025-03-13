@@ -11,8 +11,9 @@
 <body>
 <div class="container">
     @include('components.sidebar')
+    @include('components.navbar')
     <div class="main-content">
-        @include('components.navbar')
+
         <!-- Header Section -->
         <div class="header">
             <!-- Tabs Section -->
@@ -131,7 +132,6 @@
 </div>
 
 <div class="content">
-    <div class="table-container">
         @if ($tickets->count() > 0)
             <div id="ticket-list" class="table-container">
                 @include('components.ticket-list', ['tickets' => $tickets, 'technicalSupports' => $technicalSupports])
@@ -139,7 +139,6 @@
         @else
             <div class="no-records">NO RECORDS FOUND</div>
         @endif
-    </div>
 </div>
 
 <script src="{{ asset('js/Ticket_Script.js') }}"></script>

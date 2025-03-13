@@ -11,6 +11,7 @@ use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\Signup_Controller;
 use App\Http\Controllers\AccountSecurityController;
 use App\Http\Controllers\Home_Controller;
+use App\Http\Controllers\Department_Controller;
 use App\Http\Controllers\EndUserController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Ticket_Controller;
@@ -87,7 +88,6 @@ Route::middleware(['web'])->group(function() {
 // Routes for technical-support and administrator (protected by 'auth' middleware)
 Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {
     // Routes that require authentication
-    Route::resource('announcements', AnnouncementController::class);
     Route::get('/notifications', [NotificationController::class, 'fetchNotifications']);
     Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
@@ -102,7 +102,9 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::delete('/events/{id}', [EventController::class, 'destroy']); // Delete event
 
     Route::get('/home', [Home_Controller::class, 'showHome'])->middleware('CustomAuthenticate')->name('home');
+    Route::get('/tickets/export', [Home_Controller::class, 'exportTickets'])->name('tickets.export');
     Route::get('/fetch-tickets', [Home_Controller::class, 'fetchTickets']);
+    Route::get('/departments', [Department_Controller::class, 'getDepartments']);
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
     Route::post('/ticket', [Ticket_Controller::class, 'store'])->name('ticket.store'); // POST request for submitting the form
     Route::get('/tickets/filter', [Ticket_Controller::class, 'filterTickets'])->name('tickets.filter');
@@ -144,12 +146,19 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('/account/security/change-email', [AccountSecurityController::class, 'changeEmail'])->name('account.changeEmail');
     Route::post('/account/verify-password', [AccountSecurityController::class, 'verifyPassword'])->name('account.verifyPassword');
     Route::middleware(['auth', 'CheckAdmin'])->group(function () {
+        Route::resource('announcements', AnnouncementController::class);
         Route::get('/user_management', [User_Management_Controller::class, 'showUser_Management'])->name('user_management');
         Route::get('/user/management', [User_Management_Controller::class, 'showUser_Management'])->name('user.management');
         Route::post('/user/update/{employee_id}', [User_Management_Controller::class, 'update'])->name('user.update');
         Route::post('/user/change-role/{employee_id}', [User_Management_Controller::class, 'changeRole'])->name('user.changeRole');
         Route::patch('/user/toggle-status/{employee_id}', [User_Management_Controller::class, 'toggleStatus'])->name('user.toggleStatus');
+        Route::get('/department', [Department_Controller::class, 'index'])->name('department.index');
+        Route::post('/department', [Department_Controller::class, 'store'])->name('department.store');
+        Route::put('/department/{id}', [Department_Controller::class, 'update'])->name('department.update');
+        Route::delete('/department/{id}', [Department_Controller::class, 'destroy'])->name('department.destroy');
         Route::get('/report', [Report_Controller::class, 'showReport'])->name('report');
+        Route::get('/admin/tickets/export', [Report_Controller::class, 'exportTickets'])->name('tickets.export');
+        Route::get('/admin/fetch-tickets', [Report_Controller::class, 'fetchTickets']);
         Route::get('/export-technician-performance', [Report_Controller::class, 'exportTechnicianPerformance']);
         Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
         Route::get('/archive/export', [ArchiveController::class, 'export'])->name('archive.export');
