@@ -38,7 +38,6 @@ use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::routes();
 
-
 Route::get('/generate-qr/{form_no}', function ($form_no) {
     return response(QrCode::size(200)->generate(route('generate.pdf', $form_no)))
         ->header('Content-Type', 'image/svg+xml');

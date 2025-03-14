@@ -215,6 +215,7 @@
         </div>
     </div>
 </div>
+@include('components.chatbot')
 
 <script>
     // Keep the PHP variables in the Blade file
