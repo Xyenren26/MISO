@@ -1,13 +1,50 @@
-.key-metrics-summary {
-    margin: 20px;
-    text-align: center;
-}
 
 .key-metrics-summary h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
     color: #003067;
-    font-weight: bold;
+    font-size: 28px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Underline animation */
+.key-metrics-summary h2::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 3px;
+    background-color: #003067;
+    margin: 10px auto 0;
+    border-radius: 2px;
+    animation: slideIn 0.8s ease-out 0.5s forwards;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide-in animation */
+@keyframes slideIn {
+    from {
+        width: 0;
+    }
+    to {
+        width: 60px;
+    }
 }
 
 .metrics-cards {
@@ -17,36 +54,68 @@
     justify-content: center;
 }
 
+/* Metric Card Styling */
 .metric-card {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
 }
 
+/* Staggered Animation Delay */
+.metric-card:nth-child(1) { animation-delay: 0.2s; }
+.metric-card:nth-child(2) { animation-delay: 0.4s; }
+.metric-card:nth-child(3) { animation-delay: 0.6s; }
+.metric-card:nth-child(4) { animation-delay: 0.8s; }
+
+/* Hover Effect */
 .metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Icon Styling */
 .metric-card i {
     font-size: 32px;
     color: #003067;
     margin-bottom: 10px;
+    transition: transform 0.3s ease;
 }
 
+/* Icon Animation on Hover */
+.metric-card:hover i {
+    transform: rotate(10deg) scale(1.1);
+}
+
+/* Title Styling */
 .metric-card h3 {
     font-size: 18px;
     color: #333;
     margin-bottom: 5px;
 }
 
+/* Value/Text Styling */
 .metric-card p {
     font-size: 20px;
     font-weight: bold;
     color: #0073e6;
+}
+
+/* Fade-In Up Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
@@ -57,35 +126,59 @@
     justify-content: center; /* Center the charts horizontally */
     align-items: center; /* Align charts vertically */
 }
-
+/* Chart Box Styles */
 .donut-chart, .line-chart {
     padding: 20px; /* Add padding for inner spacing */
-    background-color: #f8f9fa; /* Light background for better contrast */
+    background-color: #ffffff;
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Hover Effect */
+.donut-chart:hover, .line-chart:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Donut Chart */
 .donut-chart {
     flex: 0 0 30%; /* Donut chart takes 30% of the container width */
     height: 400px; /* Fixed height */
 }
 
+/* Line Chart */
 .line-chart {
     flex: 0 0 65%; /* Line chart takes 65% of the container width */
     height: 400px; /* Fixed height */
 }
 
+/* Ensure the Canvas Fills the Container */
 .donut-chart canvas, 
 .line-chart canvas {
     height: 100% !important; /* Ensure the canvas fills the container height */
     width: 100% !important; /* Adjust width dynamically to container */
 }
 
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    .charts-container {
+        flex-direction: column; /* Stack charts vertically */
+        align-items: center;
+    }
+
+    .donut-chart, .line-chart {
+        flex: 0 0 90%; /* Allow charts to take more space */
+        height: auto; /* Adjust height dynamically */
+    }
+}
+
+
 /* Style the performance details section */
 .performance-details {
     margin-top: 30px;
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -149,23 +242,42 @@
     cursor: pointer;
 }
 
-.date-filter label{
+/* Label Styling */
+.date-filter label {
     font-size: 1.1rem;
-    font-weight: 500;
-    color: #003067; /* A deep blue color */
-    margin-right: 10px; /* Spacing between the label and the input */
+    font-weight: 600; /* Slightly bolder for readability */
+    color: #003067; /* Deep blue color */
+    margin-right: 10px; /* Spacing between label and input */
     display: inline-block;
 }
 
-#datePicker{
-    padding: 10px;
+/* Date Picker Input */
+#datePicker {
+    padding: 10px 12px; /* Adjusted padding for better touch interaction */
     font-size: 1rem;
     border: 2px solid #003067; /* Deep blue border */
-    border-radius: 5px;
-    background-color: #f7f7f7; /* Light background for the input */
+    border-radius: 6px; /* Slightly rounded for a modern look */
+    background-color: #f7f7f7; /* Light background */
     color: #003067; /* Matching text color */
-    transition: border-color 0.3s ease-in-out;
+    transition: 
+        border-color 0.3s ease-in-out, 
+        box-shadow 0.3s ease-in-out,
+        transform 0.2s ease-in-out; /* Added scale animation */
     margin-bottom: 10px;
+    margin-top: 10px;
+    outline: none; /* Remove default outline */
+}
+
+/* Hover Effect */
+#datePicker:hover {
+    border-color: #0056b3; /* Slightly lighter blue */
+}
+
+/* Focus Effect (With Animation) */
+#datePicker:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 10px rgba(0, 48, 103, 0.4); /* Glowing effect */
+    transform: scale(1.05); /* Slight zoom-in effect */
 }
 
 /* Modal Styles */

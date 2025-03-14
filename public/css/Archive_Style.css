@@ -8,65 +8,101 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     position: relative;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeIn 0.8s ease-out forwards;
 }
 
+/* Underline animation */
 .audit-logs h1::after {
     content: '';
     display: block;
-    width: 60px;
+    width: 0;
     height: 3px;
     background-color: #003067;
     margin: 10px auto 0;
     border-radius: 2px;
+    animation: slideIn 0.8s ease-out 0.5s forwards;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide-in animation */
+@keyframes slideIn {
+    from {
+        width: 0;
+    }
+    to {
+        width: 60px;
+    }
 }
 
 /* Filters Section */
 .filters {
     background-color: #ffffff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
+    transition: box-shadow 0.3s ease;
 }
+
+.filters:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
 
 .filters form {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     align-items: center;
+    width: 85%;
 }
 
-.filters label {
-    font-size: 14px;
-    color: #003067;
-    margin-right: 5px;
-}
-
-.filters input,
-.filters select,
-.filters button {
-    padding: 8px;
+.filters-input{
+    flex: 1;
+    padding: 10px;
     border: 1px solid #003067;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 14px;
     color: #003067;
     outline: none;
+    transition: all 0.3s ease;
+}
+.filters-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
 }
 
-.filters button {
+.search-button, .export-button  {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
     background-color: #003067;
     color: white;
     cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     transition: all 0.3s ease;
 }
 
-.filters button:hover {
-    background-color: white;
-    color: #003067;
-    border: 1px solid #003067;
+.search-button:hover, .export-button:hover {
+    background-color: #002147;
+    transform: translateY(-2px);
 }
 
 /* Audit Logs Table */

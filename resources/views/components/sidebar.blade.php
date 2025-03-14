@@ -90,19 +90,29 @@
 
     <script src="{{ asset('js/Sidebar_Script.js') }}"></script>
     <script>
-        // Toggle Administrative Menu
+       // Toggle Administrative Menu
         function toggleAdministrativeMenu() {
-        const administrativeMenu = document.getElementById('administrative-menu');
-        const label = document.querySelector('.administrative-label'); // Use a more specific selector
+            const administrativeMenu = document.getElementById('administrative-menu');
+            const label = document.querySelector('.administrative-label');
 
-        if (administrativeMenu && label) {
-            // Toggle the collapsed class
-            administrativeMenu.classList.toggle('collapsed');
-            label.classList.toggle('collapsed');
-        } else {
-            console.error("Elements not found!");
+            if (administrativeMenu && label) {
+                if (administrativeMenu.classList.contains('expanded')) {
+                    // If expanded, collapse it
+                    administrativeMenu.classList.remove('expanded');
+                    administrativeMenu.classList.add('collapsed');
+                } else {
+                    // If collapsed, expand it
+                    administrativeMenu.classList.remove('collapsed');
+                    administrativeMenu.classList.add('expanded');
+                }
+
+                // Toggle caret rotation
+                label.classList.toggle('collapsed');
+            } else {
+                console.error("Elements not found!");
+            }
         }
-        }
+
         </script>
 </body>
 </html>

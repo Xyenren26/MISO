@@ -68,14 +68,21 @@
     color: #003067; 
 }
 
-.tab-button:hover::after {
+/* Hover Line Animation */
+.tab-button::after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 0;
-    width: 100%;
+    left: 50%;
+    width: 0;
     height: 3px;
     background-color: #003067; 
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.tab-button:hover::after {
+    width: 100%;
+    left: 0;
 }
 
 /* Filter and Add New Ticket Section */

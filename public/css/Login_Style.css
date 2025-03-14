@@ -162,41 +162,59 @@
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   }
   
-  /* Login Container */
-  .login-container {
-    width: 100%;
-    max-width: 320px;
-    background-color: #fff;
-    margin-top: 30px;
-    border-radius: 15px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    border: 2px solid transparent;
-    background-image: linear-gradient(#fff, #fff),
-    linear-gradient(to right, #118df1, #2575fc); /* Gradient border */
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+ /* Login Container */
+.login-container {
+  width: 100%;
+  max-width: 320px;
+  background-color: #fff;
+  margin-top: 30px;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border: 2px solid transparent;
+  background-image: linear-gradient(#fff, #fff),
+      linear-gradient(to right, #118df1, #2575fc); /* Gradient border */
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+
+  /* Entrance Animation */
+  opacity: 0;
+  transform: translateY(-20px) scale(0.9);
+  animation: fadeInScale 0.5s ease-out forwards;
+}
+
+/* Hover Effect */
+.login-container:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  background-image: linear-gradient(#f9f9f9, #f9f9f9),
+      linear-gradient(to right, #0e2f66, #2575fc);
+}
+
+/* Heading Styling */
+h2 {
+  margin-bottom: 15px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Keyframes for Entrance Animation */
+@keyframes fadeInScale {
+  from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.9);
   }
-  
-  .login-container:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-    background-image: linear-gradient(#f9f9f9, #f9f9f9),
-    linear-gradient(to right, #0e2f66, #2575fc);
+  to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
   }
-  
-  /* Heading Styling */
-  h2 {
-    margin-bottom: 15px;
-    font-size: 24px;
-    font-weight: 700;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
+}
+
   /* Form Styling */
   form {
     display: flex;
@@ -310,20 +328,28 @@
     overflow: hidden;
   }
   
-  .slideshow-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    position: relative;
+  /* Slideshow Container */
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
   }
-  
-      /* Slideshow Container */
-      .slideshow-container {
-        position: relative;
-        max-width: 100%;
-        height: 100vh;
-        overflow: hidden;
-      }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
   
       .slide {
         display: none;

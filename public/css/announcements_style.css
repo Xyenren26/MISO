@@ -1,5 +1,5 @@
-/* Title Section */
-.title {
+/* Audit Logs Section */
+.title{
     color: #003067;
     font-size: 28px;
     margin-bottom: 25px;
@@ -8,17 +8,45 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     position: relative;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeIn2 0.8s ease-out forwards;
 }
 
+/* Underline animation */
 .title::after {
     content: '';
     display: block;
-    width: 60px;
+    width: 0;
     height: 3px;
     background-color: #003067;
     margin: 10px auto 0;
     border-radius: 2px;
+    animation: slideIn2 0.8s ease-out 0.5s forwards;
 }
+
+/* Fade-in animation */
+@keyframes fadeIn2 {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide-in animation */
+@keyframes slideIn2 {
+    from {
+        width: 0;
+    }
+    to {
+        width: 60px;
+    }
+}
+
 
 /* Filters Section */
 .filters {

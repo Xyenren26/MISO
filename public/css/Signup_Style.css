@@ -47,20 +47,44 @@ body {
 /* Sign-Up Container Styles */
 .sign-up-container {
   width: 100%;
-  max-width: 400px; /* Reduced from 500px */
+  max-width: 400px;
   background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 6.4px; /* Reduced from 8px */
-  box-shadow: 0 2.4px 4px rgba(0, 0, 0, 0.1); /* Reduced from 3px 5px */
-  padding: 16px; /* Reduced from 20px */
+  border-radius: 6.4px;
+  box-shadow: 0 2.4px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
   font-family: 'Arial', sans-serif;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  border: 1.6px solid transparent; /* Reduced from 2px */
+  border: 1.6px solid transparent;
   background-image: linear-gradient(#fff, #fff),
     linear-gradient(to right, #118df1, #2575fc);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Reduced from 10px 30px */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   background-origin: border-box;
   background-clip: padding-box, border-box;
+
+  /* Entrance Animation */
+  opacity: 0;
+  transform: translateY(-20px) scale(0.9);
+  animation: fadeInUp 0.5s ease-out forwards;
 }
+
+/* Hover Effect - Pulsing Glow */
+.sign-up-container:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 30px rgba(17, 141, 241, 0.3);
+}
+
+/* Keyframes for Entrance Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 
 .modal-content h2 {
   font-size: 1.8em;

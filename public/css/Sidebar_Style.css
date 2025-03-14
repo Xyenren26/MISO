@@ -107,13 +107,16 @@ body {
 
 /* Collapsible Menu Styling */
 .collapsible-menu {
-    max-height: 500px; /* Adjust based on content height */
+    max-height: 0; /* Start hidden */
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    transition: max-height 0.4s ease-out, opacity 0.4s ease-out;
+    opacity: 0; /* Start invisible */
 }
 
-.collapsible-menu.collapsed {
-    display: none;
+/* When expanded */
+.collapsible-menu.expanded {
+    max-height: 500px; /* Adjust based on content height */
+    opacity: 1;
 }
 
 /* Caret Icon Styling */
@@ -121,15 +124,49 @@ body {
     transition: transform 0.3s ease;
 }
 
+/* Rotate caret when collapsed */
 .administrative-label.collapsed .fa-caret-down {
     transform: rotate(-90deg);
 }
 
 /* Ensure the label is clickable */
 .administrative-label {
-    cursor: pointer; /* Show pointer cursor on hover */
-    pointer-events: auto; /* Ensure it's clickable */
+    cursor: pointer;
+    pointer-events: auto;
 }
+
+/* Animation for a smooth slide-down effect */
+@keyframes slideDown {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 500px;
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        max-height: 500px;
+        opacity: 1;
+    }
+    to {
+        max-height: 0;
+        opacity: 0;
+    }
+}
+
+/* JavaScript Class for Toggle Effect */
+.collapsible-menu.expanded {
+    animation: slideDown 0.4s ease-out forwards;
+}
+
+.collapsible-menu.collapsed {
+    animation: slideUp 0.3s ease-out forwards;
+}
+
 
 /* Menu Items */
 .sidebar .menu a {
@@ -339,7 +376,7 @@ body {
 @media screen and (max-width: 480px) {
     .sidebar {
         width: 60px; /* Minimized by default */
-        height: 112vh;
+        height: 193vh;
     }
     .sidebar .sidebar-logo {
         width: 60px;

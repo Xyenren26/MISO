@@ -20,8 +20,8 @@
 
             <div class="filters">
                 <form method="GET" action="{{ route('archive.index') }}">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Control No, Name, or Department">
-                    <button type="submit">Apply Filters</button>
+                    <input type="text" name="search" value="{{ request('search') }}" class="filters-input" placeholder="Search by Control No, Name, or Department">
+                    <button type="submit" class="search-button">Apply Filters</button>
                 </form>
                 <button id="exportCsv" class="export-button">
                     <i class="fas fa-file-csv"></i> Export to CSV
