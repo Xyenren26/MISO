@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced Ticket Form</title>
-    <link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ticket_components_style.css') }}">
 </head>
 <body>
     <!-- Ticket Form Container -->

@@ -23,15 +23,24 @@ body {
     flex-direction: column;
     gap: 20px;
     padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* Image Container */
 .image-container {
     width: 100%;
-    height: 250px;
+    height: 300px;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: float 5s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .image-container img {
@@ -40,8 +49,67 @@ body {
     object-fit: cover;
 }
 
-/* Text Slideshow */
+/* Side-by-Side Container */
+.side-by-side-container {
+    display: flex;
+    gap: 20px; /* Space between the two sections */
+    margin-top: 20px;
+}
+
+/* Q&A Container */
+.miso-qa-container {
+    flex: 1; /* Take up equal space */
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Question Text */
+.miso-question p {
+    font-size: 24px;
+    color: #003366;
+    font-weight: bold;
+    margin: 0;
+    overflow: hidden; /* Hide overflow text */
+    white-space: nowrap; /* Keep text in one line */
+    border-right: 2px solid #003366; /* Cursor effect */
+    animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+/* Answer Text */
+.miso-answer p {
+    font-size: 18px;
+    color: #333;
+    line-height: 1.6;
+    margin: 20px 0 0;
+    opacity: 0; /* Start invisible */
+    animation: fadeIn 1s ease-in-out forwards;
+    animation-delay: 3s; /* Delay to start after question typing */
+}
+
+/* Typing Animation */
+@keyframes typing {
+    from { width: 0; } /* Start with no width */
+    to { width: 100%; } /* Expand to full width */
+}
+
+/* Blinking Cursor Animation */
+@keyframes blink-caret {
+    from, to { border-color: transparent; } /* Hide cursor */
+    50% { border-color: #003366; } /* Show cursor */
+}
+
+/* Fade-In Animation */
+@keyframes fadeIn {
+    from { opacity: 0; } /* Start invisible */
+    to { opacity: 1; } /* Fade in */
+}
+
+/* Text Slideshow Section */
 .text-slideshow-container {
+    flex: 1; /* Take up equal space */
     text-align: center;
     padding: 20px;
     background-color: #ffffff;
@@ -87,6 +155,26 @@ body {
     min-height: 50px;
 }
 
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .side-by-side-container {
+        flex-direction: column; /* Stack sections vertically on mobile */
+    }
+
+    .mis-description, .text-slideshow-container {
+        flex: none; /* Reset flex for mobile */
+        width: 100%; /* Full width on mobile */
+    }
+
+    .text-slideshow-container h2 {
+        font-size: 24px; /* Smaller font size for mobile */
+    }
+
+    .text-slideshow {
+        font-size: 18px; /* Smaller font size for mobile */
+    }
+}
+
 /* Cards */
 .containerCards {
     display: flex;
@@ -126,6 +214,11 @@ body {
 .card p {
     font-size: 16px;
     color: #666;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* Activity Panel */
@@ -269,7 +362,7 @@ body {
 }
 
 /* Modal Styling */
-.modal {
+.modal-home {
     display: none;
     position: fixed;
     z-index: 999;
@@ -281,7 +374,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal-content {
+.modal-content-home {
     background-color: white;
     margin: 10% auto;
     padding: 20px;
@@ -289,6 +382,7 @@ body {
     width: 50%;
     color: #003067;
     box-shadow: 0 0 10px rgba(0, 51, 102, 0.3);
+    animation: slideIn 0.5s ease;
 }
 
 .close {
@@ -303,7 +397,7 @@ body {
     color: #001f3f;
 }
 
-/* Announcement and Calendar */
+/* Container for Announcement and Calendar */
 .containerannouncement {
     display: flex;
     width: auto;
@@ -311,12 +405,20 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     overflow: hidden;
+    animation: fadeIn 1s ease-in-out;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Slideshow Section */
 .slideshow {
     flex: 1;
     position: relative;
     overflow: hidden;
+    border-radius: 10px 0 0 10px;
 }
 
 .slides {
@@ -329,8 +431,10 @@ body {
     height: 400px;
     object-fit: cover;
     border-radius: 10px 0 0 10px;
+    transition: opacity 0.5s ease-in-out;
 }
 
+/* Navigation Buttons */
 .prev, .next {
     position: absolute;
     top: 50%;
@@ -342,11 +446,12 @@ body {
     cursor: pointer;
     border-radius: 50%;
     font-size: 18px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .prev:hover, .next:hover {
     background-color: rgba(0, 48, 103, 1);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .prev {
@@ -357,6 +462,7 @@ body {
     right: 15px;
 }
 
+/* Right Section (Announcement and Calendar) */
 .right-section {
     flex: 1;
     padding: 25px;
@@ -377,20 +483,34 @@ body {
     border-bottom: 2px solid #ffcc00;
     display: inline-block;
     padding-bottom: 5px;
+    animation: slideInLeft 0.8s ease-in-out;
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 .announcement p {
     font-size: 16px;
     line-height: 1.6;
     color: #e0e0e0;
+    animation: fadeIn 1s ease-in-out;
 }
 
+/* Calendar Section */
 .calendar {
     background-color: rgba(255, 255, 255, 0.1);
     padding: 20px;
     border-radius: 10px;
-    height: 100px; /* Fixed height */
-    overflow-y: auto; /* Scrollable */
+    height: 100px;
+    overflow-y: auto;
+    animation: slideInRight 0.8s ease-in-out;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 .calendar h2 {
@@ -407,8 +527,8 @@ body {
 }
 
 .calendar-btn {
-    background-color: #003067;
-    color: white;
+    background-color: #ffcc00;
+    color: #003067;
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
@@ -418,10 +538,48 @@ body {
     align-items: center;
     gap: 8px;
     margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .calendar-btn:hover {
-    background-color: #004aad;
+    background-color: #e6b800;
+    transform: translateY(-3px);
+}
+
+/* Reset FullCalendar's table layout */
+.fc table {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+}
+
+/* Fix extra space in views */
+.fc-view-harness {
+    width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Remove extra space in dayGridMonth view */
+.fc-dayGridMonth-view .fc-daygrid-body {
+    width: 100% !important;
+}
+
+/* Remove extra space in timeGridWeek and timeGridDay views */
+.fc-timeGridWeek-view .fc-timegrid-body,
+.fc-timeGridDay-view .fc-timegrid-body {
+    width: 100% !important;
+}
+
+/* Ensure scrollbars don't cause extra space */
+.fc-scrollgrid {
+    overflow: hidden !important;
+}
+
+/* Fix column widths */
+.fc-col-header, .fc-daygrid-day, .fc-timegrid-col {
+    width: 100% !important;
 }
 
 .fc-toolbar {
@@ -482,7 +640,7 @@ body {
     font-size: 14px;
     color: #e0e0e0;
     margin: 0;
-}
+} 
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {

@@ -4,10 +4,106 @@ const backgroundColors = ['#FF0000', '#FFA500', '#FFFF00', '#008000']; // Red, O
 const borderColors = ['#FF0000', '#FFA500', '#FFFF00', '#008000']; // Red, Orange, Yellow, Green
 
 // Initialize charts
-createVerticalBarChart(document.getElementById('pendingTicketGraph'), pendingData, labels, backgroundColors, borderColors);
-createVerticalBarChart(document.getElementById('solvedTicketGraph'), solvedData, labels, backgroundColors, borderColors);
-createVerticalBarChart(document.getElementById('endorsedTicketGraph'), endorsedData, labels, backgroundColors, borderColors);
-createVerticalBarChart(document.getElementById('technicalReportGraph'), technicalReportData, labels, backgroundColors, borderColors);
+function initializeCharts() {
+    // Create charts without storing their instances
+    createVerticalBarChart(document.getElementById('pendingTicketGraph'), pendingData, labels, backgroundColors, borderColors);
+    createVerticalBarChart(document.getElementById('solvedTicketGraph'), solvedData, labels, backgroundColors, borderColors);
+    createVerticalBarChart(document.getElementById('endorsedTicketGraph'), endorsedData, labels, backgroundColors, borderColors);
+    createVerticalBarChart(document.getElementById('technicalReportGraph'), technicalReportData, labels, backgroundColors, borderColors);
+}
+
+// Function to create a vertical bar chart
+function createVerticalBarChart(ctx, data, labels, backgroundColors, borderColors) {
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Ticket Status',
+                data: data,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Function to update a chart
+function updateChart(chartId, newData) {
+    const chart = Chart.getChart(chartId); // Get the chart instance by its ID
+    if (!chart || !chart.data || !chart.data.datasets) {
+        console.error('Chart is not properly initialized.');
+        return;
+    }
+    chart.data.datasets[0].data = newData; // Update the dataset
+    chart.update(); // Re-render the chart
+}
+
+// Fetch ticket data and update charts
+function fetchTicketData() {
+    const selectedMonth = document.getElementById('monthPicker').value;
+
+    fetch(`/fetch-ticket-data?month=${selectedMonth}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        // Map fetched data to the chart's data structure
+        const pendingData = mapPriorityData(data['in-progress']);
+        const solvedData = mapPriorityData(data['completed']);
+        const endorsedData = mapPriorityData(data['endorsed']);
+        const technicalReportData = mapPriorityData(data['technical-report']);
+
+        // Update the charts with new data
+        updateChart('pendingTicketGraph', pendingData);
+        updateChart('solvedTicketGraph', solvedData);
+        updateChart('endorsedTicketGraph', endorsedData);
+        updateChart('technicalReportGraph', technicalReportData);
+    })
+    .catch(error => console.error('Error fetching ticket data:', error));
+}
+
+// Function to map priority data to the chart's data structure
+function mapPriorityData(data) {
+    const mappedData = [0, 0, 0, 0]; // Initialize with zeros for [Urgent, High, Medium, Low]
+
+    if (data) {
+        for (const [priority, count] of Object.entries(data)) {
+            const index = labels.map(label => label.toLowerCase()).indexOf(priority.toLowerCase());
+            if (index !== -1) {
+                mappedData[index] = count; // Use the actual count from the data
+            }
+        }
+    }
+
+    return mappedData;
+}
+
+// Initialize charts and fetch data when the page loads
+document.addEventListener('DOMContentLoaded', function () {
+    initializeCharts(); // Initialize charts first
+    fetchTicketData(); // Fetch data immediately
+    setInterval(fetchTicketData, 5000); // Fetch data every 5 seconds
+});
 
 const ctx2 = document.getElementById('deviceManagementGraph').getContext('2d');
 
@@ -77,35 +173,6 @@ function formatNumber(count) {
         return (count / 1000).toFixed(1) + 'K';
     }
     return count;
-}
-
-// Function to initialize a vertical bar chart
-function createVerticalBarChart(ctx, data, labels, backgroundColors, borderColors) {
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Ticket Status',
-                data: data,
-                backgroundColor: backgroundColors,
-                borderColor: borderColors,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false, // Allow resizing without preserving aspect ratio
-            indexAxis: 'y', // Makes the bar chart vertical
-            x: {
-                beginAtZero: true,  // Start the y-axis at zero
-                ticks: {
-                    stepSize: 1,  // Ensure the ticks are whole numbers
-                    precision: 0  // No decimals, whole numbers only
-                }
-            }
-        }        
-    });
 }
 
 // Labels for the days of the month (1 to 31)

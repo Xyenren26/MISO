@@ -47,52 +47,49 @@ class Home_Controller extends Controller
                 ->count(),
         ];
     
-        // Pending tickets by priority
-        $pendingTickets = Ticket::select('priority', DB::raw('count(*) as total'))
+        // Normalize priority values to lowercase
+        $pendingTickets = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
             ->whereYear('created_at', $selectedYear)
             ->where('status', 'in-progress')
             ->where('technical_support_id', Auth::user()->employee_id)
-            ->groupBy('priority')
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
     
-        // Solved tickets by priority
-        $solvedTickets = Ticket::select('priority', DB::raw('count(*) as total'))
+        $solvedTickets = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
             ->whereYear('created_at', $selectedYear)
             ->where('status', 'completed')
             ->where('technical_support_id', Auth::user()->employee_id)
-            ->groupBy('priority')
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
     
-        // Endorsed tickets by priority
-        $endorsedTickets = Ticket::select('priority', DB::raw('count(*) as total'))
+        $endorsedTickets = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
             ->whereYear('created_at', $selectedYear)
             ->where('status', 'endorsed')
             ->where('technical_support_id', Auth::user()->employee_id)
-            ->groupBy('priority')
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
     
-        // Technical reports by priority
-        $technicalReports = Ticket::select('priority', DB::raw('count(*) as total'))
+        $technicalReports = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
             ->whereMonth('created_at', $selectedMonth)
             ->whereYear('created_at', $selectedYear)
             ->where('status', 'technical-report')
             ->where('technical_support_id', Auth::user()->employee_id)
-            ->groupBy('priority')
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
             ->get()
             ->pluck('total', 'priority')
             ->toArray();
     
         // Chart data preparation
-        $priorities = ['urgent', 'semi-urgent', 'non-urgent'];
+        $priorities = ['urgent', 'high', 'medium', 'low'];
         $pendingData = $this->prepareChartData($priorities, $pendingTickets);
         $solvedData = $this->prepareChartData($priorities, $solvedTickets);
         $endorsedData = $this->prepareChartData($priorities, $endorsedTickets);
@@ -138,10 +135,10 @@ class Home_Controller extends Controller
         $solvedDataByDay = $this->prepareChartDataForDays($daysOfMonth, $dailySolvedTickets);
         $technicalReportDataByDay = $this->prepareChartDataForDays($daysOfMonth, $dailyTechnicalReports);
     
-       // Get the start and end dates of the current week
+        // Get the start and end dates of the current week
         $startOfWeek = now()->startOfWeek()->toDateTimeString(); // Start of the week (Monday)
         $endOfWeek = now()->endOfWeek()->toDateTimeString();     // End of the week (Sunday)
-
+    
         $ticketRecords = DB::table('tickets')
             ->leftJoin('ratings', 'tickets.control_no', '=', 'ratings.control_no')
             ->select(
@@ -163,13 +160,13 @@ class Home_Controller extends Controller
             ->whereBetween('tickets.created_at', [$startOfWeek, $endOfWeek]) // Filter for the current week
             ->where('tickets.technical_support_id', Auth::user()->employee_id)
             ->paginate(10);
-
+    
         // Format the duration for each ticket
         $ticketRecords->transform(function ($ticket) {
             $ticket->duration = $this->formatDuration($ticket->duration_seconds);
             return $ticket;
         });
-
+    
         // Return the view with all the data
         return view('home', compact(
             'ticketCountsByStatus',
@@ -318,5 +315,63 @@ class Home_Controller extends Controller
         });
 
         return response()->json($tickets);
+    }
+
+    public function fetchTicketData(Request $request)
+    {
+        $selectedDate = $request->get('month', Carbon::now()->format('Y-m'));
+        $selectedMonth = Carbon::parse($selectedDate)->format('m');
+        $selectedYear = Carbon::parse($selectedDate)->format('Y');
+    
+        // Normalize priority values to lowercase
+        $pendingTickets = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
+            ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
+            ->where('status', 'in-progress')
+            ->where('technical_support_id', Auth::user()->employee_id)
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
+            ->get()
+            ->pluck('total', 'priority')
+            ->toArray();
+    
+        $solvedTickets = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
+            ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
+            ->where('status', 'completed')
+            ->where('technical_support_id', Auth::user()->employee_id)
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
+            ->get()
+            ->pluck('total', 'priority')
+            ->toArray();
+    
+        $endorsedTickets = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
+            ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
+            ->where('status', 'endorsed')
+            ->where('technical_support_id', Auth::user()->employee_id)
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
+            ->get()
+            ->pluck('total', 'priority')
+            ->toArray();
+    
+        $technicalReports = Ticket::select(DB::raw('LOWER(priority) as priority'), DB::raw('count(*) as total'))
+            ->whereMonth('created_at', $selectedMonth)
+            ->whereYear('created_at', $selectedYear)
+            ->where('status', 'technical-report')
+            ->where('technical_support_id', Auth::user()->employee_id)
+            ->groupBy(DB::raw('LOWER(priority)')) // Group by lowercase priority
+            ->get()
+            ->pluck('total', 'priority')
+            ->toArray();
+    
+        // Prepare data for the response
+        $response = [
+            'in-progress' => $pendingTickets,
+            'completed' => $solvedTickets,
+            'endorsed' => $endorsedTickets,
+            'technical-report' => $technicalReports,
+        ];
+    
+        return response()->json($response);
     }
 }

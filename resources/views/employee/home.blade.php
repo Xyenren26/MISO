@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechTrack</title>
     <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/employee_home_style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 </head>
@@ -19,8 +19,8 @@
         @include('components.greetings', ['accountType' => auth()->user()->account_type])
     @endauth
     @include('components.sidebar')
-    @include('components.navbar')
     <div class="main-content">
+        @include('components.navbar')
         <div id="ticketFormModal" class="modal" style="display: none;">
             <div class="modal-content">
                 @include('components.ticket-form', ['technicalSupports' => $technicalSupports, 'formattedControlNo' => $formattedControlNo])
@@ -30,39 +30,58 @@
             <div class="image-container" data-aos="fade-down">
                 <img src="{{ asset('images/image-emp.png') }}" alt="Company Image">
             </div>
-            <div class="text-slideshow-container" data-aos="fade-up">
-                <h2>Our Responsibilities</h2>
-                <div class="text-slideshow">
-                    <p id="slideshowText"></p>
+           <!-- Container for Side-by-Side Layout -->
+            <div class="side-by-side-container" data-aos="fade-up">
+                <!-- MIS Description Section -->
+                <div class="miso-qa-container">
+                    <div class="miso-question">
+                        <p id="questionText"></p>
+                    </div>
+                    <div class="miso-answer">
+                        <p id="answerText"></p>
+                    </div>
+                </div>
+
+                <!-- Text Slideshow Section -->
+                <div class="text-slideshow-container">
+                    <h2>Our Responsibilities</h2>
+                    <div class="text-slideshow">
+                        <p id="slideshowText"></p>
+                    </div>
                 </div>
             </div>
             <div class="containerCards">
+                <!-- Mission and Vision Card -->
                 <div class="card mission-card" onclick="openModalHome('missionModal')">
                     <i class="fas fa-bullseye card-icon"></i>
                     <h3>Mission and Vision</h3>
                     <p>Our guiding principles for IT excellence.</p>
                 </div>
+
+                <!-- Core Function Service Card -->
                 <div class="card core-function-card" onclick="openModalHome('coreFunctionModal')">
                     <i class="fas fa-cogs card-icon"></i>
                     <h3>Core Function Service</h3>
                     <p>Empowering Pasig City with reliable technical support.</p>
                 </div>
+
+                <!-- Contact Information Card -->
                 <div class="card contact-card" onclick="openModalHome('contactModal')">
                     <i class="fas fa-phone-alt card-icon"></i>
                     <h3>Contact Information</h3>
                     <p>Reach out to us for assistance.</p>
                 </div>
             </div>
-            <div id="missionModal" class="modal mission-modal">
-                <div class="modal-content">
+            <div id="missionModal" class="modal-home mission-modal">
+                <div class="modal-content-home">
                     <span class="close" onclick="closeModal('missionModal')">&times;</span>
                     <h2>Mission and Vision</h2>
                     <p><strong>Mission:</strong> To provide innovative and reliable IT solutions that enhance the efficiency and effectiveness of Pasig City's operations, ensuring seamless information management and technological support for all employees.</p>
                     <p><strong>Vision:</strong> To be a leader in IT and information management, driving digital transformation and fostering a culture of innovation and excellence within Pasig City.</p>
                 </div>
             </div>
-            <div id="coreFunctionModal" class="modal core-function-modal">
-                <div class="modal-content">
+            <div id="coreFunctionModal" class="modal-home core-function-modal">
+                <div class="modal-content-home">
                     <span class="close" onclick="closeModal('coreFunctionModal')">&times;</span>
                     <h2>Core Function Service</h2>
                     <p>The Technical Support Division of MISO is dedicated to providing comprehensive IT support to all Pasig City employees. Our services include:</p>
@@ -75,12 +94,14 @@
                     </ul>
                 </div>
             </div>
-            <div id="contactModal" class="modal contact-modal">
-                <div class="modal-content">
+            <div id="contactModal" class="modal-home contact-modal">
+                <div class="modal-content-home">
                     <span class="close" onclick="closeModal('contactModal')">&times;</span>
                     <h2>Contact Information</h2>
+                    <p><strong>Technical Support Head:</strong> Cecilio V. Demano</p>
                     <p><strong>Office Address:</strong> [Insert office address here]</p>
-                    <p><strong>Email & Phone Number:</strong> [Insert email and phone number here]</p>
+                    <p><strong>Email:</strong> [Insert email here]</p>
+                    <p><strong>Phone Number:</strong> [Insert phone number here]</p>
                     <p><strong>Help Desk / Support System:</strong> [Insert details about the help desk or support system]</p>
                 </div>
             </div>
@@ -98,7 +119,7 @@
                     <div class="announcement">
                         <h2>Announcements</h2>
                         @if($announcements->isEmpty())
-                            <p>Welcome to our platform! Stay updated with the latest news and events. Don't miss out on our upcoming workshops and community meetups.</p>
+                            <p>Welcome to our platform! Stay updated with the latest news and events. Don't miss out on our upcoming community meetups.</p>
                         @else
                             @foreach($announcements as $announcement)
                                 <div class="announcement-item">
@@ -134,8 +155,8 @@
                 </div>
             </div>
             <!-- Calendar Modal -->
-            <div id="calendarModal" class="modal">
-                <div class="modal-content">
+            <div id="calendarModal" class="modal-home">
+                <div class="modal-content-home">
                     <span class="close" onclick="closeCalendarModal()">&times;</span>
                     <h2>Schedule Event</h2>
                     <div id="fullCalendar"></div> <!-- FullCalendar will render here -->
@@ -238,7 +259,6 @@
         </div>
     </div>
 </div>
-<script src="{{ asset('js/employee/home_script.js') }}"></script>
 <script>
     // Initialize FullCalendar
     function initializeCalendar() {
@@ -250,6 +270,8 @@
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
+        contentHeight: 'auto', // Adjust height dynamically
+        aspectRatio: 1.5,
         events: '/events', // Fetch events from your backend
         editable: true,
         selectable: true,
@@ -339,5 +361,8 @@
         document.getElementById('calendarModal').style.display = 'none';
     }
 </script>
+<script src="{{ asset('js/employee/home_script.js') }}"></script>
+@include('components.chatbot')
+
 </body>
 </html> 

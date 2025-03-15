@@ -101,6 +101,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::delete('/events/{id}', [EventController::class, 'destroy']); // Delete event
 
     Route::get('/home', [Home_Controller::class, 'showHome'])->middleware('CustomAuthenticate')->name('home');
+    Route::get('/fetch-ticket-data', [Home_Controller::class, 'fetchTicketData'])->name('fetch.ticket.data');
     Route::get('/tickets/export', [Home_Controller::class, 'exportTickets'])->name('tickets.export');
     Route::get('/fetch-tickets', [Home_Controller::class, 'fetchTickets']);
     Route::get('/departments', [Department_Controller::class, 'getDepartments']);
