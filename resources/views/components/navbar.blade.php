@@ -106,8 +106,6 @@
 
         </div>
     </div>
-<!-- EMAIL VERIFY ALERT MESSAGE -->
-@include('modals.email_verification_alert')
 <script>
     // Function to toggle user dropdown
     function toggleDropdown() {

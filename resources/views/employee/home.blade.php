@@ -21,6 +21,8 @@
     @include('components.sidebar')
     <div class="main-content">
         @include('components.navbar')
+        <!-- EMAIL VERIFY ALERT MESSAGE -->
+        @include('modals.email_verification_alert')
         <div id="ticketFormModal" class="modal" style="display: none;">
             <div class="modal-content">
                 @include('components.ticket-form', ['technicalSupports' => $technicalSupports, 'formattedControlNo' => $formattedControlNo])

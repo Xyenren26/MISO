@@ -17,6 +17,7 @@
             gap: 10px;
             width: 100%;
             margin-top: 5px; /* Space below navbar */
+            margin-bottom: 5px; /* Space below navbar */
             position: relative;
         }
 
@@ -62,7 +63,7 @@
     </style> 
 
 
-    <div id="email-alert-box" class="alert-box">
+    <div id="email-alert-box">
         <span class="alert-message">
             ⚠️ Hey there! Just a quick reminder to verify your email for a secure experience!
         </span>

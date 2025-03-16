@@ -25,6 +25,8 @@
     <div class="main-content">
         <!-- Navbar -->
         @include('components.navbar')
+        <!-- EMAIL VERIFY ALERT MESSAGE -->
+        @include('modals.email_verification_alert')
 
         <!-- Image Container -->
         <div class="content-wrapper">

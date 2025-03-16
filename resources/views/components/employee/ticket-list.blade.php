@@ -193,6 +193,7 @@ function getPriorityClass($priority) {
 </div>
 
 @include('modals.view')
+@include('modals.rating')
 @include('modals.assist')
 @include('modals.remarks')
 @include('modals.status_change')
