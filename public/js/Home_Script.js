@@ -54,7 +54,7 @@ function updateChart(chartId, newData) {
     chart.update(); // Re-render the chart
 }
 
-// Fetch ticket data and update charts
+// Fetch ticket data and update charts and counts
 function fetchTicketData() {
     const selectedMonth = document.getElementById('monthPicker').value;
 
@@ -78,6 +78,12 @@ function fetchTicketData() {
         updateChart('solvedTicketGraph', solvedData);
         updateChart('endorsedTicketGraph', endorsedData);
         updateChart('technicalReportGraph', technicalReportData);
+
+        // Update the total counts for each ticket category
+        updateTotalCount('pendingTicketCount', data['in-progress']);
+        updateTotalCount('solvedTicketCount', data['completed']);
+        updateTotalCount('endorsedTicketCount', data['endorsed']);
+        updateTotalCount('technicalReportCount', data['technical-report']);
     })
     .catch(error => console.error('Error fetching ticket data:', error));
 }
@@ -96,6 +102,16 @@ function mapPriorityData(data) {
     }
 
     return mappedData;
+}
+
+// Function to update the total count for a ticket category
+function updateTotalCount(elementId, data) {
+    const countElement = document.getElementById(elementId);
+    if (countElement && data) {
+        // Calculate the total count by summing all priority counts
+        const totalCount = Object.values(data).reduce((sum, count) => sum + count, 0);
+        countElement.textContent = totalCount; // Update the count display
+    }
 }
 
 // Initialize charts and fetch data when the page loads

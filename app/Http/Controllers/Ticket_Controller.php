@@ -155,7 +155,7 @@ class Ticket_Controller extends Controller
                                     ->whereNotNull('endorsed_to')
                                     ->exists() ||
                           ServiceRequest::where('ticket_id', $ticket->control_no)
-                                    ->whereNotNull('employee_id')
+                                    ->whereNotNull('service_type')
                                     ->exists() ||
                           TechnicalReport::where('control_no', $ticket->control_no)
                                     ->whereNotNull('inspected_by')
@@ -246,7 +246,7 @@ class Ticket_Controller extends Controller
                                     ->whereNotNull('endorsed_to')
                                     ->exists() ||
                           ServiceRequest::where('ticket_id', $ticket->control_no)
-                                    ->whereNotNull('employee_id')
+                                    ->whereNotNull('service_type')
                                     ->exists() ||
                           TechnicalReport::where('control_no', $ticket->control_no)
                                     ->whereNotNull('inspected_by')
@@ -360,6 +360,9 @@ class Ticket_Controller extends Controller
             $ticket->technical_support_id = $request->input('technicalSupport');
             $ticket->technical_support_name = $technicalSupportName;
             $ticket->status = 'in-progress';
+
+            // Set is_pull_out based on the authenticated user's account_type
+            $ticket->is_pull_out = auth()->user()->account_type === 'end_user' ? true : false;
 
             $ticket->save();
 
@@ -483,10 +486,14 @@ class Ticket_Controller extends Controller
                 Mail::to($user->email)->send(new TicketRemarkUpdate($ticket));
             }
 
-           // Handle specific logic if the ticket status is "endorsed"
-           if ($ticket->status === 'endorsed') {
+            // Handle specific logic if the ticket status is "endorsed"
+            if ($ticket->status === 'endorsed') {
             $this->createEndorsement($ticket);  // Your custom logic for endorsements
-        }
+            }
+            // Handle specific logic if the ticket status is "pull-out"
+            if ($ticket->status === 'pull-out') {
+                $this->handlePullOut($ticket);  // Your custom logic for pull-out
+            }
 
             // Return a success response
             return response()->json(['message' => 'Ticket updated successfully.'], 200);
@@ -535,6 +542,36 @@ class Ticket_Controller extends Controller
         ]);
     } 
     
+    protected function handlePullOut($ticket)
+    {
+        try {
+            // Generate next form number
+            $latestFormNo = ServiceRequest::latest('form_no')->first();
+            $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
+            $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
+
+            // Save the ticket data into the ServiceRequest table
+            $serviceRequest = ServiceRequest::create([
+                'form_no' => $nextFormNo,
+                'ticket_id' => $ticket->control_no,
+                'name' => $ticket->name,
+                'employee_id' => $ticket->employee_id,
+                'department' => $ticket->department,
+                'technical_support_id' => $ticket->technical_support_id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            return $serviceRequest;
+
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Failed to handle pull-out:', ['error' => $e->getMessage()]);
+            
+            // Return an error message as JSON
+            throw new \Exception('Failed to handle pull-out: ' . $e->getMessage());
+        }
+    }
+
     public function getEndorsementDetails($ticketId)
     {
         try {

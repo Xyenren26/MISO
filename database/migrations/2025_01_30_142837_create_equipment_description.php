@@ -17,10 +17,10 @@ return new class extends Migration
         Schema::create('equipment_descriptions', function (Blueprint $table) {
             $table->id();
             $table->string('form_no'); // Reference to the service request form number
-            $table->string('equipment_type');
             $table->string('brand')->nullable();
             $table->string('device')->nullable();
             $table->string('description')->nullable();
+            $table->string('serial_no')->nullable(); // Ensure serial_no is unique
             $table->text('remarks')->nullable();
             $table->foreign('form_no')->references('form_no')->on('service_requests')->onDelete('cascade');
             $table->timestamps();

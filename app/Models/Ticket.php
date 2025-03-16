@@ -27,6 +27,7 @@ class Ticket extends Model
         'technical_support_id',
         'technical_support_name',
         'status',
+        'is_pull_out',
         'time_in',
         'time_out',
         'created_at',

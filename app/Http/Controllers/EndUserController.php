@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Log;
 
 class EndUserController extends Controller
 {
-   public function index()
+    public function index()
     {
         // Fetch all technical support users excluding the current one
         $technicalSupports = User::where('account_type', 'technical_support')
@@ -187,7 +187,7 @@ class EndUserController extends Controller
                                     ->whereNotNull('endorsed_by')
                                     ->exists() ||
                           ServiceRequest::where('ticket_id', $ticket->control_no)
-                                    ->whereNotNull('employee_id')
+                                    ->whereNotNull('service_type')
                                     ->exists() ||
                           TechnicalReport::where('control_no', $ticket->control_no)
                                     ->whereNotNull('inspected_by')
@@ -286,7 +286,7 @@ class EndUserController extends Controller
             // Check if ticket exists in related models
             $ticket->existsInModels = 
                                     $endorsements->where('ticket_id', $ticket->control_no)->whereNotNull('endorsed_to')->isNotEmpty() ||
-                                    $serviceRequests->where('ticket_id', $ticket->control_no)->whereNotNull('employee_id')->isNotEmpty() ||
+                                    $serviceRequests->where('ticket_id', $ticket->control_no)->whereNotNull('service_type')->isNotEmpty() ||
                                     $technicalReports->where('control_no', $ticket->control_no)->whereNotNull('inspected_by')->isNotEmpty();
                                     
             $ticket->formfillup =

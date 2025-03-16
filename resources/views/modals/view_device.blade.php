@@ -58,6 +58,12 @@
     text-transform: Uppercase;
 }
 
+/* Hide the first column (ID column) */
+#viewEquipmentTable th:nth-child(1),
+#viewEquipmentTable td:nth-child(1) {
+    display: none;
+}
+
 .form-popup-form-info_no {
     display: flex;
     align-items: center;
@@ -89,7 +95,7 @@
     cursor: pointer;
     transition: 0.3s;
 }
-#updateButton{
+#updateButtonService{
     margin-top: 20px;
     width: 100%;
     padding: 8px;
@@ -101,7 +107,7 @@
     cursor: pointer;
     transition: 0.3s;
 }
-#saveButton{
+#saveButtonService{
     margin-top: 20px;
     width: 100%;
     padding: 8px;
@@ -213,6 +219,7 @@
                             <th>Brand</th>
                             <th>Device</th>
                             <th>Description</th>
+                            <th>Serial Number</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>
@@ -253,9 +260,9 @@
 
             <!-- Action Buttons -->
             <button type="button" id="ButtonService" onclick="downloadModalAsPDFService()">Download PDF</button>
-            @if(in_array(auth()->user()->account_type, ['technical_support', 'administrator']))
-                <button type="button" id="updateButton" onclick="toggleEditMode()">Update</button>
-                <button type="button" id="saveButton" style="display: none;" onclick="saveChanges()">Save</button>
+            @if(in_array(auth()->user()->account_type, ['technical_support', 'technical_support_head']))
+                <button type="button" id="updateButtonService" onclick="toggleEditModeService()">Update</button>
+                <button type="button" id="saveButtonService" style="display: none;" onclick="saveChangesService()">Save</button>
             @endif
         </div>
     </div>
@@ -266,6 +273,82 @@
 <script>
     function closePopup(popupId) {
         document.getElementById(popupId).style.display = 'none';
+    }
+
+    function toggleEditModeService() {
+        const tableBody = document.getElementById("viewEquipmentTable");
+        const rows = tableBody.querySelectorAll("tr");
+
+        // Enable editing for device, description, and remarks fields
+        rows.forEach(row => {
+            const brandInput = row.querySelector("td:nth-child(2) input");
+            const deviceInput = row.querySelector("td:nth-child(3) input");
+            const descInput = row.querySelector("td:nth-child(4) input");
+            const serialInput = row.querySelector("td:nth-child(5) input");
+            const remarksInput = row.querySelector("td:nth-child(6) input");
+            if (brandInput) brandInput.readOnly = false; // Enable editing for brand
+            if (deviceInput) deviceInput.readOnly = false; // Enable editing for device
+            if (descInput) descInput.readOnly = false; // Enable editing for description
+            if (serialInput) serialInput.readOnly = false;
+            if (remarksInput) remarksInput.readOnly = false; // Enable editing for remarks
+        });
+
+        // Toggle button visibility
+        document.getElementById("updateButtonService").style.display = "none";
+        document.getElementById("saveButtonService").style.display = "block";
+    }
+
+    function saveChangesService() {
+        const tableBody = document.getElementById("viewEquipmentTable");
+        const rows = tableBody.querySelectorAll("tr");
+        const formNo = document.getElementById("viewFormNoService").value;
+
+        // Prepare the equipment data to send to the backend
+        const equipmentData = [];
+        rows.forEach(row => {
+            const idInput = row.querySelector("input[data-field='id']");
+            const brandInput = row.querySelector("input[data-field='brand']");
+            const deviceInput = row.querySelector("input[data-field='device']");
+            const descriptionInput = row.querySelector("input[data-field='description']");
+            const serialInput = row.querySelector("input[data-field='serial']");
+            const remarksInput = row.querySelector("input[data-field='remarks']");
+
+            equipmentData.push({
+                id: idInput.value, // Include the ID
+                brand: brandInput.value,
+                device: deviceInput.value,
+                description: descriptionInput.value,
+                serial_no: serialInput.value,
+                remarks: remarksInput.value,
+            });
+        });
+
+        // Send the updated equipment data to the backend
+        fetch('/update-service-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({
+                form_no: formNo,
+                equipment: equipmentData,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Equipment descriptions updated successfully!');
+                // Disable editing after saving
+                toggleEditModeService();
+            } else {
+                alert('Failed to update equipment descriptions.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving changes.');
+        });
     }
     
     function downloadModalAsPDFService() {
@@ -362,73 +445,4 @@
         printWindow.document.close();
         printWindow.print();
     }
-
-    function toggleEditMode() {
-        const formPopup = document.getElementById('viewFormPopup');
-        const inputs = formPopup.querySelectorAll('input, textarea, select');
-        const updateButton = document.getElementById('updateButton');
-        const saveButton = document.getElementById('saveButton');
-
-        // Enable all input fields, checkboxes, radios, and selects
-        inputs.forEach(input => {
-            if (input.type !== "button" && input.type !== "submit") {
-                input.removeAttribute("readonly");
-                input.removeAttribute("disabled");
-            }
-        });
-
-        // Toggle button visibility
-        if (updateButton) updateButton.style.display = 'none';
-        if (saveButton) saveButton.style.display = 'block';
-    }
-
-
-    function saveChanges() {
-        const inputs = document.querySelectorAll('#viewFormPopup .form-popup-input');
-        const radios = document.querySelectorAll('#viewFormPopup input[type="radio"]');
-        const updateButton = document.getElementById('updateButton');
-        const saveButton = document.getElementById('saveButton');
-
-        // Disable inputs and radios
-        inputs.forEach(input => {
-            input.readOnly = true;
-        });
-
-        radios.forEach(radio => {
-            radio.disabled = true;
-        });
-
-        // Toggle button visibility
-        updateButton.style.display = 'block';
-        saveButton.style.display = 'none';
-
-        // Save changes to the backend
-        const formData = new FormData();
-        inputs.forEach(input => {
-            formData.append(input.id, input.value);
-        });
-        radios.forEach(radio => {
-            if (radio.checked) {
-                formData.append(radio.name, radio.value);
-            }
-        });
-
-        fetch('/update-service-request', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Changes saved successfully!');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to save changes.');
-        });
-    }
-
-
 </script>

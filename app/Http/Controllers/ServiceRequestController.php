@@ -6,6 +6,7 @@ use App\Models\ServiceRequest;
 use App\Models\Approval;
 use App\Models\EquipmentDescription;
 use App\Models\EquipmentPart;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Rating;
 use Illuminate\Http\Request;
@@ -20,12 +21,12 @@ class ServiceRequestController extends Controller
     public function store(Request $request)
     {
         \Log::info('Received request:', $request->all()); // Log the input request
-
+    
         try {
             $request->merge([
                 'ticket_id' => ($request->ticket_id === 'formPopup' || empty($request->ticket_id)) ? null : $request->ticket_id,
-            ]);            
-            
+            ]);
+    
             // Validate the form input
             $validated = $request->validate([
                 'ticket_id' => 'nullable|exists:tickets,control_no',
@@ -41,40 +42,59 @@ class ServiceRequestController extends Controller
                 'equipment.*.description' => 'required|string|max:255',
                 'equipment.*.remarks' => 'nullable|string|max:255',
             ]);
-            
-
+    
             \Log::info('Validation Passed:', $validated);
-
+    
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Validation Failed:', ['errors' => $e->errors()]);
             return redirect()->back()->withErrors($e->errors())->withInput();
         }
-
-        // Generate a dynamic form number (SRF-year-000001)
-        $year = now()->year;
-        $latestFormRequest = ServiceRequest::whereYear('created_at', $year)->latest('id')->first();
-        $latestNumber = $latestFormRequest ? (int)substr($latestFormRequest->form_no, -6) : 0;
-        $newFormNo = 'SRF-' . $year . '-' . str_pad($latestNumber + 1, 6, '0', STR_PAD_LEFT);
-
-        $serviceRequest = ServiceRequest::create([
-            'ticket_id' => $request->ticket_id ?? null,
-            'form_no' => $newFormNo,
-            'service_type' => $request->service_type,
-            'name' => $request->name,
-            'employee_id' => $request->employee_id,
-            'department' => $request->department,
-            'condition' => $request->condition[0] ?? null, // Save only the first value
-            'technical_support_id' => $request->technical_support_id,
-        ]);
-        
-        \Log::info('Service Request Saved', ['id' => $serviceRequest->id ?? 'Failed']);
-
+    
+        // Check if a ServiceRequest already exists for the given ticket_id
+        $serviceRequest = ServiceRequest::where('ticket_id', $request->ticket_id)->first();
+    
+        if ($serviceRequest) {
+            // Update the existing record
+            $serviceRequest->update([
+                'service_type' => $request->service_type,
+                'name' => $request->name,
+                'employee_id' => $request->employee_id,
+                'department' => $request->department,
+                'condition' => $request->condition[0] ?? null, // Save only the first value
+                'technical_support_id' => $request->technical_support_id,
+                'status' => 'in-repairs',
+            ]);
+    
+            \Log::info('Service Request Updated', ['id' => $serviceRequest->id]);
+        } else {
+            // Generate a dynamic form number (SRF-year-000001)
+            $year = now()->year;
+            $latestFormRequest = ServiceRequest::whereYear('created_at', $year)->latest('id')->first();
+            $latestNumber = $latestFormRequest ? (int)substr($latestFormRequest->form_no, -6) : 0;
+            $newFormNo = 'SRF-' . $year . '-' . str_pad($latestNumber + 1, 6, '0', STR_PAD_LEFT);
+    
+            // Create a new record
+            $serviceRequest = ServiceRequest::create([
+                'ticket_id' => $request->ticket_id ?? null,
+                'form_no' => $newFormNo,
+                'service_type' => $request->service_type,
+                'name' => $request->name,
+                'employee_id' => $request->employee_id,
+                'department' => $request->department,
+                'condition' => $request->condition[0] ?? null, // Save only the first value
+                'technical_support_id' => $request->technical_support_id,
+                'status' => 'in-repairs',
+            ]);
+    
+            \Log::info('Service Request Created', ['id' => $serviceRequest->id]);
+        }
+    
         // Save Equipment Description and Parts
-        $this->saveEquipmentDescriptions($newFormNo, $request);
-
-       // Notify the assigned technical support personnel
+        $this->saveEquipmentDescriptions($serviceRequest->form_no, $request);
+    
+        // Notify the assigned technical support personnel
         $technicalSupport = User::where('employee_id', $request->technical_support_id)->first();
-
+    
         if ($technicalSupport) {
             $technicalSupport->notify(new SystemNotification(
                 'Service Request',
@@ -82,22 +102,23 @@ class ServiceRequestController extends Controller
                 route('ticket', ['form_no' => $serviceRequest->form_no])
             ));
         }
-
+    
         // Retrieve the administrator
         $admin = User::where('account_type', 'technical_support_head')->first();
-
+    
         if ($admin) {
             $notification = new SystemNotification(
                 'TicketUpdated',
                 'A new update has been made to a ticket that requires your approval.',
                 route('ticket')
             );
-
+    
             $admin->notify($notification);
         }
+    
         $notification = $request->input('ticket_id');
         event(new NewNotification($notification));
-
+    
         return redirect()->route('ticket')->with('success', 'Service request submitted successfully!');
     }
 
@@ -108,9 +129,10 @@ class ServiceRequestController extends Controller
         foreach ($equipmentData as $device) {
             EquipmentDescription::create([
                 'form_no' => $formNo,
-                'equipment_type' => $device['device'] ?? 'Unknown',
                 'brand' => $device['brand'] ?? 'Unknown',
+                'device' => $device['device'] ?? 'Unknown',
                 'description' => $device['description'] ?? '',
+                'serial_no' => $device['serial_no'] ?? '',
                 'remarks' => $device['remarks'] ?? '',
             ]);
         }
@@ -118,16 +140,36 @@ class ServiceRequestController extends Controller
     
     public function checkServiceRequest($ticketId)
     {
-        $serviceRequest = ServiceRequest::where('ticket_id', $ticketId)->with('equipmentDescriptions')->first();
+        // Fetch the ticket details
+        $ticket = Ticket::find($ticketId);
 
-        if ($serviceRequest) {
+        if (!$ticket) {
+            return response()->json([
+                'exists' => false,
+                'message' => 'Ticket not found.',
+            ], 404);
+        }
+
+        // Fetch the service request with related equipment descriptions
+        $serviceRequest = ServiceRequest::where('ticket_id', $ticketId)
+            ->with('equipmentDescriptions')
+            ->first();
+
+        // Check if the service request exists and has a non-null services_type
+        if ($serviceRequest && !is_null($serviceRequest->service_type)) {
             return response()->json([
                 'exists' => true,
                 'formNo' => $serviceRequest->form_no ?? null,
+                'ticket' => $ticket, // Always return the ticket data
             ]);
         }
 
-        return response()->json(['exists' => false]);
+        // If the service request does not exist or services_type is null
+        return response()->json([
+            'exists' => false,
+            'ticket' => $ticket, // Always return the ticket data
+            'serviceRequest' => $serviceRequest, // Return the service request data if it exists
+        ]);
     }
 
     public function updateStatus(Request $request, $form_no)
@@ -184,9 +226,11 @@ class ServiceRequestController extends Controller
             // Equipment details
             'equipment_descriptions' => $serviceRequest->equipmentDescriptions->map(function ($equipment) {
                 return [
+                    'id' => $equipment->id ?? 'N/A',
                     'brand' => $equipment->brand ?? 'N/A',
                     'description' => $equipment->description ?? 'N/A',
-                    'equipment_type' => $equipment->equipment_type ?? 'Unknown',
+                    'device' => $equipment->device ?? 'Unknown',
+                    'serial_no' => $equipment->serial_no ?? 'Unknown',
                     'remarks' => $equipment->remarks ?? 'N/A',
                 ];
             }),
@@ -199,41 +243,71 @@ class ServiceRequestController extends Controller
         ]);
     }
     
-
     public function update(Request $request)
     {
+        \Log::info('Received equipment update request:', $request->all());
+    
         try {
+            // Validate the request
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'employee_id' => 'required|integer|min:1',
-                'department' => 'required|string|max:255',
-                'condition' => 'required|array|min:1',
-                'condition.*' => 'string',
-                'technical_support_id' => 'required|exists:users,employee_id',
-                'system_brand' => 'nullable|string|max:255',
-                'monitor_brand' => 'nullable|string|max:255',
-                'laptop_brand' => 'nullable|string|max:255',
-                'printer_brand' => 'nullable|string|max:255',
-                'ups_brand' => 'nullable|string|max:255',
-                'monitor_remarks' => 'nullable|string|max:255',
-                'laptop_remarks' => 'nullable|string|max:255',
-                'printer_remarks' => 'nullable|string|max:255',
-                'ups_remarks' => 'nullable|string|max:255',
+                'form_no' => 'required|string|exists:service_requests,form_no',
+                'equipment' => 'required|array|min:1',
+                'equipment.*.id' => 'required|exists:equipment_descriptions,id', // Use id for unique identification
+                'equipment.*.brand' => 'required|string|max:255', // Read-only, but still validated
+                'equipment.*.device' => 'required|string|max:255', // Editable
+                'equipment.*.description' => 'required|string|max:255', // Editable
+                'equipment.*.serial_no' => 'required|string|max:255', // Read-only, but still validated
+                'equipment.*.remarks' => 'nullable|string|max:255', // Editable
             ]);
-
-            $formNo = $request->input('form_no');
-            $serviceRequest = ServiceRequest::where('form_no', $formNo)->first();
-
+    
+            // Find the service request by form_no
+            $serviceRequest = ServiceRequest::where('form_no', $request->form_no)->first();
+    
             if ($serviceRequest) {
-                $serviceRequest->update($validated);
-                return response()->json(['message' => 'Service request updated successfully!']);
+                // Update each equipment description
+                foreach ($request->equipment as $equipment) {
+                    \Log::info('Updating equipment:', [
+                        'form_no' => $request->form_no,
+                        'id' => $equipment['id'], // Log the id for debugging
+                    ]);
+    
+                    // Find the equipment description by id
+                    $equipmentDescription = EquipmentDescription::find($equipment['id']);
+    
+                    if ($equipmentDescription) {
+                        // Update the equipment description
+                        $equipmentDescription->update([
+                            'brand' => $equipment['brand'],
+                            'device' => $equipment['device'],
+                            'description' => $equipment['description'],
+                            'serial_no' => $equipment['serial_no'],
+                            'remarks' => $equipment['remarks'],
+                        ]);
+    
+                        \Log::info('Equipment updated successfully:', [
+                            'form_no' => $request->form_no,
+                            'id' => $equipment['id'],
+                        ]);
+                    } else {
+                        \Log::error('Failed to find equipment:', [
+                            'form_no' => $request->form_no,
+                            'id' => $equipment['id'],
+                        ]);
+                    }
+                }
+    
+                \Log::info('Equipment descriptions updated:', ['form_no' => $request->form_no]);
+                return response()->json(['success' => true, 'message' => 'Equipment descriptions updated successfully!']);
             } else {
-                return response()->json(['error' => 'Service request not found.'], 404);
+                \Log::error('Service Request Not Found:', ['form_no' => $request->form_no]);
+                return response()->json(['success' => false, 'error' => 'Service request not found.'], 404);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            \Log::error('Validation Failed:', ['errors' => $e->errors()]);
+            return response()->json(['success' => false, 'error' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'An error occurred while updating the service request.'], 500);
+            \Log::error('Error Updating Equipment Descriptions:', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'error' => 'An error occurred while updating equipment descriptions.'], 500);
         }
     }
 }

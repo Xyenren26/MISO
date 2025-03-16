@@ -13,38 +13,45 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: #f9f9f9;
         }
 
         /* Header */
         .header {
             text-align: center;
             padding: 20px;
-            background-color: #f2f2f2;
-            border-bottom: 1px solid #ddd;
+            background-color: #003067; /* Theme color */
+            color: #fff;
+            border-bottom: 3px solid #ffa500; /* Accent color */
         }
 
         .header h1 {
             margin: 0;
-            font-size: 1.5em;
+            font-size: 1.8em;
+            font-weight: bold;
         }
 
         .header h2 {
             margin: 5px 0 0;
-            font-size: 1em;
-            color: #555;
+            font-size: 1.2em;
+            color: #ffa500; /* Accent color */
         }
-        .titleName h2{
+
+        .titleName h2 {
             text-align: center;
-            margin: 0;
-            font-size: 1.5em;
+            margin: 20px 0;
+            font-size: 1.8em;
+            color: #003067; /* Theme color */
+            font-weight: bold;
         }
 
         /* Form Info */
         .form-popup-form-info {
             text-align: center;
-            font-size: 1em;
-            color: #555;
+            font-size: 1.1em;
+            color: #003067; /* Theme color */
             margin: 15px 0;
+            font-weight: bold;
         }
 
         /* Form Section */
@@ -67,6 +74,7 @@
             font-weight: bold;
             display: block;
             margin-bottom: 5px;
+            color: #003067; /* Theme color */
         }
 
         .form-popup-input {
@@ -75,6 +83,8 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1em;
+            background-color: #f9f9f9;
+            color: #333;
         }
 
         /* Table Styling */
@@ -82,6 +92,8 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
         }
 
         th, td {
@@ -91,33 +103,48 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #003067; /* Theme color */
+            color: #fff;
             font-weight: bold;
         }
 
         td {
             font-size: 0.9em;
+            color: #333;
         }
 
-        td input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin: 0 auto;
+        /* Warning Message */
+        .warning-message {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 0.9em;
         }
 
         /* Footer */
         .footer {
             text-align: center;
             padding: 10px;
-            background-color: #f2f2f2;
-            border-top: 1px solid #ddd;
+            background-color: #003067; /* Theme color */
+            border-top: 3px solid #ffa500; /* Accent color */
             margin-top: auto;
+            color: #fff;
         }
 
         .footer p {
             margin: 0;
             font-size: 0.9em;
-            color: #555;
+        }
+
+        /* Accent Color for Headings */
+        h3 {
+            color: #003067; /* Theme color */
+            border-bottom: 2px solid #ffa500; /* Accent color */
+            padding-bottom: 5px;
+            font-size: 1.4em;
         }
     </style>
 </head>
@@ -160,7 +187,7 @@
 
         <div class="form-popup-input-group">
             <label class="form-popup-label">Condition:</label>
-            <input class="form-popup-input" value="{{ $condition }}" readonly>
+            <input class="form-popup-input" value="{{ ucfirst($condition) }}" readonly>
         </div>
     </section>
 
@@ -170,11 +197,9 @@
         <thead>
             <tr>
                 <th>Brand</th>
+                <th>Device</th>
                 <th>Description</th>
-                <th>Motherboard</th>
-                <th>RAM</th>
-                <th>HDD</th>
-                <th>Accessories</th>
+                <th>Serial Number</th>
                 <th>Remarks</th>
             </tr>
         </thead>
@@ -182,20 +207,20 @@
             @foreach ($equipment_descriptions as $equipment)
             <tr>
                 <td>{{ $equipment['brand'] }}</td>
-                <td>{{ $equipment['equipment_type'] }}</td>
-                
-                @foreach (['Motherboard', 'RAM', 'HDD', 'Accessories'] as $part)
-                    <td>
-                        @if (in_array($part, $equipment['equipment_parts']))
-                            [X] <!-- Checked checkbox -->
-                        @else
-                            [ ] <!-- Unchecked checkbox -->
-                        @endif
-                    </td>
-                @endforeach
-                
+                <td>{{ $equipment['device'] }}</td>
+                <td>{{ $equipment['description'] }}</td>
+                <td>{{ $equipment['serial_no'] }}</td>
                 <td>{{ $equipment['remarks'] }}</td>
             </tr>
+
+            <!-- Display warning message if serial_no appears more than 5 times -->
+            @if ($equipment['warning_message'])
+                <tr>
+                    <td colspan="5" class="warning-message">
+                        {{ $equipment['warning_message'] }}
+                    </td>
+                </tr>
+            @endif
             @endforeach
         </tbody>
     </table>

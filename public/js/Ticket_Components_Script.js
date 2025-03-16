@@ -291,16 +291,17 @@ function closeTechnicalReportModal() {
 }
 
 function checkAndOpenPopup(ticketId) {
-  fetch(`/check-service-request/${ticketId}`)
-      .then(response => response.json())
-      .then(data => {
-          if (data.exists) {
-              openViewModal(data.formNo);
-          } else {
-              openPopup(ticketId);
-          }
-      })
-      .catch(error => console.error('Error:', error));
+    fetch(`/check-service-request/${ticketId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.exists) {
+                openViewModal(data.formNo);
+            } else {
+                // Pass the ticketControlNo and ticket data to openPopup
+                openPopup(ticketId, data.ticket, data.serviceRequest);
+            }
+        })
+        .catch(error => console.error('Error:', error));
 }
 
 function openViewModal(formNo) {
@@ -359,33 +360,67 @@ function openViewModal(formNo) {
                 data.equipment_descriptions.forEach((equipment) => {
                     const row = document.createElement('tr');
 
-                    // Brand Column
+                    // Hidden ID Column
+                    const idCell = document.createElement('td');
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden'; // Hidden input for ID
+                    idInput.value = equipment.id || ''; // Include the ID
+                    idInput.setAttribute('data-field', 'id'); // Add data-field attribute
+                    idCell.appendChild(idInput);
+                    row.appendChild(idCell);
+
+                    // Brand Column (Read-only)
                     const brandCell = document.createElement('td');
                     const brandInput = document.createElement('input');
                     brandInput.classList.add('form-popup-input');
                     brandInput.type = 'text';
                     brandInput.value = equipment.brand || 'N/A';
-                    brandInput.readOnly = true;
+                    brandInput.readOnly = true; // Brand is read-only
+                    brandInput.setAttribute('data-field', 'brand'); // Add data-field attribute
                     brandCell.appendChild(brandInput);
                     row.appendChild(brandCell);
 
-                    // Device Column
-                    const typeCell = document.createElement('td');
-                    typeCell.textContent = equipment.equipment_type || 'Unknown';
-                    row.appendChild(typeCell);
+                    // Device Column (Editable)
+                    const deviceCell = document.createElement('td');
+                    const deviceInput = document.createElement('input');
+                    deviceInput.classList.add('form-popup-input');
+                    deviceInput.type = 'text';
+                    deviceInput.value = equipment.device || 'Unknown';
+                    deviceInput.readOnly = true; // Initially read-only
+                    deviceInput.setAttribute('data-field', 'device'); // Add data-field attribute
+                    deviceCell.appendChild(deviceInput);
+                    row.appendChild(deviceCell);
 
-                    // Description Column
+                    // Description Column (Editable)
                     const descCell = document.createElement('td');
-                    descCell.textContent = equipment.description || 'N/A';
+                    const descInput = document.createElement('input');
+                    descInput.classList.add('form-popup-input');
+                    descInput.type = 'text';
+                    descInput.value = equipment.description || 'N/A';
+                    descInput.readOnly = true; // Initially read-only
+                    descInput.setAttribute('data-field', 'description'); // Add data-field attribute
+                    descCell.appendChild(descInput);
                     row.appendChild(descCell);
 
-                    // Remarks Column
+                    // Serial Column (Read-only)
+                    const serialCell = document.createElement('td');
+                    const serialInput = document.createElement('input');
+                    serialInput.classList.add('form-popup-input');
+                    serialInput.type = 'text';
+                    serialInput.value = equipment.serial_no || 'N/A';
+                    serialInput.readOnly = true; // Serial is read-only
+                    serialInput.setAttribute('data-field', 'serial'); // Add data-field attribute
+                    serialCell.appendChild(serialInput);
+                    row.appendChild(serialCell);
+
+                    // Remarks Column (Editable)
                     const remarksCell = document.createElement('td');
                     const remarksInput = document.createElement('input');
                     remarksInput.classList.add('form-popup-input');
                     remarksInput.type = 'text';
                     remarksInput.value = equipment.remarks || 'N/A';
-                    remarksInput.readOnly = true;
+                    remarksInput.readOnly = true; // Initially read-only
+                    remarksInput.setAttribute('data-field', 'remarks'); // Add data-field attribute
                     remarksCell.appendChild(remarksInput);
                     row.appendChild(remarksCell);
 
@@ -418,27 +453,28 @@ function closePopup(id) {
   document.getElementById(id).style.display = 'none';
 }
 
-function openPopup(ticketControlNo = null) {
-  var modal = document.getElementById("formPopup");
+function openPopup(ticketControlNo, ticket, serviceRequest) {
+    var modal = document.getElementById("formPopup");
 
-  if (ticketControlNo) {
-      fetch(`/get-ticket-details/${ticketControlNo}`)
-          .then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  document.getElementById("ticket_id").value = ticketControlNo;
-                  document.getElementById("name").value = data.name;
-                  document.getElementById("employee_id").value = data.employee_id;
-                  document.getElementById("Pulloutdepartment").value = data.department;
-                  document.getElementById('pullOut').checked = true;
-              }
-          })
-          .catch(error => console.error("Error fetching ticket details:", error));
-  } else {
-      document.getElementById("ticket_id").value = "";
-  }
+    if (ticketControlNo && ticket) {
+        // Populate the form fields using the ticket data
+        document.getElementById("ticket_id").value = ticketControlNo;
+        document.getElementById("name").value = ticket.name;
+        document.getElementById("employee_id").value = ticket.employee_id;
+        document.getElementById("Pulloutdepartment").value = ticket.department;
+        // Set the pullOut checkbox based on ticket.is_pull_out
+        if (ticket.is_pull_out == 1) { // Check if is_pull_out is true (1)
+            document.getElementById('pullOut').checked = true;
+        } else {
+            document.getElementById('walkIn').checked = true; // Assuming you have a walkIn radio button or checkbox
+        }
+        document.getElementById('viewFormNoServiceService').value = serviceRequest.form_no;
+    } else {
+        // Clear the form fields if no ticketControlNo or ticket data is provided
+        document.getElementById("ticket_id").value = "";
+    }
 
-  modal.style.display = "block";
+    modal.style.display = "block";
 }
 
 function closePopup(popupId) {

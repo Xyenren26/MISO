@@ -25,6 +25,7 @@ return new class extends Migration
                 $table->text('remarks')->nullable();
                 $table->string('technical_support_name')->nullable(); // Name of technical support (just a string)
                 $table->enum('status', ['endorsed', 'completed', 'in-progress', 'technical-report', 'pull-out', 'deployment'])->default('in-progress');
+                $table->boolean('is_pull_out')->default(true);
                 $table->timestamp('time_in')->useCurrent(); // Default to current time
                 $table->timestamp('time_out')->nullable(); // Nullable field
                 $table->timestamps(); // Adds created_at and updated_at column

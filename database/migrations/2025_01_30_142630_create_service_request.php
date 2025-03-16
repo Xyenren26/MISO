@@ -18,12 +18,12 @@ return new class extends Migration
                 $table->foreign('ticket_id')->references('control_no')->on('tickets')->onDelete('cascade');
 
                 $table->string('form_no')->unique();
-                $table->enum('service_type', ['walk_in', 'pull_out']);
-                $table->string('name'); 
-                $table->unsignedBigInteger('employee_id'); // Make sure it matches User model
-                $table->string('department');
-                $table->enum('condition', ['working', 'not-working', 'needs-repair']);
-                $table->enum('status', ['in-repairs', 'repaired']);
+                $table->enum('service_type', ['walk_in', 'pull_out'])->nullable();
+                $table->string('name')->nullable();
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('department')->nullable();
+                $table->enum('condition', ['working', 'not-working', 'needs-repair'])->nullable();
+                $table->enum('status', ['in-repairs', 'repaired'])->nullable();
 
                 $table->integer('technical_support_id')->nullable();
                 $table->foreign('technical_support_id')

@@ -175,6 +175,72 @@ body {
     }
 }
 
+/* Mobile Responsive Design for screens up to 480px */
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 10px; /* Reduce padding for smaller screens */
+    }
+
+    .image-container {
+        height: 200px; /* Adjust height for smaller screens */
+    }
+
+    .side-by-side-container {
+        gap: 10px; /* Reduce gap between sections */
+    }
+
+    .miso-qa-container, .text-slideshow-container {
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
+
+    .miso-question p {
+        font-size: 20px; /* Smaller font size for questions */
+    }
+
+    .miso-answer p {
+        font-size: 16px; /* Smaller font size for answers */
+    }
+
+    .text-slideshow-container h2 {
+        font-size: 20px; /* Smaller font size for slideshow heading */
+    }
+
+    .text-slideshow {
+        font-size: 16px; /* Smaller font size for slideshow text */
+        padding: 8px 15px; /* Adjust padding for smaller screens */
+    }
+
+    .containerCards {
+        flex-direction: column; /* Stack cards vertically on smaller screens */
+        gap: 15px; /* Adjust gap between cards */
+        padding: 10px; /* Reduce padding for smaller screens */
+    }
+
+    .card {
+        width: 100%; /* Full width for cards on smaller screens */
+    }
+
+    .card-icon {
+        font-size: 30px; /* Smaller icon size for cards */
+    }
+
+    .card h3 {
+        font-size: 20px; /* Smaller font size for card headings */
+    }
+
+    .card p {
+        font-size: 14px; /* Smaller font size for card text */
+    }
+
+    .activity-panel {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    .activity-panel h2 {
+        font-size: 1.2rem; /* Smaller font size for activity panel heading */
+    }
+}
+
 /* Cards */
 .containerCards {
     display: flex;
@@ -641,24 +707,3 @@ body {
     color: #e0e0e0;
     margin: 0;
 } 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .slides img {
-        border-radius: 10px 10px 0 0;
-    }
-
-    .right-section {
-        border-radius: 0 0 10px 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .toggle-btn {
-        width: 10%;
-        min-width: 80px;
-    }
-}

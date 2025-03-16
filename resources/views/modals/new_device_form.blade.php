@@ -55,6 +55,25 @@
     color: #555;
 }
 
+.form-popup-form-info_no {
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    gap: 8px; /* Adds space between label and input */
+}
+
+.form-label-no {
+    font-weight: 600; /* Makes label bold */
+}
+
+.form-input-no {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: #333; /* Dark gray for visibility */
+    width: auto;
+}
+
 /* Form Section */
 .form-popup-section {
     margin-bottom: 20px;
@@ -148,8 +167,9 @@
                     <img src="images/SystemLogo.png" alt="Logo">
                 </div>
                 <h1>ICT Equipment Service Request Form</h1>
-                <div class="form-popup-form-info">
-                    <span>Form No.: {{ $nextFormNo }}</span>
+                <div class="form-popup-form-info_no">
+                    <label for="viewFormNoService" class="form-label-no">Form No.:</label>
+                    <input type="text" id="viewFormNoServiceService" class="form-input-no" readonly>
                 </div>
 
             </header>
@@ -157,7 +177,7 @@
                 @csrf
                 <input type="hidden" id="ticket_id" name="ticket_id">
                 <section class="form-popup-section-radio">
-                    <label><input type="radio" name="service_type" value="walk_in" required> Walk-In</label>
+                    <label><input type="radio" name="service_type" value="walk_in" required id="walkIn"> Walk-In</label>
                     <label><input type="radio" name="service_type" value="pull_out" required id="pullOut"> Pull-Out</label>
                 </section>
 
@@ -196,15 +216,17 @@
                                 <th>Brand</th>
                                 <th>Device</th>
                                 <th>Description</th>
+                                <th>Serial Number</th>
                                 <th>Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input class="form-popup-input" type="text" name="equipment[0][brand]" placeholder="Brand"></td>
-                                <td><input class="form-popup-input" type="text" name="equipment[0][device]" placeholder="Device"></td>
-                                <td><input class="form-popup-input" type="text" name="equipment[0][description]" placeholder="Description"></td>
-                                <td><input class="form-popup-input" type="text" name="equipment[0][remarks]" placeholder="Remarks"></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][brand]" placeholder="Brand" required></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][device]" placeholder="Device" required></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][description]" placeholder="Description" required></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][serial_no]" placeholder="Serial Number" required></td>
+                                <td><input class="form-popup-input" type="text" name="equipment[0][remarks]" placeholder="Remarks" required></td>
                             </tr>
                         </tbody>
                     </table>
@@ -214,9 +236,13 @@
                 <section class="form-popup-section">
                     <h3 class="form-popup-title">Assign Technical Support</h3>
                     <select class="form-popup-input" name="technical_support_id">
-                        <option value="">Select Technical Support</option>
+                        <option value="{{ auth()->user()->employee_id }}" selected>
+                            {{ auth()->user()->first_name }} {{ auth()->user()->last_name }} (You)
+                        </option>
                         @foreach ($technicalSupports as $support)
-                            <option value="{{ $support->employee_id }}">{{ $support->first_name }} {{ $support->last_name }}</option>
+                            <option value="{{ $support->employee_id }}">
+                                {{ $support->first_name }} {{ $support->last_name }}
+                            </option>
                         @endforeach
                     </select>
                 </section>
@@ -238,6 +264,7 @@
             <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][brand]" placeholder="Brand"></td>
             <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][device]" placeholder="Device"></td>
             <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][description]" placeholder="Description"></td>
+            <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][serial_no]" placeholder="Serial Number"></td>
             <td><input class="form-popup-input" type="text" name="equipment[${rowCount}][remarks]" placeholder="Remarks"></td>
         `;
     }
