@@ -71,8 +71,19 @@ body {
 .sidebar .sidebar-logo {
     width: 200px;
     height: auto;
-    transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
+
+/* Animation when hovered */
+.sidebar .sidebar-logo:hover {
+    transform: scale(1.1); /* Slight zoom effect */
+}
+
+/* Animation when sidebar expands */
+.sidebar.expanded .sidebar-logo {
+    width: 220px;
+}
+
 
 /* Sidebar Toggle Button (Circle Button) */
 .sidebar .sidebar-toggle-btn {
@@ -297,17 +308,33 @@ body {
     text-align: center;
 }
 
-/* Active menu item styling */
+/* Active menu item styling with shimmer effect */
 .sidebar .menu li.active {
     background-color: #003067;
     opacity: 0.8;
     color: white;
     border-radius: 25px;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Active menu item link and icon styling */
 .sidebar .menu li.active a,
 .sidebar .menu li.active i {
     color: white;
+}
+
+/* Shimmering light effect */
+.sidebar .menu li.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-25deg);
+    animation: shimmer 1.5s infinite linear;
 }
 
 /* Modify the hover effect so the active state doesn't interfere */
@@ -315,6 +342,17 @@ body {
     background-color: #003067;
     color: white;
 }
+
+/* Shimmer animation */
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
 
 /* Hide text when sidebar is minimized */
 .sidebar.minimized .employeeticketstext {

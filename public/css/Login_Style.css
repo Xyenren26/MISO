@@ -458,7 +458,7 @@ h2 {
   
     .left-screen {
       background-size: contain; /* Ensures the image covers the entire container */
-      background: url('images/mobilebackground2.png') no-repeat center center;
+      background: url('/images/mobilebackground2.png') no-repeat center center;
       height:100vh; /* Set the left screen to fill the viewport height */
       width: 100%; /* Ensure it fills the container width */
       padding:0;
