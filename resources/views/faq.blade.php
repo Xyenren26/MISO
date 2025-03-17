@@ -38,8 +38,8 @@
 and Management System for MISO Technical Division developed for Pasig City Hall's Management Information Systems Office (MISO). It is designed to track and manage IT assets, technical support requests, and resource deployment in a more efficient and responsive manner.</p>
         </div>
         <div class="faq-item">
-            <h3 class="faq-question">How does TechTrack improve inventory management?</h3>
-            <p class="faq-answer">TechTrack automates the tracking and management of devices such as computers, printers, and network equipment. With real-time asset tracking, automated reports, and integrated service request management, it minimizes manual errors and optimizes the use of resources.</p>
+            <h3 class="faq-question">How does TechTrack improve operation?</h3>
+            <p class="faq-answer">TechTrack automates the tracking and management of ticket request for technical issue related to computers, printers, and employee equipment. With real-time asset tracking, automated reports, and integrated service request management, it minimizes manual errors and optimizes the use of resources.</p>
         </div>
         <div class="faq-item">
             <h3 class="faq-question">How can I submit a service request using TechTrack?</h3>
@@ -51,15 +51,11 @@ and Management System for MISO Technical Division developed for Pasig City Hall'
         </div>
         <div class="faq-item">
             <h3 class="faq-question">What features does TechTrack offer?</h3>
-            <p class="faq-answer">TechTrack includes features such as real-time inventory tracking, automated maintenance schedules, resource deployment management, and an integrated ticketing system for managing internal technical support requests. These features improve operational efficiency and accountability across Pasig City Hall.</p>
+            <p class="faq-answer">TechTrack includes features such as real-time ticket tracking, automated technical performance, and an integrated ticketing system for managing internal technical support requests. These features improve operational efficiency and accountability across Pasig City Hall.</p>
         </div>
         <div class="faq-item">
             <h3 class="faq-question">How do I access my account in TechTrack?</h3>
             <p class="faq-answer">To access your TechTrack account, visit the login page and enter your credentials. If you don’t have an account, you can request access from your department's MISO coordinator.</p>
-        </div>
-        <div class="faq-item">
-            <h3 class="faq-question">Can TechTrack help me manage device maintenance?</h3>
-            <p class="faq-answer">Yes, TechTrack automatically schedules and tracks maintenance activities for devices, ensuring that resources are efficiently utilized and technical issues are addressed promptly to minimize downtime.</p>
         </div>
         <div class="faq-item">
             <h3 class="faq-question">How can I update my TechTrack account information?</h3>
