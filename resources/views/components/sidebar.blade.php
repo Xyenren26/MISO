@@ -49,10 +49,10 @@
                 <li class="{{ Request::is('ticket') ? 'active' : '' }}">
                     <a href="{{ route('ticket') }}"><i class="fas fa-ticket-alt"></i><span class="menu-label">Ticket Management</span></a>
                 </li>
+                <li class="{{ Request::is('audit_logs') ? 'active' : '' }}">
+                    <a href="{{ route('audit_logs') }}"><i class="fas fa-file-alt"></i><span class="menu-label"> Audit Logs</span></a>
+                </li>
             @endif
-            <li class="{{ Request::is('audit_logs') ? 'active' : '' }}">
-                <a href="{{ route('audit_logs') }}"><i class="fas fa-file-alt"></i><span class="menu-label"> Audit Logs</span></a>
-            </li>
         </ul>
 
         @if(in_array(auth()->user()->account_type, ['administrator', 'technical_support', 'technical_support_head']))

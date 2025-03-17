@@ -27,7 +27,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\OtherMessagesController;
-
+use App\Http\Controllers\DialogflowController;
 
 
 use App\Http\Controllers\PDFController;
@@ -36,8 +36,10 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::routes();
 
+
+Broadcast::routes();
+Route::post('/webhook', [DialogflowController::class, 'handleWebhook']);
 Route::get('/generate-qr/{form_no}', function ($form_no) {
     return response(QrCode::size(200)->generate(route('generate.pdf', $form_no)))
         ->header('Content-Type', 'image/svg+xml');
