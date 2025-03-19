@@ -49,8 +49,8 @@ class ServiceRequest extends Model
                 'date_time' => now(),
                 'action_type' => 'created',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->ticket_id,
-                'remarks' => 'Service request created'
+                'ticket_or_device_id' => $request->form_no,
+                'remarks' => 'Turn Over request created'
             ]);
         });
 
@@ -60,7 +60,7 @@ class ServiceRequest extends Model
                 'action_type' => 'updated',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
                 'ticket_or_device_id' => $request->form_no,
-                'remarks' => 'Service request updated'
+                'remarks' => 'Turn Over request updated'
             ]);
         });
 
@@ -70,7 +70,7 @@ class ServiceRequest extends Model
                 'action_type' => 'deleted',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
                 'ticket_or_device_id' => $request->form_no,
-                'remarks' => 'Service request deleted'
+                'remarks' => 'Turn Over request deleted'
             ]);
         });
     }

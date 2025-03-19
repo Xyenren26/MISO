@@ -42,4 +42,40 @@ class TechnicalReport extends Model
     {
         return $this->belongsTo(Ticket::class, 'control_no', 'control_no');
     }
+
+    // 🔹 Model Events for Audit Logging
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($request) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'created',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $request->TR_id,
+                'remarks' => 'Technical Report request created'
+            ]);
+        });
+
+        static::updated(function ($request) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'updated',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $request->TR_id,
+                'remarks' => 'Technical Report request updated'
+            ]);
+        });
+
+        static::deleted(function ($request) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'deleted',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $request->TR_id,
+                'remarks' => 'Technical Report request deleted'
+            ]);
+        });
+    }
 }

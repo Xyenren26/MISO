@@ -45,4 +45,40 @@ class Endorsement extends Model
     {
         return $this->hasOne(Endorsement::class, 'ticket_id', 'control_no');
     }
+
+    // 🔹 Model Events for Audit Logging
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($request) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'created',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $request->control_no,
+                'remarks' => 'Endorsement request created'
+            ]);
+        });
+
+        static::updated(function ($request) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'updated',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $request->control_no,
+                'remarks' => 'Endorsement request updated'
+            ]);
+        });
+
+        static::deleted(function ($request) {
+            Audit_logs::create([
+                'date_time' => now(),
+                'action_type' => 'deleted',
+                'performed_by' => Auth::user()->employee_id ?? 'System',
+                'ticket_or_device_id' => $request->control_no,
+                'remarks' => 'Endorsement request deleted'
+            ]);
+        });
+    }
 }
