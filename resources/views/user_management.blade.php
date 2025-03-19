@@ -55,9 +55,9 @@
 
         
 
-        <!-- Table -->
+       <!-- Table -->
         <div class="table-container">
-        <p class="results-info">Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} results</p>
+            <p class="results-info">Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} results</p>
             <table class="user-table">
                 <thead>
                     <tr>
@@ -107,18 +107,19 @@
                                     </button>
 
                                     <!-- Disable/Enable Button -->
-                                    <form id="disableForm{{ $user->employee_id }}" action="{{ route('user.toggleStatus', ['employee_id' => $user->employee_id]) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="button" class="action-button disable" 
-                                                title="{{ $user->status === 'active' ? 'Disable User' : 'Enable User' }}" 
-                                                onclick="toggleStatus(event, '{{ $user->employee_id }}', '{{ $user->status }}')">
-                                            <span class="material-icons">{{ $user->status === 'active' ? 'do_not_disturb_alt' : 'check_circle' }}</span>
-                                            {{ $user->status === 'active' ? '' : '' }}
-                                        </button>
-                                    </form>
+                                    @if ($user->first_name !== 'TechTrack' || $user->last_name !== 'Admin')
+                                        <form id="disableForm{{ $user->employee_id }}" action="{{ route('user.toggleStatus', ['employee_id' => $user->employee_id]) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="button" class="action-button disable" 
+                                                    title="{{ $user->status === 'active' ? 'Disable User' : 'Enable User' }}" 
+                                                    onclick="toggleStatus(event, '{{ $user->employee_id }}', '{{ $user->status }}')">
+                                                <span class="material-icons">{{ $user->status === 'active' ? 'do_not_disturb_alt' : 'check_circle' }}</span>
+                                                {{ $user->status === 'active' ? '' : '' }}
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
-
                             </td>
                         </tr>
                     @empty

@@ -26,16 +26,22 @@
                         <div class="personal-info-field">
                             <label for="first-name">First Name:</label>
                             <input type="text" id="first-name" name="first-name" placeholder="First Name" required
-                            value="{{ Auth::user()->account_type === 'end_user' ? Auth::user()->first_name : '' }}">
+                                   value="{{ Auth::user()->first_name }}" {{ Auth::user()->account_type === 'end_user' ? 'readonly' : '' }}>
                         </div>
                         <div class="personal-info-field">
                             <label for="last-name">Last Name:</label>
                             <input type="text" id="last-name" name="last-name" placeholder="Last Name" required
-                            value="{{ Auth::user()->account_type === 'end_user' ? Auth::user()->last_name : '' }}">
+                                   value="{{ Auth::user()->last_name }}" {{ Auth::user()->account_type === 'end_user' ? 'readonly' : '' }}>
                         </div>
                         <div class="personal-info-field">
                             <label for="department">Department</label>
-                            <select id="department" name="department" class="department-select" required></select>
+                            <select id="department" name="department" class="department-select" required {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
+                                @if (Auth::user()->account_type === 'end_user')
+                                    <option value="{{ Auth::user()->department }}" selected>{{ Auth::user()->department }}</option>
+                                @endif
+                            </select>
+                            <!-- Hidden input for department -->
+                            <input type="hidden" name="department" value="{{ Auth::user()->department }}">
                         </div>
                     </div>
                 </fieldset>
@@ -111,36 +117,40 @@
                         </div>
 
                         <label for="category">Priority:</label>
-                        <select id="category" name="category" required onchange="setPriority(this.value)">
+                        <select id="category" name="category" required onchange="setPriority(this.value)" {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
                             <option value="" disabled selected>Select Priority</option>
                             <option value="urgent">Urgent (1-3 days)</option>
                             <option value="high">High (4-12 hours)</option>
                             <option value="medium">Medium (30 min - 4 hours)</option>
                             <option value="low">Low (10-30 min)</option>
                         </select>
+                        <!-- Hidden input for priority -->
+                        <input type="hidden" name="category" value="medium"> <!-- Set a default value or dynamically update it -->
 
                         <!-- Priority Description -->
                         <div id="priorityDescription" style="margin-top: 10px; font-style: italic; color: #555;"></div>
 
                         <label for="employeeId">Employee ID:</label>
                         <input type="text" id="employeeId" name="employeeId" required
-                        value="{{ Auth::user()->account_type === 'end_user' ? Auth::user()->employee_id : '' }}">
+                            value="{{ str_pad(Auth::user()->employee_id, 7, '0', STR_PAD_LEFT) }}" {{ Auth::user()->account_type === 'end_user' ? 'readonly' : '' }}>
                         <span id="error-message" style="color: red; display: none;">Employee ID must be a 7-digit whole number.</span>
                     </div>
                 </fieldset>
 
-                <!-- Row 3: Support Details -->
+               <!-- Row 3: Support Details -->
                 <fieldset>
                     <legend>Support Details</legend>
                     <div class="support-details-container">
                         <div class="support-details-field">
                             <label for="technicalSupport">Technical Support By:</label>
-                            <select id="technicalSupport" name="technicalSupport" required>
+                            <select id="technicalSupport" name="technicalSupport" required {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
                                 <option value="" disabled selected>Select Technical Support</option>
                                 @foreach($technicalSupports as $tech)
                                     <option value="{{ $tech->employee_id }}">{{ $tech->first_name }} {{ $tech->last_name }}</option>
                                 @endforeach
                             </select>
+                            <!-- Hidden input for technicalSupport -->
+                            <input type="hidden" name="technicalSupport" value="{{ $technicalSupports->isNotEmpty() ? $technicalSupports[0]->employee_id : '' }}">
                         </div>
                     </div>
                 </fieldset>
@@ -157,7 +167,6 @@
             </form>
         </div>
     </div>
-
 <script>
     document.addEventListener('scroll', function() {
         const formContainer = document.querySelector('.ticket-form-container');

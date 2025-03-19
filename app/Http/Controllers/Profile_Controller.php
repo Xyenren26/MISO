@@ -62,25 +62,39 @@ class Profile_Controller extends Controller
             'account_type' => $accountType,
             'is_first_login' => false, // Mark profile as complete
         ]);
-        
-        return $this->redirectUser($user);
-         // Logout the user and redirect to login
-         Auth::logout();
 
-        return redirect()->route('login')->with('success', 'Successful Finish profile, please log in again.');
+        // If the account type is technical_support, set status to inactive
+        if ($accountType === 'technical_support') {
+            $user->update([
+                'status' => 'inactive', // Set status to inactive
+            ]);
+        }
+        return $this->redirectUser($user);
     }
 
      // 🔹 Helper function to redirect users based on account type
      private function redirectUser($user)
      {
          if ($user->account_type === 'end_user') {
+            $currentSessionId = session()->getId();
+
+            // Generate & save new session_id and remember_token
+            $user->remember_token = Str::random(60);
+            $user->session_id = $currentSessionId; // Store the new session ID
+            $user->last_activity = now();
+            $user->active_status = true;
+            $user->save();
+
+            session(['user_id' => $user->id, 'last_activity' => now()]);
              return redirect('/employee/home'); // Redirect to employee's home page
          } elseif ($user->account_type === 'technical_support_head') {
              return redirect()->route('ticket'); // Redirect technical_support_head to Ticket Management
          } elseif ($user->account_type === 'administrator') {
              return redirect()->route('report'); // Redirect administrator to Reports and Analytics
          } elseif ($user->account_type === 'technical_support') {
-             return redirect()->route('home'); // Redirect technical support to home
+            // Logout the user and redirect to login
+            Auth::logout();
+             return redirect()->route('login')->with('success', 'Successful Finish profile, your account is temporary inactive please contact the administrator');
          }
      }
 
