@@ -90,7 +90,6 @@
                     <ul>
                         <li><strong>Hardware Support:</strong> Troubleshooting and maintenance of computers, printers, and other devices.</li>
                         <li><strong>Software Support:</strong> Installation, configuration, and troubleshooting of software applications.</li>
-                        <li><strong>Network Support:</strong> Ensuring stable and secure network connectivity across all departments.</li>
                         <li><strong>System Maintenance:</strong> Regular updates and maintenance of IT systems to ensure optimal performance.</li>
                         <li><strong>User Training:</strong> Providing training sessions to enhance employees' IT skills and knowledge.</li>
                     </ul>
@@ -101,10 +100,9 @@
                     <span class="close" onclick="closeModal('contactModal')">&times;</span>
                     <h2>Contact Information</h2>
                     <p><strong>Technical Support Head:</strong> Cecilio V. Demano</p>
-                    <p><strong>Office Address:</strong> [Insert office address here]</p>
-                    <p><strong>Email:</strong> [Insert email here]</p>
-                    <p><strong>Phone Number:</strong> [Insert phone number here]</p>
-                    <p><strong>Help Desk / Support System:</strong> [Insert details about the help desk or support system]</p>
+                    <p><strong>Office Address:</strong> H35J+RFW, Caruncho Ave, Barangay San Nicolas, Pasig, 1600 Metro Manila</p>
+                    <p><strong>Email:</strong> techtrackesmms@gmail.com</p>
+                    <p><strong>Developers Email:</strong> techtrackesmms@pasigmisotechtrack.com</p>
                 </div>
             </div>
             <div class="containerannouncement">

@@ -169,12 +169,16 @@
         
         <div class="form-group">
             <label for="first-name">First Name</label>
-            <input type="text" id="first-name" name="first-name" placeholder="First Name" value="{{ old('first-name') }}" required oninput="this.value = this.value.replace(/\b\w/g, function(char) { return char.toUpperCase(); });">
+            <input type="text" id="first-name" name="first-name" placeholder="First Name" 
+                value="{{ old('first-name') }}" required 
+                oninput="capitalizeFirstLetter(this)">
         </div>
 
         <div class="form-group">
             <label for="last-name">Last Name</label>
-            <input type="text" id="last-name" name="last-name" placeholder="Last Name" value="{{ old('last-name') }}" required oninput="this.value = this.value.replace(/\b\w/g, function(char) { return char.toUpperCase(); });">
+            <input type="text" id="last-name" name="last-name" placeholder="Last Name" 
+                value="{{ old('last-name') }}" required 
+                oninput="capitalizeFirstLetter(this)">
         </div>
 
         <div class="form-group">
@@ -184,9 +188,9 @@
 
         <div class="form-group">
             <label for="phone-number">Phone Number</label>
-            <input type="text" id="phone-number" name="phone-number" placeholder="Enter phone number" 
-                value="{{ old('phone-number') }}" required oninput="validatePhoneNumber(this)">
-            <small id="phone-error" style="color: red; display: none;">Invalid phone number</small>
+            <input type="text" id="phone-number" name="phone-number" placeholder="Enter 11-digit phone number" 
+                maxlength="11" oninput="validatePhoneNumber(this)">
+            <span id="phone-error" style="color: red; display: none;">Please enter exactly 11 digits (numbers only).</span>
         </div>
         
 
@@ -195,77 +199,100 @@
 </div>
 
 <script>
-// Function to fetch departments and populate the dropdown
-async function populateDepartments() {
-    try {
-        // Fetch departments from the API
-        const response = await fetch('/departments');
-        if (!response.ok) throw new Error('Failed to fetch departments');
-        const departments = await response.json();
+    // Function to fetch departments and populate the dropdown
+    async function populateDepartments() {
+        try {
+            // Fetch departments from the API
+            const response = await fetch('/departments');
+            if (!response.ok) throw new Error('Failed to fetch departments');
+            const departments = await response.json();
 
-        // Get all select elements with the class 'department-select'
-        const selectElements = document.querySelectorAll('.department-select');
+            // Get all select elements with the class 'department-select'
+            const selectElements = document.querySelectorAll('.department-select');
 
-        // Loop through each select element
-        selectElements.forEach(select => {
-            // Clear any existing options
-            select.innerHTML = '';
+            // Loop through each select element
+            selectElements.forEach(select => {
+                // Clear any existing options
+                select.innerHTML = '';
 
-            // Add the default option
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.text = 'Select Department';
-            select.appendChild(defaultOption);
+                // Add the default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = 'Select Department';
+                select.appendChild(defaultOption);
 
-            // Loop through the grouped departments
-            for (const [groupName, groupDepartments] of Object.entries(departments)) {
-                // Create an optgroup element
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = groupName;
+                // Loop through the grouped departments
+                for (const [groupName, groupDepartments] of Object.entries(departments)) {
+                    // Create an optgroup element
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = groupName;
 
-                // Loop through the departments in the group
-                groupDepartments.forEach(department => {
-                    // Create an option element
-                    const option = document.createElement('option');
-                    option.value = department.name;
-                    option.text = department.name;
+                    // Loop through the departments in the group
+                    groupDepartments.forEach(department => {
+                        // Create an option element
+                        const option = document.createElement('option');
+                        option.value = department.name;
+                        option.text = department.name;
 
-                    // Preselect the user's department (if applicable)
-                    if (department.name === "{{ Auth::user()->department }}") {
-                        option.selected = true;
-                    }
+                        // Preselect the user's department (if applicable)
+                        if (department.name === "{{ Auth::user()->department }}") {
+                            option.selected = true;
+                        }
 
-                    // Append the option to the optgroup
-                    optgroup.appendChild(option);
-                });
+                        // Append the option to the optgroup
+                        optgroup.appendChild(option);
+                    });
 
-                // Append the optgroup to the select element
-                select.appendChild(optgroup);
+                    // Append the optgroup to the select element
+                    select.appendChild(optgroup);
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching departments:', error);
+            // Display a user-friendly error message in all select elements
+            document.querySelectorAll('.department-select').forEach(select => {
+                select.innerHTML = '<option value="">Failed to load departments. Please try again later.</option>';
+            });
+        }
+    }
+
+    function capitalizeFirstLetter(input) {
+        // Remove any numbers from the input value
+        input.value = input.value.replace(/[0-9]/g, '');
+
+        // Split the input value into words
+        let words = input.value.split(' ');
+
+        // Process each word
+        words = words.map(word => {
+            if (word.length > 0) {
+                // Capitalize the first letter and make the rest lowercase
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
             }
+            return word; // Handle empty strings (e.g., multiple spaces)
         });
-    } catch (error) {
-        console.error('Error fetching departments:', error);
-        // Display a user-friendly error message in all select elements
-        document.querySelectorAll('.department-select').forEach(select => {
-            select.innerHTML = '<option value="">Failed to load departments. Please try again later.</option>';
-        });
-    }
-}
 
-// Call the function to populate the dropdown when the page loads
-document.addEventListener('DOMContentLoaded', populateDepartments);
-function validatePhoneNumber(input) {
-    let phoneError = document.getElementById('phone-error');
-    let phoneRegex = /^[0-9\s\-()]{10,15}$/; // Allows digits, spaces, dashes, and parentheses
-
-    if (phoneRegex.test(input.value)) {
-        phoneError.style.display = 'none';
-        input.setCustomValidity('');
-    } else {
-        phoneError.style.display = 'block';
-        input.setCustomValidity('Invalid phone number');
+        // Join the words back into a single string
+        input.value = words.join(' ');
     }
-}
+    
+    // Call the function to populate the dropdown when the page loads
+    document.addEventListener('DOMContentLoaded', populateDepartments);
+    function validatePhoneNumber(input) {
+        let phoneError = document.getElementById('phone-error');
+        let phoneRegex = /^\d{11}$/; // Allows exactly 11 digits
+
+        // Remove any non-digit characters from the input
+        input.value = input.value.replace(/\D/g, '');
+
+        if (phoneRegex.test(input.value)) {
+            phoneError.style.display = 'none';
+            input.setCustomValidity('');
+        } else {
+            phoneError.style.display = 'block';
+            input.setCustomValidity('Please enter exactly 11 digits (numbers only).');
+        }
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         // Show Laravel validation errors

@@ -190,9 +190,7 @@
 
                             @if (
                                 $ticket->isRemarksDone &&
-                                $ticket->isApproved &&
                                 Auth::user()->account_type === 'administrator' &&
-                                $ticket->existsInModels &&
                                 $ticket->isRated 
                             )
                             <button class="action-button archive-btn" onclick="archiveTicket('{{ $ticket->control_no }}')">

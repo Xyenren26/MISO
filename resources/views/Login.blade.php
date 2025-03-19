@@ -4,8 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>TechTrack</title>
-    <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
+  <title>TechTrack - Electronic Service Monitoring and Management System</title>
+  <meta name="description" content="TechTrack is an Electronic Service Monitoring and Management System designed to streamline service operations and enhance efficiency. Login to access your account.">
+  <meta name="author" content="TechTrack ESM">
+  <meta name="keywords" content="TechTrack, ESM, Electronic Service Monitoring, Management System, Pasig, Login">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="TechTrack - Electronic Service Monitoring and Management System">
+  <meta property="og:description" content="TechTrack is an Electronic Service Monitoring and Management System designed to streamline service operations and enhance efficiency. Login to access your account.">
+  <meta property="og:image" content="{{ asset('images/SystemLogo.png') }}">
+  <meta property="og:url" content="http://pasigmisotechtrack.com">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TechTrack - Electronic Service Monitoring and Management System">
+  <meta name="twitter:description" content="TechTrack is an Electronic Service Monitoring and Management System designed to streamline service operations and enhance efficiency. Login to access your account.">
+  <meta name="twitter:image" content="{{ asset('images/SystemLogo.png') }}">
+  <link rel="icon" href="{{ asset('images/Systembrowserlogo.png') }}" type="image/png">
   <link rel="stylesheet" href="{{ asset('css/Login_Style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">

@@ -62,12 +62,27 @@ class Profile_Controller extends Controller
             'account_type' => $accountType,
             'is_first_login' => false, // Mark profile as complete
         ]);
-
-        // Logout the user and redirect to login
-        Auth::logout();
+        
+        return $this->redirectUser($user);
+         // Logout the user and redirect to login
+         Auth::logout();
 
         return redirect()->route('login')->with('success', 'Successful Finish profile, please log in again.');
     }
+
+     // 🔹 Helper function to redirect users based on account type
+     private function redirectUser($user)
+     {
+         if ($user->account_type === 'end_user') {
+             return redirect('/employee/home'); // Redirect to employee's home page
+         } elseif ($user->account_type === 'technical_support_head') {
+             return redirect()->route('ticket'); // Redirect technical_support_head to Ticket Management
+         } elseif ($user->account_type === 'administrator') {
+             return redirect()->route('report'); // Redirect administrator to Reports and Analytics
+         } elseif ($user->account_type === 'technical_support') {
+             return redirect()->route('home'); // Redirect technical support to home
+         }
+     }
 
 
     public function index()

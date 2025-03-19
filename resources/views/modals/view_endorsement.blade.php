@@ -1,7 +1,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
-<link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/ticket_components_style.css') }}">
 <style>
       #endorsementViewModal{
         position: fixed;
@@ -194,7 +194,7 @@
                 </div>
             </div>
             <div class="modal-form-section">
-                <label for="endorsed_by_remarks">Remarks:</label>
+                <label for="endorsed_by_remarks">Work Done:</label>
                 <input type="text" id="endorsed_by_remarks" name="endorsed_by_remarks" class="modal-input-box" readonly disabled>
             </div>
         </div>

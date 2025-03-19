@@ -286,7 +286,7 @@ body {
   border-radius: 100%;
   border: 1px solid;
   overflow: hidden;
-  background-image: url("/images/systemLogo.png");
+  background-image: url('https://pasigmisotechtrack.com/public/Images/SystemLogo.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;

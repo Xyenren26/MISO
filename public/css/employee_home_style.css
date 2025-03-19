@@ -209,35 +209,17 @@ body {
         font-size: 16px; /* Smaller font size for slideshow text */
         padding: 8px 15px; /* Adjust padding for smaller screens */
     }
-
-    .containerCards {
-        flex-direction: column; /* Stack cards vertically on smaller screens */
-        gap: 15px; /* Adjust gap between cards */
-        padding: 10px; /* Reduce padding for smaller screens */
-    }
-
+    
     .card {
-        width: 100%; /* Full width for cards on smaller screens */
+       display: none;
     }
 
-    .card-icon {
-        font-size: 30px; /* Smaller icon size for cards */
+    .containerannouncement {
+        display: none;
     }
 
-    .card h3 {
-        font-size: 20px; /* Smaller font size for card headings */
-    }
-
-    .card p {
-        font-size: 14px; /* Smaller font size for card text */
-    }
-
-    .activity-panel {
-        padding: 10px; /* Adjust padding for smaller screens */
-    }
-
-    .activity-panel h2 {
-        font-size: 1.2rem; /* Smaller font size for activity panel heading */
+    .toggle-btn {
+        display: none;
     }
 }
 

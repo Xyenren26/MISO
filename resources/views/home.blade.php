@@ -136,7 +136,7 @@
                                     <th>Concern</th>
                                     <th>Priority</th>
                                     <th>Status</th>
-                                    <th>Remarks</th>
+                                    <th>Work Done</th>
                                     <th>Rating</th>
                                     <th>Rating Remark</th>
                                     <th>Duration</th> <!-- New Column -->
