@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class TechnicalReport extends Model
 {
@@ -31,10 +32,12 @@ class TechnicalReport extends Model
         'inspected_by',
         'inspected_date',
     ];
+
     protected $casts = [
         'date_time' => 'datetime',
         'inspected_date' => 'datetime',
     ];
+
     /**
      * Relationship to the Ticket model
      */
@@ -48,33 +51,33 @@ class TechnicalReport extends Model
     {
         parent::boot();
 
-        static::created(function ($request) {
+        static::created(function ($technicalReport) {
             Audit_logs::create([
                 'date_time' => now(),
                 'action_type' => 'created',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->TR_id,
-                'remarks' => 'Technical Report request created'
+                'ticket_or_device_id' => $technicalReport->TR_id,
+                'remarks' => 'Technical Report request created',
             ]);
         });
 
-        static::updated(function ($request) {
+        static::updated(function ($technicalReport) {
             Audit_logs::create([
                 'date_time' => now(),
                 'action_type' => 'updated',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->TR_id,
-                'remarks' => 'Technical Report request updated'
+                'ticket_or_device_id' => $technicalReport->TR_id,
+                'remarks' => 'Technical Report request updated',
             ]);
         });
 
-        static::deleted(function ($request) {
+        static::deleted(function ($technicalReport) {
             Audit_logs::create([
                 'date_time' => now(),
-                'action_type' => 'deleted',
+                'action_type' => 'archive',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->TR_id,
-                'remarks' => 'Technical Report request deleted'
+                'ticket_or_device_id' => $technicalReport->TR_id,
+                'remarks' => 'Technical Report request archive',
             ]);
         });
     }

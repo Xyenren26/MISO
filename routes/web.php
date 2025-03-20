@@ -43,18 +43,18 @@ Route::post('/webhook', [DialogflowController::class, 'handleWebhook']);
 Route::get('/generate-qr/{form_no}', function ($form_no) {
     return response(QrCode::size(200)->generate(route('generate.pdf', $form_no)))
         ->header('Content-Type', 'image/svg+xml');
-});
-
-Route::get('/generate-qr-deployment/{control_number}', function ($control_number) {
-    return response(QrCode::size(200)->generate(route('generate.deployment.pdf', $control_number)))
-        ->header('Content-Type', 'image/svg+xml');
-});
+})->name('generate-qr');
 
 Route::get('/generate-pdf/{form_no}', [PDFController::class, 'generatePDF'])->name('generate.pdf');
 Route::post('verification/send', [VerificationController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
-
+Route::get('/technical-report/download/{id}', [PDFController::class, 'downloadPdfReport'])->name('technical_report.download')
+    ->middleware('auth');
+Route::get('/endorsement/download/{id}', [PDFController::class, 'downloadPdfEndorsement'])->name('endorsement.download')
+    ->middleware('auth');
+Route::get('/service-request/download/{formNo}', [PDFController::class, 'downloadPdfService_Request'])->name('service_request.download')
+->middleware('auth');
 
 Route::get('verification/verify/{id}/{hash}', [VerificationController::class, 'verifyEmail'])
     ->name('verification.custom.verify');

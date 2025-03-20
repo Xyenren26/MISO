@@ -82,7 +82,7 @@
             <div id="starRatingTechnical"></div>
         </div>
         <div id="waitingForApprovalTechnical" class="waiting-approval" style="display: none;">
-            <p>🚨 Waiting for admin approval...</p>
+            <p>🚨 Waiting for Technical Head approval...</p>
         </div>
         <div class="form-header">Technical Report Details</div>
 
@@ -160,88 +160,16 @@
 
         <!-- Buttons -->
         <button type="button" id="ButtonDownloadTechnical" onclick="downloadModalAsPDFTechnical()">Download PDF</button>
-        <button type="button" id="ButtonEditTechnical" onclick="toggleEditMode()">Edit</button>
+        @if(in_array(auth()->user()->account_type, ['technical_support', 'technical_support_head']))
+            <button type="button" id="ButtonEditTechnical" onclick="toggleEditMode()">Edit</button>
+        @endif
     </div>
 </div>
 
 <script>
     function downloadModalAsPDFTechnical() {
-        const { jsPDF } = window.jspdf;
-        const modal = document.getElementById("technicalReportViewModal");
-        const modalContent = modal.querySelector(".modal-content-technical-report");
-
-        // Ensure modal is visible before capturing
-        const previousDisplay = modal.style.display;
-        modal.style.display = "block";
-
-        // Hide buttons before capturing
-        const closeButton = modal.querySelector(".close");
-        const printButton = document.getElementById("ButtonDownloadTechnical");
-
-        closeButton.style.display = "none";
-        printButton.style.display = "none";
-
-        // Store original styles
-        const originalStyles = {
-            background: document.body.style.backgroundColor,
-            width: modalContent.style.width,
-            height: modalContent.style.height,
-            position: modalContent.style.position,
-            padding: modalContent.style.padding,
-            margin: modalContent.style.margin,
-        };
-
-        // Make modal full-page with white background
-        document.body.style.backgroundColor = "white";
-        modalContent.style.width = "100vw";
-        modalContent.style.height = "100vh";
-        modalContent.style.position = "fixed";
-        modalContent.style.padding = "20px";
-        modalContent.style.margin = "0";
-
-        html2canvas(modalContent, {
-            scale: 3,
-            backgroundColor: "#ffffff",
-            useCORS: true,
-            windowWidth: modalContent.scrollWidth,
-            windowHeight: modalContent.scrollHeight
-        }).then(canvas => {
-            const pdf = new jsPDF("p", "mm", "a4");
-
-            const imgWidth = 210; // A4 width in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            pdf.addImage(canvas, "PNG", 0, 0, imgWidth, imgHeight);
-
-            // Handle multi-page PDFs if content is long
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            while (heightLeft > 297) {
-                position -= 297;
-                pdf.addPage();
-                pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= 297;
-            }
-
-            // Restore original styles
-            document.body.style.backgroundColor = originalStyles.background;
-            modalContent.style.width = originalStyles.width;
-            modalContent.style.height = originalStyles.height;
-            modalContent.style.position = originalStyles.position;
-            modalContent.style.padding = originalStyles.padding;
-            modalContent.style.margin = originalStyles.margin;
-
-            // Show hidden buttons again
-            closeButton.style.display = "block";
-            printButton.style.display = "block";
-
-            // Get control number for filename
-            const controlNo = document.getElementById("viewTechnicalReportControlNo").value || "Technical_Report";
-            pdf.save(`Technical_Report_${controlNo}.pdf`);
-
-            modal.style.display = previousDisplay;
-        });
+        const controlNo = document.getElementById('view-TR_id').value;
+        window.location.href = `/technical-report/download/${controlNo}`;
     }
 
     let isEditMode = false;

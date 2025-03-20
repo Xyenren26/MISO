@@ -46,7 +46,7 @@
               <i class="fas fa-eye toggle-password" id="togglePassword"></i>
           </div>
 
-          <button type="submit" class="login-btn">Login</button>
+          <button type="submit" id="submit-btn" class="login-btn">Login</button>
           
       </form>
       <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>

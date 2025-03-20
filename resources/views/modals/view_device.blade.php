@@ -156,7 +156,7 @@
         </div>
             
         <div id="waitingForApprovalService" class="waiting-approval" style="display: none;">
-            <p>🚨 Waiting for admin approval...</p>
+            <p>🚨 Waiting for Technical Head approval...</p>
         </div>
         
         
@@ -352,88 +352,8 @@
     }
     
     function downloadModalAsPDFService() {
-        const { jsPDF } = window.jspdf;
-        const modal = document.getElementById("viewFormPopup");
-        const modalContent = modal.querySelector(".form-popup-content-view");
-
-        // Ensure modal is visible before capturing
-        const previousDisplay = modal.style.display;
-        modal.style.display = "block";
-
-        // Hide buttons before capturing
-        const elementsToHide = [
-            modal.querySelector(".form-popup-close-btn"),
-            document.getElementById("ButtonService"),
-            document.getElementById("updateButton"),
-            document.getElementById("saveButton")
-        ];
-
-        elementsToHide.forEach(el => {
-            if (el) el.style.display = "none";
-        });
-
-        // Store original styles
-        const originalStyles = {
-            background: document.body.style.backgroundColor,
-            width: modalContent.style.width,
-            height: modalContent.style.height,
-            position: modalContent.style.position,
-            padding: modalContent.style.padding,
-            margin: modalContent.style.margin,
-        };
-
-        // Make modal full-page with white background
-        document.body.style.backgroundColor = "white";
-        modalContent.style.width = "100vw";
-        modalContent.style.height = "100vh";
-        modalContent.style.position = "fixed";
-        modalContent.style.padding = "20px";
-        modalContent.style.margin = "0";
-
-        html2canvas(modalContent, {
-            scale: 3,
-            backgroundColor: "#ffffff",
-            useCORS: true,
-            windowWidth: modalContent.scrollWidth,
-            windowHeight: modalContent.scrollHeight
-        }).then(canvas => {
-            const pdf = new jsPDF("p", "mm", "a4");
-
-            const imgWidth = 210; // A4 width in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            pdf.addImage(canvas, "PNG", 0, 0, imgWidth, imgHeight);
-
-            // Handle multi-page PDFs if content is long
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            while (heightLeft > 297) {
-                position -= 297;
-                pdf.addPage();
-                pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= 297;
-            }
-
-            // Restore original styles
-            document.body.style.backgroundColor = originalStyles.background;
-            modalContent.style.width = originalStyles.width;
-            modalContent.style.height = originalStyles.height;
-            modalContent.style.position = originalStyles.position;
-            modalContent.style.padding = originalStyles.padding;
-            modalContent.style.margin = originalStyles.margin;
-
-            // Show hidden buttons again
-            elementsToHide.forEach(el => {
-                if (el) el.style.display = "block";
-            });
-
-            // Get control number for filename
-            const controlNo = document.getElementById("viewFormNoService").value || "Pullout";
-            pdf.save(`PullOut_Device_${controlNo}.pdf`);
-
-            modal.style.display = previousDisplay;
-        });
+        const formNo = document.getElementById('viewFormNoService').value;
+        window.location.href = `/service-request/download/${formNo}`;
     }
 
     function printQRCode() {

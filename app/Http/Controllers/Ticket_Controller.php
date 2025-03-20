@@ -430,7 +430,7 @@ class Ticket_Controller extends Controller
         $ticket->history()->create([
             'previous_technical_support' => $ticket->technical_support_id,
             'new_technical_support' => $newTechnicalSupport,
-            'ticket_id' => $ticket->id,
+            'ticket_id' => $ticket->control_no,
         ]);
 
         $ticket->technical_support_id = $newTechnicalSupport;

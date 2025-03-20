@@ -73,11 +73,11 @@
             color: #ffcc00;
         }
 
-        .modal-footer {
+        .modal-footer-button {
             text-align: right;
         }
 
-        .modal-footer button {
+        .modal-footer-button button {
             padding: 8px 16px;
             border: none;
             border-radius: 4px;
@@ -85,12 +85,12 @@
             margin-left: 10px;
         }
 
-        .modal-footer .btn-secondary {
+        .modal-footer-button .btn-secondary {
             background: #6c757d;
             color: white;
         }
 
-        .modal-footer .btn-success {
+        .modal-footer-button .btn-success {
             background: #28a745;
             color: white;
         }
@@ -128,7 +128,7 @@
             <textarea class="form-control" id="remark" rows="3" placeholder="Add any additional feedback or comments..."></textarea>
         </div>
     </div>
-    <div class="modal-footer text-center">
+    <div class="modal-footer-button text-center">
         <button type="button" class="btn btn-secondary" onclick="hideRating()">Cancel</button>
         <button type="button" class="btn btn-success" onclick="submitRating()">Submit</button>
     </div>

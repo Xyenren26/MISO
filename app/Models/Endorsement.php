@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Endorsement extends Model
 {
@@ -41,9 +42,10 @@ class Endorsement extends Model
         'endorsed_by_date' => 'date',
     ];
 
-    public function endorsement()
+    // Define the relationship to the Ticket model
+    public function ticket()
     {
-        return $this->hasOne(Endorsement::class, 'ticket_id', 'control_no');
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 
     // 🔹 Model Events for Audit Logging
@@ -51,33 +53,33 @@ class Endorsement extends Model
     {
         parent::boot();
 
-        static::created(function ($request) {
+        static::created(function ($endorsement) {
             Audit_logs::create([
                 'date_time' => now(),
                 'action_type' => 'created',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->control_no,
-                'remarks' => 'Endorsement request created'
+                'ticket_or_device_id' => $endorsement->control_no,
+                'remarks' => 'Endorsement request created',
             ]);
         });
 
-        static::updated(function ($request) {
+        static::updated(function ($endorsement) {
             Audit_logs::create([
                 'date_time' => now(),
                 'action_type' => 'updated',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->control_no,
-                'remarks' => 'Endorsement request updated'
+                'ticket_or_device_id' => $endorsement->control_no,
+                'remarks' => 'Endorsement request updated',
             ]);
         });
 
-        static::deleted(function ($request) {
+        static::deleted(function ($endorsement) {
             Audit_logs::create([
                 'date_time' => now(),
-                'action_type' => 'deleted',
+                'action_type' => 'archive',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->control_no,
-                'remarks' => 'Endorsement request deleted'
+                'ticket_or_device_id' => $endorsement->control_no,
+                'remarks' => 'Endorsement request archive',
             ]);
         });
     }

@@ -361,7 +361,7 @@
                     </div>
                 </div>
                 <div class="modal-form-section">
-                    <label for="remarks">>Work Done:</label>
+                    <label for="remarks">Work Done:</label>
                     <input id="remarkstechnical" name="endorsed_by_remarks" class="modal-input-box"  readonly>
                 </div>
             </div>

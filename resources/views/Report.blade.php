@@ -50,6 +50,91 @@
             text-decoration: none;
             cursor: pointer;
         }
+        /* Responsive Design for Table */
+        @media (max-width: 768px) {
+            .performance-details table {
+                font-size: 14px;
+            }
+
+            .performance-details th,
+            .performance-details td {
+                padding: 8px;
+            }
+        }
+
+        /* Tablet & Smaller Screens */
+        @media (max-width: 1024px) {
+            .metrics-cards {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller grid size */
+            }
+
+            .charts-container {
+                flex-direction: column; /* Stack charts vertically */
+                gap: 20px;
+            }
+
+            .performance-details {
+                padding: 15px;
+            }
+        }
+
+        /* Smartphones (≤ 768px) */
+        @media (max-width: 768px) {
+            
+            .metrics-cards {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr); /* Ensures exactly 2 columns */
+                gap: 10px;
+                width: 90%; /* Adjusts width to fit better on smartphones */
+                margin: 0 auto; /* Centers the grid */
+            }
+            .metric-card {
+                width: 100px;
+            }
+
+
+            .charts-container {
+                flex-direction: column; /* Stack charts vertically */
+                gap: 15px;
+                width: 95%; /* Adjust width for better spacing */
+                margin: 0 auto;
+            }
+
+            .performance-details {
+                padding: 10px;
+                width: 90%; /* Ensures better fit */
+                margin: 0 auto; /* Centers the container */
+            }
+
+            /* Hide specific elements on smartphones */
+            .hide-on-mobile,
+            .donut-chart,
+            .line-chart {
+                display: none !important;
+            }
+        }
+
+        /* Extra Small Screens (≤ 480px) */
+        @media (max-width: 480px) {
+            
+            .metrics-cards {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                width: 95%; /* Makes it more compact for smaller screens */
+                margin: 0 auto;
+            }
+
+            .charts-container {
+                width: 100%; /* Maximizes space for charts */
+                gap: 10px;
+            }
+
+            .performance-details {
+                width: 95%;
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>

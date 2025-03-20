@@ -3,9 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\ServiceRequest;
 use App\Models\EquipmentDescription;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\TechnicalReport; 
+use App\Models\Rating;
+use App\Models\Approval;
+use App\Models\User;
+use App\Models\Endorsement; 
+
 
 class PDFController extends Controller
 {
@@ -63,5 +70,101 @@ class PDFController extends Controller
         ]);
 
         return $pdf->stream("ServiceRequest_$form_no.pdf");
+    }
+
+    public function downloadPdfReport($id)
+    {
+        // Fetch the technical report data
+        $technicalReport = TechnicalReport::findOrFail($id);
+
+        // Fetch the rating based on the control_no
+        $rating = Rating::where('control_no', $technicalReport->control_no)->first();
+        $approve = Approval::where('ticket_id', $technicalReport->control_no)->first();
+
+        // Pass the data to the Blade template
+        $pdf = Pdf::loadView('pdf.technical_report', [
+            'technicalReport' => $technicalReport,
+            'rating' => $rating ? $rating->rating : 'No Rating', // Use the rating or a default value
+            'approve' => $approve,
+        ]);
+
+        // Download the PDF
+        return $pdf->download('technical_report.pdf');
+    }
+   
+    public function downloadPdfEndorsement($id)
+    {
+        // Fetch the endorsement data
+        $endorsement = Endorsement::findOrFail($id);
+
+        // Fetch rating and approval data
+        $rating = Rating::where('control_no', $endorsement->ticket_id)->first();
+        $approve = Approval::where('ticket_id', $endorsement->ticket_id)->first();
+
+        // Format dates for HTML input fields
+        $endorsement->endorsed_to_date = $endorsement->endorsed_to_date ? date('Y-m-d', strtotime($endorsement->endorsed_to_date)) : '';
+        $endorsement->endorsed_by_date = $endorsement->endorsed_by_date ? date('Y-m-d', strtotime($endorsement->endorsed_by_date)) : '';
+
+        // Handle missing approval data
+        $approveData = [
+            'name' => $approve ? $approve->name : 'Not Available',
+            'approve_date' => $approve ? $approve->approve_date : 'Not Available',
+        ];
+
+        // Decode network and network_details
+        $network = $this->safeJsonDecode($endorsement->network);
+        $network_details = $this->safeJsonDecode($endorsement->network_details);
+
+        // Pass the data to the Blade template
+        $pdf = Pdf::loadView('pdf.endorsement', [
+            'endorsement' => $endorsement,
+            'rating' => $rating ? $rating->rating : 'No Rating',
+            'approve' => $approveData,
+            'network' => $network, // Pass the decoded network array
+            'network_details' => $network_details, // Pass the decoded network_details array
+        ]);
+
+        // Download the PDF
+        return $pdf->download('endorsement.pdf');
+    }
+
+    /**
+     * Helper function to safely decode JSON values
+     */
+    private function safeJsonDecode($value)
+    {
+        $decoded = json_decode($value, true);
+        return json_last_error() === JSON_ERROR_NONE ? $decoded : $value; // Return original value if not JSON
+    }
+
+    public function downloadPdfService_Request($formNo)
+    {
+        // Fetch the service request data
+        $serviceRequest = ServiceRequest::where('form_no', $formNo)->firstOrFail();
+
+        // Fetch the equipment descriptions for this service request
+        $equipmentDescriptions = EquipmentDescription::where('form_no', $formNo)->get();
+
+        // Fetch the rating based on the control_no
+        $rating = Rating::where('control_no', $serviceRequest->ticket_id)->first();
+        $approve = Approval::where('ticket_id', $serviceRequest->ticket_id)->first();
+        $name = User::where('employee_id', $serviceRequest->technical_support_id )->first();
+
+        // Generate the QR code as a base64 string
+        $qrCode = QrCode::size(200)->generate(route('generate.pdf', $formNo));
+        $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
+
+        // Pass the data to the Blade template
+        $pdf = Pdf::loadView('pdf.service_request', [
+            'serviceRequest' => $serviceRequest,
+            'equipmentDescriptions' => $equipmentDescriptions,
+            'qrCodeBase64' => $qrCodeBase64,
+            'rating' => $rating ? $rating->rating : 'No Rating', // Use the rating or a default value
+            'approve' => $approve,
+            'name' => $name,
+        ]);
+
+        // Download the PDF
+        return $pdf->download('service_request.pdf');
     }
 }    

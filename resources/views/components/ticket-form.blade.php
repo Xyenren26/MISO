@@ -70,6 +70,9 @@
                                 <option value="Broken Screen">Broken Screen</option>
                                 <option value="Battery Issue">Battery Issue</option>
                                 <option value="Keyboard Malfunction">Keyboard Malfunction</option>
+                                <option value="Printer Not Working">Printer Not Working</option>
+                                <option value="Mouse Not Responding">Mouse Not Responding</option>
+                                <option value="Power Supply Failure">Power Supply Failure</option>
                                 <option value="Other">Other</option>
                             </select>
                             <input type="text" id="hardwareOtherInput" class="other-sub-issue" placeholder="Specify hardware issue" style="display: none;" oninput="updateSelectedConcerns()">
@@ -82,6 +85,9 @@
                                 <option value="System Crash">System Crash</option>
                                 <option value="Application Not Responding">Application Not Responding</option>
                                 <option value="License Expired">License Expired</option>
+                                <option value="Operating System Error">Operating System Error</option>
+                                <option value="Software Installation Failure">Software Installation Failure</option>
+                                <option value="Virus/Malware Infection">Virus/Malware Infection</option>
                                 <option value="Other">Other</option>
                             </select>
                             <input type="text" id="softwareOtherInput" class="other-sub-issue" placeholder="Specify software issue" style="display: none;" oninput="updateSelectedConcerns()">

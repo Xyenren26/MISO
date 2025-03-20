@@ -1,6 +1,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link rel="stylesheet" href="{{ asset('css/ticket_Style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/ticket_style.css') }}">
 <link rel="stylesheet" href="{{ asset('css/ticket_components_style.css') }}">
 <style>
       #endorsementViewModal{
@@ -106,7 +106,7 @@
         <span class="close" onclick="closeEndorsementViewModal()">&times;</span>
 
         <div id="waitingForApproval" class="waiting-approval" style="display: none;">
-            <p>🚨 Waiting for admin approval...</p>
+            <p>🚨 Waiting for Technical Head approval...</p>
         </div>
 
         <div class="rating-container" id="rating-containerEndorsement">
@@ -141,7 +141,7 @@
                 <!-- Left Column - Network Issues -->
                 <div class="modal-column">
                     <div class="modal-checkbox-group">
-                        @foreach(['Network diagnostics', 'Connectivity and access issues', 'Account creation and management', 'File sharing and folder permissions', 'Others'] as $networkItem)
+                        @foreach(['Network diagnostics', 'Connectivity and access issues', 'Account creation and management', 'File sharing and folder permissions', 'others'] as $networkItem)
                             <div>
                                 <input type="checkbox" name="network[]" value="{{ $networkItem }}" id="network_{{ $loop->index }}" disabled>
                                 <label>{{ $networkItem }}</label>
@@ -212,168 +212,95 @@
                 <input class="form-popup-input" id="viewApproveDate" readonly disabled>
             </div>
         </section>
-
-        <!-- Update and Save Button -->
-        <button type="button" id="updateEndorsementButton" onclick="enableEditing()">Update</button>
-        <button type="button" id="saveEndorsementButton" onclick="saveEndorsement()" style="display: none;">Save</button>
         <button type="button" id="ButtonEndorsement" onclick="downloadModalAsPDF()">Download PDF</button>
+        @if(in_array(auth()->user()->account_type, ['technical_support', 'technical_support_head']))
+            <!-- Update and Save Button -->
+            <button type="button" id="updateEndorsementButton" onclick="enableEditing()">Update</button>
+        @endif
+        <button type="button" id="saveEndorsementButton" onclick="saveEndorsement()" style="display: none;">Save</button>
     </div>
 </div>
 <script>
-function enableEditing() {
-    // Enable Concern Checkbox and Fields
-    document.querySelectorAll('input[name="network[]"]').forEach(checkbox => {
-        checkbox.disabled = false;
-    });
-    document.querySelectorAll('input[name^="network_details"]').forEach(input => {
-        input.disabled = false;
-    });
+    function enableEditing() {
+        // Enable Concern Checkbox and Fields
+        document.querySelectorAll('input[name="network[]"]').forEach(checkbox => {
+            checkbox.disabled = false;
+        });
+        document.querySelectorAll('input[name^="network_details"]').forEach(input => {
+            input.disabled = false;
+        });
 
-    // Enable Endorsed To and Remarks
-    document.getElementById("endorsed_to").disabled = false;
-    document.getElementById("endorsed_to_remarks").disabled = false;
+        // Enable Endorsed To and Remarks
+        document.getElementById("endorsed_to").disabled = false;
+        document.getElementById("endorsed_to_remarks").disabled = false;
 
-    // Switch buttons
-    document.getElementById("updateEndorsementButton").style.display = "none";
-    document.getElementById("saveEndorsementButton").style.display = "inline-block";
-}
+        // Switch buttons
+        document.getElementById("updateEndorsementButton").style.display = "none";
+        document.getElementById("saveEndorsementButton").style.display = "inline-block";
+    }
 
-function saveEndorsement() {
-    const controlNo = document.getElementById("ViewEndorsementcontrol_no").value;
-    const endorsedTo = document.getElementById("endorsed_to").value;
-    const endorsedToRemarks = document.getElementById("endorsed_to_remarks").value;
+    function saveEndorsement() {
+        const controlNo = document.getElementById("ViewEndorsementcontrol_no").value;
+        const endorsedTo = document.getElementById("endorsed_to").value;
+        const endorsedToRemarks = document.getElementById("endorsed_to_remarks").value;
 
-    // Collect Concern Checkbox and Fields
-    const concerns = [];
-    document.querySelectorAll('input[name="network[]"]').forEach((checkbox, index) => {
-        if (checkbox.checked) {
-            const detailInput = document.getElementById(`network_details_${index}`);
-            if (detailInput) { // Check if the input exists
-                const detail = detailInput.value;
-                concerns.push({
-                    concern: checkbox.value,
-                    detail: detail
-                });
-            } else {
-                console.error(`Detail input for network item ${index} not found.`);
+        // Collect Concern Checkbox and Fields
+        const concerns = [];
+        document.querySelectorAll('input[name="network[]"]').forEach((checkbox, index) => {
+            if (checkbox.checked) {
+                const detailInput = document.getElementById(`network_details_${index}`);
+                if (detailInput) { // Check if the input exists
+                    const detail = detailInput.value;
+                    concerns.push({
+                        concern: checkbox.value,
+                        detail: detail
+                    });
+                } else {
+                    console.error(`Detail input for network item ${index} not found.`);
+                }
             }
-        }
-    });
+        });
 
-    // Prepare the data for the AJAX request
-    const requestData = {
-        control_no: controlNo,
-        endorsed_to: endorsedTo,
-        endorsed_to_remarks: endorsedToRemarks,
-        concerns: concerns
-    };
+        // Prepare the data for the AJAX request
+        const requestData = {
+            control_no: controlNo,
+            endorsed_to: endorsedTo,
+            endorsed_to_remarks: endorsedToRemarks,
+            concerns: concerns
+        };
 
-    // Send the request via Fetch API
-    fetch("/tickets/update-endorsement", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
-        },
-        body: JSON.stringify(requestData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Network response was not ok.");
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            alert("Endorsement updated successfully!");
-            closeEndorsementViewModal();
-            location.reload(); // Reload the page to reflect changes
-        } else {
-            alert("Error updating endorsement. Please try again.");
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("An error occurred. Please try again.");
-    });
-}
+        // Send the request via Fetch API
+        fetch("/tickets/update-endorsement", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert("Endorsement updated successfully!");
+                closeEndorsementViewModal();
+                location.reload(); // Reload the page to reflect changes
+            } else {
+                alert("Error updating endorsement. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+        });
+    }
 
-function downloadModalAsPDF() {
-    const { jsPDF } = window.jspdf;
-    const modal = document.getElementById("endorsementViewModal");
-    const modalContent = modal.querySelector(".endorsed-modal-content");
-
-    // Ensure modal is visible before capturing
-    const previousDisplay = modal.style.display;
-    modal.style.display = "block";
-
-    // Hide buttons before capturing
-    const closeButton = modal.querySelector(".close");
-    const printButton = document.getElementById("ButtonEndorsement");
-
-    if (closeButton) closeButton.style.display = "none";
-    if (printButton) printButton.style.display = "none";
-
-    // Store original styles
-    const originalStyles = {
-        background: document.body.style.backgroundColor,
-        width: modalContent.style.width,
-        height: modalContent.style.height,
-        position: modalContent.style.position,
-        padding: modalContent.style.padding,
-        margin: modalContent.style.margin,
-    };
-
-    // Make modal full-page with white background
-    document.body.style.backgroundColor = "white";
-    modalContent.style.width = "100vw";
-    modalContent.style.height = "100vh";
-    modalContent.style.position = "fixed";
-    modalContent.style.padding = "20px";
-    modalContent.style.margin = "0";
-
-    html2canvas(modalContent, {
-        scale: 3,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-        windowWidth: modalContent.scrollWidth,
-        windowHeight: modalContent.scrollHeight
-    }).then(canvas => {
-        const pdf = new jsPDF("p", "mm", "a4");
-
-        const imgWidth = 210; // A4 width in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(canvas, "PNG", 0, 0, imgWidth, imgHeight);
-
-        // Handle multi-page PDFs if content is long
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        while (heightLeft > 297) {
-            position -= 297;
-            pdf.addPage();
-            pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-            heightLeft -= 297;
-        }
-
-        // Restore original styles
-        document.body.style.backgroundColor = originalStyles.background;
-        modalContent.style.width = originalStyles.width;
-        modalContent.style.height = originalStyles.height;
-        modalContent.style.position = originalStyles.position;
-        modalContent.style.padding = originalStyles.padding;
-        modalContent.style.margin = originalStyles.margin;
-
-        // Show hidden buttons again
-        if (closeButton) closeButton.style.display = "block";
-        if (printButton) printButton.style.display = "block";
-
-        // Get control number for filename
-        const controlNo = document.getElementById("ViewEndorsementcontrol_no").value || "Technical_Endorsement";
-        pdf.save(`Technical_Endorsement_${controlNo}.pdf`);
-
-        modal.style.display = previousDisplay;
-    });
-}
+    function downloadModalAsPDF() {
+        const controlNo = document.getElementById('ViewEndorsementcontrol_no').value;
+        window.location.href = `/endorsement/download/${controlNo}`;
+    }
 </script>

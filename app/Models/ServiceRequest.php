@@ -49,7 +49,7 @@ class ServiceRequest extends Model
                 'date_time' => now(),
                 'action_type' => 'created',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
-                'ticket_or_device_id' => $request->form_no,
+                'ticket_or_device_id' => $request->ticket_id,
                 'remarks' => 'Turn Over request created'
             ]);
         });
@@ -67,10 +67,10 @@ class ServiceRequest extends Model
         static::deleted(function ($request) {
             Audit_logs::create([
                 'date_time' => now(),
-                'action_type' => 'deleted',
+                'action_type' => 'archive',
                 'performed_by' => Auth::user()->employee_id ?? 'System',
                 'ticket_or_device_id' => $request->form_no,
-                'remarks' => 'Turn Over request deleted'
+                'remarks' => 'Turn Over request archive'
             ]);
         });
     }
