@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced Ticket Form</title>
-    <link rel="stylesheet" href="{{ asset('css/ticket_components_style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ticket_components_Style.css') }}">
 </head>
 <body>
     <!-- Ticket Form Container -->
@@ -26,22 +26,18 @@
                         <div class="personal-info-field">
                             <label for="first-name">First Name:</label>
                             <input type="text" id="first-name" name="first-name" placeholder="First Name" required
-                                   value="{{ Auth::user()->first_name }}" {{ Auth::user()->account_type === 'end_user' ? 'readonly' : '' }}>
+                            value="{{ Auth::user()->account_type === 'end_user' ? Auth::user()->first_name : '' }}">
                         </div>
                         <div class="personal-info-field">
                             <label for="last-name">Last Name:</label>
                             <input type="text" id="last-name" name="last-name" placeholder="Last Name" required
-                                   value="{{ Auth::user()->last_name }}" {{ Auth::user()->account_type === 'end_user' ? 'readonly' : '' }}>
+                            value="{{ Auth::user()->account_type === 'end_user' ? Auth::user()->last_name : '' }}">
                         </div>
                         <div class="personal-info-field">
                             <label for="department">Department</label>
-                            <select id="department" name="department" class="department-select" required {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
-                                @if (Auth::user()->account_type === 'end_user')
-                                    <option value="{{ Auth::user()->department }}" selected>{{ Auth::user()->department }}</option>
-                                @endif
+                            <select id="department" name="department" class="department-select" required>
+                                @include('components.list_department')
                             </select>
-                            <!-- Hidden input for department -->
-                            <input type="hidden" name="department" value="{{ Auth::user()->department }}">
                         </div>
                     </div>
                 </fieldset>
@@ -62,8 +58,8 @@
                             </div>
                         </div>
 
-                        <!-- Sub-dropdowns for specific concerns -->
-                        <div id="hardwareDropdown" class="sub-dropdown" style="display: none;">
+                          <!-- Sub-dropdowns for specific concerns -->
+                          <div id="hardwareDropdown" class="sub-dropdown" style="display: none;">
                             <label for="hardwareIssue">Hardware Issues:</label>
                             <select id="hardwareIssue" name="hardwareIssue" onchange="toggleOtherSubInput(this, 'hardwareOtherInput'); updateSelectedConcerns()">
                                 <option value="">Select Hardware Issue</option>
@@ -123,40 +119,36 @@
                         </div>
 
                         <label for="category">Priority:</label>
-                        <select id="category" name="category" required onchange="setPriority(this.value)" {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
+                        <select id="category" name="category" required onchange="setPriority(this.value)">
                             <option value="" disabled selected>Select Priority</option>
                             <option value="urgent">Urgent (1-3 days)</option>
                             <option value="high">High (4-12 hours)</option>
                             <option value="medium">Medium (30 min - 4 hours)</option>
                             <option value="low">Low (10-30 min)</option>
                         </select>
-                        <!-- Hidden input for priority -->
-                        <input type="hidden" name="category" value="medium"> <!-- Set a default value or dynamically update it -->
 
                         <!-- Priority Description -->
                         <div id="priorityDescription" style="margin-top: 10px; font-style: italic; color: #555;"></div>
 
                         <label for="employeeId">Employee ID:</label>
                         <input type="text" id="employeeId" name="employeeId" required
-                            value="{{ str_pad(Auth::user()->employee_id, 7, '0', STR_PAD_LEFT) }}" {{ Auth::user()->account_type === 'end_user' ? 'readonly' : '' }}>
+                        value="{{ Auth::user()->account_type === 'end_user' ? Auth::user()->employee_id : '' }}">
                         <span id="error-message" style="color: red; display: none;">Employee ID must be a 7-digit whole number.</span>
                     </div>
                 </fieldset>
 
-               <!-- Row 3: Support Details -->
+                <!-- Row 3: Support Details -->
                 <fieldset>
                     <legend>Support Details</legend>
                     <div class="support-details-container">
                         <div class="support-details-field">
                             <label for="technicalSupport">Technical Support By:</label>
-                            <select id="technicalSupport" name="technicalSupport" required {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
+                            <select id="technicalSupport" name="technicalSupport" required>
                                 <option value="" disabled selected>Select Technical Support</option>
                                 @foreach($technicalSupports as $tech)
                                     <option value="{{ $tech->employee_id }}">{{ $tech->first_name }} {{ $tech->last_name }}</option>
                                 @endforeach
                             </select>
-                            <!-- Hidden input for technicalSupport -->
-                            <input type="hidden" name="technicalSupport" value="{{ $technicalSupports->isNotEmpty() ? $technicalSupports[0]->employee_id : '' }}">
                         </div>
                     </div>
                 </fieldset>
@@ -173,81 +165,8 @@
             </form>
         </div>
     </div>
+
 <script>
-    document.addEventListener('scroll', function() {
-        const formContainer = document.querySelector('.ticket-form-container');
-        const scrollY = window.scrollY || window.pageYOffset;
-        const windowHeight = window.innerHeight;
-        const formHeight = formContainer.offsetHeight;
-
-        // Adjust the top position based on scroll position
-        if (scrollY > windowHeight / 2) {
-            // If user is scrolling towards the bottom, move the form up
-            formContainer.style.top = `${Math.max(20, windowHeight - formHeight - 20)}px`;
-        } else {
-            // If user is at the top, center the form
-            formContainer.style.top = '50%';
-        }
-    });
-    // Function to fetch departments and populate the dropdown
-    async function populateDepartments() {
-        try {
-            // Fetch departments from the API
-            const response = await fetch('/departments');
-            if (!response.ok) throw new Error('Failed to fetch departments');
-            const departments = await response.json();
-
-            // Get all select elements with the class 'department-select'
-            const selectElements = document.querySelectorAll('.department-select');
-
-            // Loop through each select element
-            selectElements.forEach(select => {
-                // Clear any existing options
-                select.innerHTML = '';
-
-                // Add the default option
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.text = 'Select Department';
-                select.appendChild(defaultOption);
-
-                // Loop through the grouped departments
-                for (const [groupName, groupDepartments] of Object.entries(departments)) {
-                    // Create an optgroup element
-                    const optgroup = document.createElement('optgroup');
-                    optgroup.label = groupName;
-
-                    // Loop through the departments in the group
-                    groupDepartments.forEach(department => {
-                        // Create an option element
-                        const option = document.createElement('option');
-                        option.value = department.name;
-                        option.text = department.name;
-
-                        // Preselect the user's department (if applicable)
-                        if (department.name === "{{ Auth::user()->department }}") {
-                            option.selected = true;
-                        }
-
-                        // Append the option to the optgroup
-                        optgroup.appendChild(option);
-                    });
-
-                    // Append the optgroup to the select element
-                    select.appendChild(optgroup);
-                }
-            });
-        } catch (error) {
-            console.error('Error fetching departments:', error);
-            // Display a user-friendly error message in all select elements
-            document.querySelectorAll('.department-select').forEach(select => {
-                select.innerHTML = '<option value="">Failed to load departments. Please try again later.</option>';
-            });
-        }
-    }
-
-    // Call the function to populate the dropdown when the page loads
-    document.addEventListener('DOMContentLoaded', populateDepartments);
     // Function to set priority and description based on the selected concern
     function setPriority(priority) {
         const priorityDropdown = document.getElementById('category');
