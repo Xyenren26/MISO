@@ -97,8 +97,6 @@ class PDFController extends Controller
         // Fetch the endorsement data
         $endorsement = Endorsement::findOrFail($id);
 
-        // Fetch rating and approval data
-        $rating = Rating::where('control_no', $endorsement->ticket_id)->first();
         $approve = Approval::where('ticket_id', $endorsement->ticket_id)->first();
 
         // Format dates for HTML input fields
@@ -118,7 +116,6 @@ class PDFController extends Controller
         // Pass the data to the Blade template
         $pdf = Pdf::loadView('pdf.endorsement', [
             'endorsement' => $endorsement,
-            'rating' => $rating ? $rating->rating : 'No Rating',
             'approve' => $approveData,
             'network' => $network, // Pass the decoded network array
             'network_details' => $network_details, // Pass the decoded network_details array

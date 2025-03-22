@@ -194,6 +194,7 @@
             display: flex;
             align-items: center;
             gap: 10px; /* Space between checkbox, label, and input */
+            width: 100%;
         }
 
         .checkbox-row label {
@@ -223,10 +224,6 @@
     <div class="endorsed-modal-content">
         <!-- Header Section -->
         <div class="modal-header">
-            <div class="rating-container">
-                <label class="form-popup-label">Rating:</label>
-                <div id="starRatingTechnical">{{ $rating }}</div>
-            </div>
             <h2>Technical Endorsement</h2>
             <p><strong>MISO</strong><br>Management Information Systems Office</p>
         </div>
@@ -250,12 +247,18 @@
                 <!-- Left Column - Network Issues -->
                 <div class="modal-column">
                     <div class="modal-checkbox-group">
-                        @foreach($network as $item)
+                        @if(!empty($network))
+                            @foreach($network as $item)
+                                <div class="checkbox-row">
+                                    <label>{{ $item }}</label> <!-- Display the network concern -->
+                                    <input type="text" value="{{ $network_details[$item] ?? '' }}" readonly> <!-- Display the corresponding details -->
+                                </div>
+                            @endforeach
+                        @else
                             <div class="checkbox-row">
-                                <label>{{ $item }}</label>
-                                <input type="text" value="{{ $network_details[$item] ?? '' }}" readonly>
+                                <label>No network data available</label>
                             </div>
-                        @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
