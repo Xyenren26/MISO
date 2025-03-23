@@ -258,8 +258,13 @@
                 <img id="qrCodeImage" class="qr-code" src="" alt="QR Code">
             </div>
 
-            <!-- Action Buttons -->
-            <button type="button" id="ButtonService" onclick="downloadModalAsPDFService()">Download PDF</button>
+           <!-- Action Buttons -->
+            <button type="button" id="ButtonService" 
+                onclick="downloadModalAsPDFService()" 
+                @if(auth()->user()->account_type === 'end_user') disabled @endif>
+                Download PDF
+            </button>
+
             @if(in_array(auth()->user()->account_type, ['technical_support', 'technical_support_head']))
                 <button type="button" id="updateButtonService" onclick="toggleEditModeService()">Update</button>
                 <button type="button" id="saveButtonService" style="display: none;" onclick="saveChangesService()">Save</button>

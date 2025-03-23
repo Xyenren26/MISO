@@ -20,7 +20,8 @@
         <!-- Remarks Input -->
         <div>
             <label for="remarksInput">Work Done:</label>
-            <textarea id="remarksInput" placeholder="Enter your remarks"></textarea>
+            <small id="charCounter">Maximum of 255 characters</small>
+            <textarea id="remarksInput" placeholder="Enter your remarks" maxlength="255"></textarea>
         </div>
 
         <!-- Status Dropdown -->

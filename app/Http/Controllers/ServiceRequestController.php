@@ -15,6 +15,8 @@ use App\Mail\ServiceRequestUpdated;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Events\NewNotification;
+use Chatify\Facades\ChatifyMessenger as Chatify; 
+use App\Models\ChMessage;
 
 class ServiceRequestController extends Controller
 {
@@ -189,6 +191,25 @@ class ServiceRequestController extends Controller
         if ($user && $user->email) {
             Mail::to($user->email)->send(new ServiceRequestUpdated($serviceRequest));
         }
+
+        // Retrieve the end user ID (assuming ticket has a `user_id` field)
+        $EndUserID = $serviceRequest->employee_id;
+
+        $message = "Hello, {$serviceRequest->name} your ticket with Ticket No:{$serviceRequest->ticket_id} 
+        has been mark as repaired and ready to be redeploy.
+       
+        If you have any question related to your Ticket Service Request Please fill free to Inquire.
+        
+        Thank you by TechTrack Team.";
+
+        // Create a new message to notify the end user
+        ChMessage::create([
+        'from_id' => auth()->id(), // Sender (could be admin or support staff)
+        'to_id' => $EndUserID, // Recipient (end user)
+        'body' => $message, // The predefined message content
+        'created_at' => now(),
+        'updated_at' => now(),
+        ]);
 
         return response()->json(['success' => true, 'message' => 'Status updated and email sent successfully']);
     }

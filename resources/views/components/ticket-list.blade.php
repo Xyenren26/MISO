@@ -190,6 +190,21 @@
 
                             @if (
                                 $ticket->isRemarksDone &&
+                                !$ticket->isApproved &&
+                                Auth::user()->account_type === 'technical_support_head' &&
+                                $ticket->existsInModels
+                                !$ticket->isRepaired
+                            )
+
+                            <button class="action-button deny-button" onclick="denyTicket('{{ $ticket->control_no }}')">
+                                <i class="fas fa-times-circle"></i> 
+                                <span class="tooltip">Denied</span>
+                            </button>
+
+                            @endif
+
+                            @if (
+                                $ticket->isRemarksDone &&
                                 Auth::user()->account_type === 'administrator' &&
                                 $ticket->isRated 
                             )

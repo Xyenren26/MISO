@@ -18,11 +18,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const csrfToken = window.csrfToken; // Passed from Blade
     const userDepartment = window.userDepartment; // Passed from Blade
 
-    // ✅ Handle Verification Modal and Email Resend
+   // ✅ Handle Verification Modal and Email Resend
     if (triggerBtn && verificationForm) {
-        triggerBtn.addEventListener("click", function () {
-            // Show modal
-            modal.classList.add("show");
+        triggerBtn.addEventListener("click", function (event) {
+            // Prevent default button behavior (e.g., form submission)
+            event.preventDefault();
+
+            // Show the modal immediately
+            modal.style.display = "block";
+
+            // Add a spinner and loading message
+            modal.querySelector(".modal-content").innerHTML = `
+                <h4>Email Verification</h4>
+                <div class="spinner"></div>
+                <p>Sending verification email...</p>
+            `;
 
             // Send verification request via Fetch API
             fetch(verificationForm.action, {
@@ -36,24 +46,54 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert("Verification email sent! Check your inbox.");
+                    // Update modal content to show success message
+                    modal.querySelector(".modal-content").innerHTML = `
+                        <h4>Email Verification</h4>
+                        <p>Verification email sent! Check your inbox.</p>
+                        <button id="close-modal" class="close-btn">Close</button>
+                    `;
                 } else {
-                    alert("Error sending verification email.");
+                    // Update modal content to show error message
+                    modal.querySelector(".modal-content").innerHTML = `
+                        <h4>Email Verification</h4>
+                        <p>Error sending verification email.</p>
+                        <button id="close-modal" class="close-btn">Close</button>
+                    `;
                 }
+
+                // Re-attach the close modal event listener
+                document.getElementById("close-modal").addEventListener("click", function () {
+                    modal.style.display = "none";
+                });
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => {
+                console.error("Error:", error);
+                // Update modal content to show error message
+                modal.querySelector(".modal-content").innerHTML = `
+                    <h4>Email Verification</h4>
+                    <p>An error occurred. Please try again later.</p>
+                    <button id="close-modal" class="close-btn">Close</button>
+                `;
+
+                // Re-attach the close modal event listener
+                document.getElementById("close-modal").addEventListener("click", function () {
+                    modal.style.display = "none";
+                });
+            });
         });
     }
 
+    // Close modal when clicking the close button
     if (closeModal) {
         closeModal.addEventListener("click", function () {
-            modal.classList.remove("show");
+            modal.style.display = "none";
         });
     }
 
+    // Close modal when clicking outside the modal
     window.addEventListener("click", function (event) {
         if (event.target === modal) {
-            modal.classList.remove("show");
+            modal.style.display = "none";
         }
     });
 

@@ -276,7 +276,7 @@ class Home_Controller extends Controller
         $filter = $request->query('filter');
         $month = $request->query('month');
         $year = $request->query('year');
-
+    
         $query = Ticket::leftJoin('ratings', 'tickets.control_no', '=', 'ratings.control_no')
             ->select(
                 'tickets.control_no',
@@ -294,7 +294,7 @@ class Home_Controller extends Controller
                 \DB::raw('(ratings.rating * 20) as rating_percentage'),
                 \DB::raw('TIMESTAMPDIFF(SECOND, tickets.time_in, tickets.time_out) as duration_seconds')
             );
-
+    
         // Apply filtering
         if ($filter === 'weekly') {
             $query->whereBetween('tickets.time_in', [now()->startOfWeek(), now()->endOfWeek()]);
@@ -303,20 +303,50 @@ class Home_Controller extends Controller
         } elseif ($filter === 'annually') {
             $query->whereYear('tickets.time_in', $year);
         }
-
+    
         // Fetch all records (no pagination)
         $tickets = $query->get();
-
+    
         // Format duration
         $tickets->transform(function ($ticket) {
             $ticket->duration = $this->formatDuration($ticket->duration_seconds);
             unset($ticket->duration_seconds); // Remove unnecessary field
             return $ticket;
         });
+    
+        // Format the data for CSV export
+        $formattedTickets = $tickets->map(function ($ticket) {
+            return [
+                'Control No' => $ticket->control_no,
+                'Date Time' => $ticket->date_time,
+                'Name' => $ticket->name,
+                'Department' => $ticket->department,
+                'Concern' => $ticket->concern,
+                'Priority' => $ticket->priority,
+                'Status' => $ticket->status,
+                'Remarks' => $this->escapeCsvValue($ticket->remarks), // Escape special characters
+                'Time In' => $ticket->time_in,
+                'Time Out' => $ticket->time_out,
+                'Rating' => $ticket->rating,
+                'Rating Remark' => $this->escapeCsvValue($ticket->remark), // Escape special characters
+                'Rating Percentage' => $ticket->rating_percentage,
+                'Duration' => $ticket->duration,
+            ];
+        });
 
-        return response()->json($tickets);
+        return response()->json($formattedTickets);
     }
 
+    private function escapeCsvValue($value)
+    {
+        // Escape double quotes by doubling them
+        $value = str_replace('"', '""', $value);
+        // Wrap the value in double quotes if it contains commas or line breaks
+        if (strpos($value, ',') !== false || strpos($value, "\n") !== false) {
+            $value = '"' . $value . '"';
+        }
+        return $value;
+    }
     public function fetchTicketData(Request $request)
     {
         $selectedDate = $request->get('month', Carbon::now()->format('Y-m'));

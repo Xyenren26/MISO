@@ -15,16 +15,34 @@ class VerificationController extends Controller
     public function sendVerificationEmail(Request $request)
     {
         $user = auth()->user();
-
+    
+        // Check if the user's email is already verified
         if ($user->email_verified_at) {
-            return back()->with('message', 'Your email is already verified.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Your email is already verified.'
+            ], 400); // 400 Bad Request status code
         }
-
-        Mail::to($user->email)->send(new VerificationMail($user));
-
-        return back()->with('message', 'Verification email sent!');
+    
+        try {
+            // Send the verification email
+            Mail::to($user->email)->send(new VerificationMail($user));
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Verification email sent! Check your inbox.'
+            ]);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Failed to send verification email: ' . $e->getMessage());
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send verification email. Please try again later.'
+            ], 500); // 500 Internal Server Error status code
+        }
     }
-
+    
     public function verifyEmail(Request $request, $id, $hash)
     {
         $expires = $request->input('expires');

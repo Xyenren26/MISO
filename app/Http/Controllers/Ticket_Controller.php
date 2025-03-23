@@ -441,24 +441,24 @@ class Ticket_Controller extends Controller
     public function updateRemarks(Request $request)
     {
         // Validate the request inputs
-        $request->validate([
-            'control_no' => 'required|string|exists:tickets,control_no',
-            'remarks' => 'required|string|max:255',
-            'status' => 'required|in:completed,endorsed,technical-report,pull-out',
-        ]);
-
         try {
+            $validatedData = $request->validate([
+                'control_no' => 'required|string|exists:tickets,control_no',
+                'remarks' => 'required|string|max:255', // Increased max length
+                'status' => 'required|in:completed,endorsed,technical-report,pull-out',
+            ]);
+    
             // Find the ticket by control number
             $ticket = Ticket::where('control_no', $request->control_no)->firstOrFail();
             $ticket->remarks = $request->remarks;
             $ticket->status = $request->status;  // Update the status
             $ticket->save();
-
+    
             // Retrieve the end user ID (assuming ticket has a `user_id` field)
             $EndUserID = $ticket->employee_id;
-
+    
             $statusFormatted = ucwords(str_replace('-', ' ', $ticket->status));
-
+    
             $message = "Hello, {$ticket->name} your ticket with Ticket No:{$ticket->control_no} 
                         has been updated to Status: {$statusFormatted}, with 
                         Remarks: {$ticket->remarks} by {$ticket->technical_support_name} 
@@ -467,8 +467,7 @@ class Ticket_Controller extends Controller
                         If you have any question related to your Ticket Service Request Please fill free to Inquire.
                         
                         Thank you by TechTrack Team.";
-
-
+    
             // Create a new message to notify the end user
             ChMessage::create([
                 'from_id' => auth()->id(), // Sender (could be admin or support staff)
@@ -477,34 +476,44 @@ class Ticket_Controller extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
+    
             // Fetch user email based on employee_id
             $user = User::where('employee_id', $ticket->employee_id)->first();
-
+    
             // Send email notification if user exists and has an email
             if ($user && $user->email) {
                 Mail::to($user->email)->send(new TicketRemarkUpdate($ticket));
             }
-
+    
             // Handle specific logic if the ticket status is "endorsed"
             if ($ticket->status === 'endorsed') {
-            $this->createEndorsement($ticket);  // Your custom logic for endorsements
+                $this->createEndorsement($ticket);  // Your custom logic for endorsements
             }
+    
             // Handle specific logic if the ticket status is "pull-out"
             if ($ticket->status === 'pull-out') {
                 $this->handlePullOut($ticket);  // Your custom logic for pull-out
             }
-
+    
             // Return a success response
             return response()->json(['message' => 'Ticket updated successfully.'], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('Failed to update ticket and endorsement:', ['error' => $e->getMessage()]);
-            
+    
             // Return an error message as JSON
-            return response()->json(['message' => 'Failed to update ticket.', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Failed to update ticket.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-    } 
+    }
 
     public function createEndorsement($ticket)
     {
