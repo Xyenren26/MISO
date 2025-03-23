@@ -322,7 +322,7 @@ class Report_Controller extends Controller
                 . "$endorsedTickets,"
                 . "$pullOut,"
                 . "$technicalReports,"
-                . "$averageRating\n";
+                . "$ratingPercentage\n"; // Use $ratingPercentage instead of $averageRating
         }
 
         // Return CSV as a response

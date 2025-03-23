@@ -8,7 +8,7 @@
         /* Global Styles */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fa;
+            background-color: #ffffff; /* White background for PDF */
             color: #003067;
             margin: 0;
             padding: 20px;
@@ -16,13 +16,14 @@
 
         .endorsed-modal-content {
             background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            border-radius: 8px;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
 
+        /* Header Section */
         .modal-header {
             text-align: center;
             border-bottom: 2px solid #003067;
@@ -31,7 +32,7 @@
         }
 
         .modal-header h2 {
-            font-size: 28px;
+            font-size: 24px;
             margin: 10px 0;
             color: #003067;
         }
@@ -39,25 +40,10 @@
         .modal-header p {
             font-size: 16px;
             color: #555;
+            margin: 5px 0;
         }
 
-        .rating-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .rating-container label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        #starRatingTechnical {
-            color: #ffc107;
-            font-size: 24px;
-        }
-
+        /* Form Sections */
         .modal-form-section {
             margin-bottom: 20px;
         }
@@ -67,17 +53,18 @@
             font-weight: bold;
             margin-bottom: 5px;
             color: #003067;
+            font-size: 14px;
         }
 
         .modal-input-box, .modal-input-box-date {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 14px;
             color: #555;
             background-color: #f9f9f9;
-            transition: border-color 0.3s ease;
+            box-sizing: border-box;
         }
 
         .modal-input-box:disabled, .modal-input-box-date:disabled {
@@ -85,39 +72,50 @@
             color: #777;
         }
 
-        .modal-input-box:focus, .modal-input-box-date:focus {
-            border-color: #003067;
-            outline: none;
-        }
-
+        /* Two-Column Layout */
         .modal-two-column {
-            display: flex;
-            gap: 20px;
+            display: table;
+            width: 100%;
         }
 
         .modal-column {
-            flex: 1;
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+            padding-right: 10px;
         }
 
-        .modal-checkbox-group div {
-            display: flex;
-            align-items: center;
-            gap: 10px; /* Space between checkbox, label, and input */
+        .modal-column:last-child {
+            padding-right: 0;
+        }
+
+        /* Checkbox Group */
+        .modal-checkbox-group {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-row {
             margin-bottom: 10px;
         }
 
-        .modal-checkbox-group input[type="checkbox"] {
-            margin-right: 10px;
+        .checkbox-row label {
+            display: inline-block;
+            min-width: 150px;
+            color: #003067;
+            font-size: 14px;
         }
 
-        .modal-checkbox-group label {
-            min-width: 100px; /* Adjust as needed */
+        .checkbox-row input[type="text"] {
+            width: calc(100% - 160px);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #555;
+            background-color: #f9f9f9;
         }
 
-        .modal-checkbox-group input[type="text"] {
-            flex: 1; /* Allow the input to take up remaining space */
-        }
-
+        /* Footer Sections */
         .modal-footer {
             border-top: 2px solid #003067;
             padding-top: 20px;
@@ -125,28 +123,36 @@
         }
 
         .modal-footer h3 {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 15px;
             color: #003067;
         }
 
         .modal-stacked-date-time {
-            display: flex;
-            gap: 20px;
+            margin-bottom: 15px;
         }
 
         .modal-stacked-date-time div {
-            flex: 1;
+            display: inline-block;
+            width: 48%;
+            margin-right: 2%;
         }
 
+        .modal-stacked-date-time div:last-child {
+            margin-right: 0;
+        }
+
+        /* Approval Details Section */
         .form-popup-section {
             margin-top: 20px;
         }
 
         .form-popup-title {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 15px;
             color: #003067;
+            border-bottom: 2px solid #003067;
+            padding-bottom: 8px;
         }
 
         .form-popup-input-group {
@@ -158,17 +164,17 @@
             font-weight: bold;
             margin-bottom: 5px;
             color: #003067;
+            font-size: 14px;
         }
 
         .form-popup-input {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 14px;
             color: #555;
             background-color: #f9f9f9;
-            transition: border-color 0.3s ease;
         }
 
         .form-popup-input:disabled {
@@ -176,47 +182,23 @@
             color: #777;
         }
 
+        /* Technical Support Division Head */
+        .form-popup-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #003067;
+            border-bottom: 2px solid #003067;
+            padding-bottom: 8px;
+        }
+
         .form-popup-input-group-approval {
-            margin-top: 20px;
+            margin-bottom: 15px;
         }
 
         .form-popup-input-group-approval label {
             font-weight: bold;
             color: #003067;
-        }
-        .modal-checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px; /* Space between rows */
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px; /* Space between checkbox, label, and input */
-            width: 100%;
-        }
-
-        .checkbox-row label {
-            min-width: 150px; /* Adjust this value to align all labels */
-            text-align: left; /* Align text to the left */
-        }
-
-        .checkbox-row input[type="text"] {
-            flex: 1; /* Allow the input to take up remaining space */
-            min-width: 200px; /* Adjust this value as needed */
-        }
-        
-
-        /* Animation for Input Focus */
-        @keyframes inputFocus {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .modal-input-box:focus, .modal-input-box-date:focus, .form-popup-input:focus {
-            animation: inputFocus 0.3s ease;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -250,8 +232,8 @@
                         @if(!empty($network))
                             @foreach($network as $item)
                                 <div class="checkbox-row">
-                                    <label>{{ $item }}</label> <!-- Display the network concern -->
-                                    <input type="text" value="{{ $network_details[$item] ?? '' }}" readonly> <!-- Display the corresponding details -->
+                                    <label>{{ $item }}</label>
+                                    <input type="text" value="{{ $network_details[$item] ?? '' }}" readonly>
                                 </div>
                             @endforeach
                         @else
@@ -316,8 +298,8 @@
             <div class="form-popup-input-group">
                 <label class="form-popup-label">Noted By:</label>
                 <input class="form-popup-input" value="{{ $approve['name'] }}" readonly disabled>
-            </div>    
-            <div class="form-popup-input-group"> 
+            </div>
+            <div class="form-popup-input-group">
                 <label class="form-popup-label">Approval Date:</label>
                 <input class="form-popup-input" value="{{ $approve['approve_date'] }}" readonly disabled>
             </div>

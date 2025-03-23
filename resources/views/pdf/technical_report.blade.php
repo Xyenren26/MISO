@@ -19,19 +19,19 @@
             margin: 0 auto;
             padding: 20px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            background: #fff;
+            border-radius: 4px;
+            background: #ffffff;
         }
 
         /* Header */
         .form-header {
             font-size: 24px;
-            font-weight: 600;
+            font-weight: 700;
             color: #003067;
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #003067;
             padding-bottom: 10px;
+            border-bottom: 2px solid #003067;
         }
 
         /* Rating Container */
@@ -43,6 +43,7 @@
         .rating-container label {
             font-weight: bold;
             color: #003067;
+            font-size: 16px;
         }
 
         #starRatingTechnical {
@@ -60,6 +61,7 @@
             color: #003067;
             display: block;
             margin-bottom: 5px;
+            font-size: 14px;
         }
 
         .form-group input,
@@ -84,12 +86,12 @@
         }
 
         .form-popup-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 700;
             color: #003067;
             margin-bottom: 15px;
-            border-bottom: 2px solid #003067;
             padding-bottom: 8px;
+            border-bottom: 2px solid #003067;
         }
 
         .form-popup-input-group {
@@ -101,6 +103,7 @@
             color: #003067;
             display: block;
             margin-bottom: 5px;
+            font-size: 14px;
         }
 
         .form-popup-input {
@@ -110,6 +113,16 @@
             border-radius: 4px;
             background: #f9f9f9;
             font-size: 14px;
+        }
+
+        /* Technical Support Division Head */
+        .form-popup-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #003067;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #003067;
         }
     </style>
 </head>
@@ -121,7 +134,7 @@
             <div id="starRatingTechnical" class="star-rating">{{ $rating }}
                 @php
                     $ratingValue = (int)$rating;
-                    echo str_repeat('★', $ratingValue) . str_repeat('☆', 5 - $ratingValue);
+                    echo str_repeat('*', $ratingValue) . str_repeat('', 5 - $ratingValue);
                 @endphp
             </div>
         </div>
