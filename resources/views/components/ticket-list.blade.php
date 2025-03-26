@@ -192,7 +192,7 @@
                                 $ticket->isRemarksDone &&
                                 !$ticket->isApproved &&
                                 Auth::user()->account_type === 'technical_support_head' &&
-                                $ticket->existsInModels
+                                $ticket->existsInModels &&
                                 !$ticket->isRepaired
                             )
 

@@ -163,8 +163,10 @@
         If you have any questions about this Privacy Policy, please contact us:
         <ul>
           <li>Email: <a href="mailto:pasigmiso@pasig.city.com">pasigmiso@pasig.city.com</a></li>
-          <li>Phone: +63 123-2131</li>
-          <li>Address: Pasig City</li>
+          <li>Phone: (Tel) 8343-11 / Local 1313</li>
+          <li>Main City Hall: Caruncho Avenue, Pasig City</li>
+          <li>Temporary City Hall (for some offices): Eulogio Amang Rodriguez Avenue in Barangay Rosario
+          Pasig City Hall Annex: 3341 Kaginhawaan, Pasig</li>
         </ul>
       </p>
     </div>
