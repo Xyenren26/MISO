@@ -63,12 +63,15 @@ class Profile_Controller extends Controller
             'is_first_login' => false, // Mark profile as complete
         ]);
 
-        // If the account type is technical_support, set status to inactive
-        if ($accountType === 'technical_support') {
-            $user->update([
-                'status' => 'inactive', // Set status to inactive
-            ]);
-        }
+        $currentSessionId = session()->getId();
+        // Generate & save new session_id and remember_token
+        $user->remember_token = Str::random(60);
+        $user->session_id = $currentSessionId; // Store the new session ID
+        $user->last_activity = now();
+        $user->active_status = true;
+        $user->save();
+
+        session(['user_id' => $user->id, 'last_activity' => now()]);
         return $this->redirectUser($user);
     }
 
@@ -92,9 +95,7 @@ class Profile_Controller extends Controller
          } elseif ($user->account_type === 'administrator') {
              return redirect()->route('report'); // Redirect administrator to Reports and Analytics
          } elseif ($user->account_type === 'technical_support') {
-            // Logout the user and redirect to login
-            Auth::logout();
-             return redirect()->route('login')->with('success', 'Successful Finish profile, your account is temporary inactive please contact the administrator');
+             return redirect('/home'); // Redirect to employee's home page
          }
      }
 

@@ -128,20 +128,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Password visibility toggle
-  window.togglePasswordVisibility = function (inputId) {
+  window.togglePasswordVisibility = function (inputId, toggleId) {
     const passwordInput = document.getElementById(inputId);
-    const eyeIcon = document.querySelector(`#toggle-${inputId} i`);
+    const eyeIcon = document.getElementById(toggleId); // Directly reference ID
+
     if (passwordInput.type === "password") {
-      passwordInput.type = "text";
-      eyeIcon.classList.remove("fa-eye");
-      eyeIcon.classList.add("fa-eye-slash");
+        passwordInput.type = "text";
+        eyeIcon.classList.remove("fa-eye");
+        eyeIcon.classList.add("fa-eye-slash");
     } else {
-      passwordInput.type = "password";
-      eyeIcon.classList.remove("fa-eye-slash");
-      eyeIcon.classList.add("fa-eye");
+        passwordInput.type = "password";
+        eyeIcon.classList.remove("fa-eye-slash");
+        eyeIcon.classList.add("fa-eye");
     }
-  };
+};
 
   // Modal elements
   const modal = document.getElementById("privacy-policy-modal");

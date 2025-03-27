@@ -38,23 +38,24 @@
 
         <!-- Password and Confirm Password in a Row -->
         <div class="form-group-row">
-          <div class="form-group">
-            <label for="password">Password</label>
-            <div class="input-wrapper">
-              <input type="password" id="password" name="password"  placeholder="Password" required>
-              <!-- FontAwesome Eye Icon for visibility toggle -->
-              <i id="toggle-password" class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('password')"></i>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <!-- FontAwesome Eye Icon for visibility toggle -->
+                    <i id="toggle-password" class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('password', 'toggle-password')"></i>
+                </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="password_confirmation">Confirm Password</label>
-            <div class="input-wrapper">
-              <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password" required>
-              <!-- FontAwesome Eye Icon for visibility toggle -->
-              <i id="toggle-password-confirm" class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('password_confirmation')"></i>
+            <div class="form-group">
+                <label for="password_confirmation">Confirm Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password" required>
+                    <!-- FontAwesome Eye Icon for visibility toggle -->
+                    <i id="toggle-password-confirm" class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('password_confirmation', 'toggle-password-confirm')"></i>
+                </div>
             </div>
-          </div>
         </div>
+
 
          <!-- Privacy Policy -->
          <div class="form-group checkbox-group">

@@ -24,6 +24,7 @@ class Signup_Controller extends Controller
             'employee_id' => $request->input('employee-id'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'status' => 'inactive', // Set status to inactive
         ]);
 
         // Fetch the user again from the database using their email
@@ -33,6 +34,6 @@ class Signup_Controller extends Controller
         Mail::to($user->email)->send(new WelcomeEmail($user));
 
         // Redirect to login with success message
-        return redirect()->route('login')->with('success', 'Account created successfully. Please log in.');
+        return redirect()->route('login')->with('success', 'Successful created, your account is temporary inactive please contact the administrator');
     }
 }
