@@ -159,7 +159,8 @@
         </section>
 
         <!-- Buttons -->
-        <button type="button" id="ButtonDownloadTechnical" onclick="downloadModalAsPDFTechnical()">Download PDF</button>
+        <button type="button" id="ButtonDownloadTechnical" onclick="downloadModalAsPDFTechnical()"  @if(auth()->user()->account_type === 'end_user') disabled @endif>
+        Download PDF</button>
         @if(in_array(auth()->user()->account_type, ['technical_support', 'technical_support_head']))
             <button type="button" id="ButtonEditTechnical" onclick="toggleEditMode()">Edit</button>
         @endif

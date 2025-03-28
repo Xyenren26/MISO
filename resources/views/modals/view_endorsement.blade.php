@@ -212,7 +212,8 @@
                 <input class="form-popup-input" id="viewApproveDate" readonly disabled>
             </div>
         </section>
-        <button type="button" id="ButtonEndorsement" onclick="downloadModalAsPDF()">Download PDF</button>
+        <button type="button" id="ButtonEndorsement" onclick="downloadModalAsPDF()"   @if(auth()->user()->account_type === 'end_user') disabled @endif>
+        Download PDF</button>
         @if(in_array(auth()->user()->account_type, ['technical_support', 'technical_support_head']))
             <!-- Update and Save Button -->
             <button type="button" id="updateEndorsementButton" onclick="enableEditing()">Update</button>

@@ -24,10 +24,18 @@
             
             @if(auth()->user()->account_type == 'end_user')
                 <div class="employeeticketssection">
-                    <button class="employeetickets" id="requestSupportButton" onclick="openTicketFormModal()">
-                        <span class="employeeticketsicon">➕</span> 
-                        <span class="employeeticketstext">Request Support</span>
-                    </button>
+                    @if(is_null(auth()->user()->email_verified_at))
+                        <p style="color: red; margin-bottom: 10px;">Please validate your email first</p>
+                        <button class="employeetickets" disabled style="background-color: gray; cursor: not-allowed;">
+                            <span class="employeeticketsicon">➕</span> 
+                            <span class="employeeticketstext">Request Support</span>
+                        </button>
+                    @else
+                        <button class="employeetickets" id="requestSupportButton" onclick="openTicketFormModal()">
+                            <span class="employeeticketsicon">➕</span> 
+                            <span class="employeeticketstext">Request Support</span>
+                        </button>
+                    @endif
                     <!-- Message placeholder -->
                     <p id="ticketMessage" style="display: none; color: red; margin-top: 10px;"></p>
                 </div>

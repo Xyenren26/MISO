@@ -63,7 +63,7 @@
 </head>
 <body>
     <div class="container">
-    <img src="https://i.imgur.com/aQrIRgy.png" alt="System Logo" class="logo">
+        <img src="https://i.imgur.com/aQrIRgy.png" alt="System Logo" class="logo">
         <h2>Hello, {{ $user->first_name }}!</h2>
         <p>Thank you for registering. Please verify your email by clicking the button below:</p>
 

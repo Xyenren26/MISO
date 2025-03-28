@@ -190,9 +190,11 @@
 
                             @if (
                                 $ticket->isRemarksDone &&
-                                !$ticket->isApproved &&
+                                $ticket->isApproved &&
                                 Auth::user()->account_type === 'technical_support_head' &&
                                 $ticket->existsInModels &&
+                                $ticket->status == 'pull-out' &&
+                                $ticket->formfillup && &&
                                 !$ticket->isRepaired
                             )
 
