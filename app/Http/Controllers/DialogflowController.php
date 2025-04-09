@@ -15,13 +15,29 @@ class DialogflowController extends Controller
         $intentName = $request->input('queryResult.intent.displayName');
 
         if ($intentName === 'Default Fallback Intent') {
-            // Call Google Gemini API instead of OpenAI
-            $response = Http::post("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" . env('GEMINI_API_KEY'), [
-                'contents' => [['parts' => [['text' => $queryText]]]]
+            $openAiApiKey = env('OPENAI_API_KEY');
+            $openAiUrl = "https://api.openai.com/v1/chat/completions";
+        
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer $openAiApiKey",
+                'Content-Type' => 'application/json'
+            ])->post($openAiUrl, [
+                'model' => 'gpt-4', // or 'gpt-3.5-turbo'
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are a helpful assistant.'],
+                    ['role' => 'user', 'content' => $queryText]
+                ]
             ]);
-            \Log::info('Gemini API Response', $response->json()); // Log API response
 
-            $responseText = $response->json('candidates.0.content.parts.0.text', 'Sorry, I do not understand.');
+            // Log the OpenAI response
+            \Log::info('OpenAI API Response', $response->json());
+
+            if ($response->successful()) {
+                $responseText = data_get($response->json(), 'choices.0.message.content', 'Sorry, I do not understand.');
+            } else {
+                $responseText = 'Sorry, I am currently unavailable.';
+                \Log::error('OpenAI API Error', $response->json());
+            }
         } else {
             $responseText = "I understood your intent: $intentName.";
         }

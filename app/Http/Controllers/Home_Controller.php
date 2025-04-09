@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Models\ServiceRequest;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
+use App\Models\PdfPassword;
+use Dompdf\Dompdf;
 
 class Home_Controller extends Controller
 {
@@ -159,7 +164,7 @@ class Home_Controller extends Controller
             )
             ->whereBetween('tickets.created_at', [$startOfWeek, $endOfWeek]) // Filter for the current week
             ->where('tickets.technical_support_id', Auth::user()->employee_id)
-            ->paginate(10);
+            ->paginate(5);
     
         // Format the duration for each ticket
         $ticketRecords->transform(function ($ticket) {
@@ -248,7 +253,8 @@ class Home_Controller extends Controller
                 'ratings.remark',
                 \DB::raw('(ratings.rating * 20) as rating_percentage'),
                 \DB::raw('TIMESTAMPDIFF(SECOND, tickets.time_in, tickets.time_out) as duration_seconds')
-            );
+            )
+            ->where('tickets.technical_support_id', auth()->user()->employee_id); // Add this line to filter by the authenticated user's employee_id
 
         // Apply filtering based on the selected option
         if ($filter === 'weekly') {
@@ -260,7 +266,7 @@ class Home_Controller extends Controller
         }
 
         // Fetch results with pagination
-        $tickets = $query->paginate(10);
+        $tickets = $query->paginate(5);
 
         // Format the duration for each ticket
         $tickets->transform(function ($ticket) {
@@ -269,16 +275,23 @@ class Home_Controller extends Controller
         });
 
         return response()->json($tickets);
-    } 
+    }
 
     public function exportTickets(Request $request)
     {
-        $filter = $request->query('filter');
-        $month = $request->query('month');
-        $year = $request->query('year');
+        // First, clean up any expired passwords before creating new ones
+        \App\Models\PdfPassword::deleteExpired();
+        
+        // Validate request parameters
+        $request->validate([
+            'filter' => 'required|in:weekly,monthly,annually',
+            'month' => 'required_if:filter,monthly|numeric|between:1,12',
+            'year' => 'required|numeric|digits:4'
+        ]);
     
+        // Query construction - updated to use created_at and updated_at
         $query = Ticket::leftJoin('ratings', 'tickets.control_no', '=', 'ratings.control_no')
-            ->select(
+            ->select([
                 'tickets.control_no',
                 'tickets.created_at as date_time',
                 'tickets.name',
@@ -287,66 +300,109 @@ class Home_Controller extends Controller
                 'tickets.priority',
                 'tickets.status',
                 'tickets.remarks',
-                'tickets.time_in',
-                'tickets.time_out',
+                'tickets.created_at as time_in',  // Changed from time_in to created_at
+                'tickets.updated_at as time_out', // Changed from time_out to updated_at
                 'ratings.rating',
                 'ratings.remark',
                 \DB::raw('(ratings.rating * 20) as rating_percentage'),
-                \DB::raw('TIMESTAMPDIFF(SECOND, tickets.time_in, tickets.time_out) as duration_seconds')
-            );
+                \DB::raw('TIMESTAMPDIFF(SECOND, tickets.created_at, tickets.updated_at) as duration_seconds')
+            ])  ->where('tickets.technical_support_id', auth()->user()->employee_id);
     
-        // Apply filtering
-        if ($filter === 'weekly') {
-            $query->whereBetween('tickets.time_in', [now()->startOfWeek(), now()->endOfWeek()]);
-        } elseif ($filter === 'monthly') {
-            $query->whereYear('tickets.time_in', $year)->whereMonth('tickets.time_in', $month);
-        } elseif ($filter === 'annually') {
-            $query->whereYear('tickets.time_in', $year);
+        // Apply filters - updated to use created_at instead of time_in
+        switch ($request->filter) {
+            case 'weekly':
+                $query->whereBetween('tickets.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                break;
+            case 'monthly':
+                $query->whereYear('tickets.created_at', $request->year)
+                    ->whereMonth('tickets.created_at', $request->month);
+                break;
+            case 'annually':
+                $query->whereYear('tickets.created_at', $request->year);
+                break;
         }
     
-        // Fetch all records (no pagination)
-        $tickets = $query->get();
-    
-        // Format duration
-        $tickets->transform(function ($ticket) {
-            $ticket->duration = $this->formatDuration($ticket->duration_seconds);
-            unset($ticket->duration_seconds); // Remove unnecessary field
-            return $ticket;
-        });
-    
-        // Format the data for CSV export
-        $formattedTickets = $tickets->map(function ($ticket) {
+        $tickets = $query->get()->map(function ($ticket) {
             return [
-                'Control No' => $ticket->control_no,
-                'Date Time' => $ticket->date_time,
-                'Name' => $ticket->name,
-                'Department' => $ticket->department,
-                'Concern' => $ticket->concern,
-                'Priority' => $ticket->priority,
-                'Status' => $ticket->status,
-                'Remarks' => $this->escapeCsvValue($ticket->remarks), // Escape special characters
-                'Time In' => $ticket->time_in,
-                'Time Out' => $ticket->time_out,
-                'Rating' => $ticket->rating,
-                'Rating Remark' => $this->escapeCsvValue($ticket->remark), // Escape special characters
-                'Rating Percentage' => $ticket->rating_percentage,
-                'Duration' => $ticket->duration,
+                ...$ticket->toArray(),
+                'duration' => $this->formatDurations($ticket->duration_seconds)
             ];
         });
-
-        return response()->json($formattedTickets);
-    }
-
-    private function escapeCsvValue($value)
-    {
-        // Escape double quotes by doubling them
-        $value = str_replace('"', '""', $value);
-        // Wrap the value in double quotes if it contains commas or line breaks
-        if (strpos($value, ',') !== false || strpos($value, "\n") !== false) {
-            $value = '"' . $value . '"';
+    
+        // Rest of your code remains the same...
+        $passwords = [
+            'open' => 'OPEN_' . Str::random(8) . rand(10, 99),
+            'owner' => 'OWNER_' . Str::random(10) . rand(100, 999),
+            'expires_at' => now()->addHours(2)->toDateTimeString()
+        ];
+    
+        $passwordRecord = auth()->user()->pdfPasswords()->create([
+            'passwords' => $passwords,
+            'document_name' => 'tickets_report_' . now()->format('YmdHis'),
+            'ip_address' => $request->ip(),
+            'expires_at' => now()->addHours(2)
+        ]);
+    
+        $pdf = PDF::loadView('pdf.secure-tickets', [
+            'tickets' => $tickets,
+            'filter' => $request->filter,
+            'month' => $request->month,
+            'year' => $request->year
+        ]);
+    
+        $dompdf = $pdf->getDomPDF();
+        $dompdf->getCanvas()->get_cpdf()->setEncryption(
+            $passwords['open'],
+            $passwords['owner'],
+            ['print'],
+            'AES-256'
+        );
+    
+        $pdfContent = $pdf->output();
+        if (!str_contains($pdfContent, '/Encrypt')) {
+            logger()->error('PDF encryption failed');
+            throw new \RuntimeException('Failed to secure PDF document');
         }
-        return $value;
+    
+        return response()->json([
+            'pdf' => "data:application/pdf;base64," . base64_encode($pdfContent),
+            'passwords' => $passwords,
+            'download_name' => $this->generateFilename($request->filter, $request->year)
+        ]);
     }
+    
+    // Keep your existing formatDurations and generateFilename methods
+
+    private function formatDurations($seconds)
+    {
+        $days = floor($seconds / (3600 * 24));
+        $hours = floor(($seconds % (3600 * 24)) / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+        
+        $parts = [];
+        if ($days > 0) {
+            $parts[] = $days . 'd';
+        }
+        if ($hours > 0) {
+            $parts[] = $hours . 'h';
+        }
+        if ($minutes > 0 || empty($parts)) {
+            $parts[] = $minutes . 'm';
+        }
+        
+        return implode(' ', $parts);
+    }
+
+    private function generateFilename($filter, $year)
+    {
+        return sprintf(
+            'Tickets_%s_%s_%s.pdf',
+            $filter,
+            $year,
+            now()->format('YmdHis')
+        );
+    }
+
     public function fetchTicketData(Request $request)
     {
         $selectedDate = $request->get('month', Carbon::now()->format('Y-m'));

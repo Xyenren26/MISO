@@ -91,6 +91,9 @@
                     <li class="{{ Request::is('announcements*') ? 'active' : '' }}">
                         <a href="{{ route('announcements.index') }}"><i class="fas fa-bullhorn"></i><span class="menu-label">Announcements</span></a>
                     </li>
+                    <li class="{{ Request::is('concerns*') ? 'active' : '' }}">
+                        <a href="{{ route('concerns.index') }}"><i class="fas fa-bullhorn"></i><span class="menu-label">Concerns</span></a>
+                    </li>
                 </div>
             </ul>
         @endif

@@ -43,6 +43,18 @@ class Ticket extends Model
         return $this->belongsTo(TechnicalSupport::class, 'technical_support_id', 'id');
     }
 
+    public function equipment()
+    {
+        return $this->hasOneThrough(
+            EquipmentDescription::class,
+            ServiceRequest::class,
+            'ticket_id',       // Foreign key on service_requests table
+            'form_no',         // Foreign key on equipment_descriptions table
+            'control_no',      // Local key on tickets table
+            'form_no'          // Local key on service_requests table
+        );
+    }
+
     public function history()
     {
         return $this->hasMany(TicketHistory::class, 'ticket_id', 'control_no');

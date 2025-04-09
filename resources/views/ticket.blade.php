@@ -90,7 +90,7 @@
     <div class="spacer"></div>
 
    <!-- Filter and Add New Ticket Section (Right side) -->
-    <div class="filter-section">
+    <!--<div class="filter-section">
         <div class="dropdown">
             <button class="dropdown-button">
                 <i class="fas fa-filter"></i> Filter Record <span class="arrow">&#x25BC;</span>
@@ -103,7 +103,7 @@
                 <a href="javascript:void(0);" onclick="filterByPriority('low')">Low</a>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Date Filter -->
     <div class="date-filter-container">

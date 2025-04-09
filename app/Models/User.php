@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Notifications\CustomResetPassword;
 use Illuminate\Auth\Notifications\ResetPassword;
 
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
@@ -103,5 +104,30 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPassword($token));
+    }
+
+    public function pdfPasswords()
+    {
+        return $this->hasMany(\App\Models\PdfPassword::class, 'employee_id', 'employee_id');
+    }
+
+    public function getLatestPdfPassword()
+    {
+        return $this->pdfPasswords()
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+    }
+
+    public function isCurrentlyActive()
+    {
+        // Method 1: Check active session (recommended)
+        return \DB::table('sessions')
+            ->where('user_id', $this->id)
+            ->where('last_activity', '>=', now()->subMinutes(config('auth.lifetime', 120)))
+            ->exists();
+
+        // OR Method 2: Check remember token (alternative)
+        // return $this->remember_token && $this->last_seen_at > now()->subMinutes(30);
     }
 }

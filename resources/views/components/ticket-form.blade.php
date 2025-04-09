@@ -52,69 +52,31 @@
                     <div class="form-row">
                         <label for="concern">Concern/Problem:</label>
                         <div class="issue-dropdown">
-                            <button class="issue-dropbtn" id="selectedConcerns">Select Concern</button>
-                            <div class="issue-dropdown-content">
-                                <label><input type="radio" name="issues[]" value="Hardware Issue" onchange="updateSelectedConcerns(); toggleSubDropdown('hardwareissueDropdown', this); setPriority('urgent')"> Hardware Issue</label>
-                                <label><input type="radio" name="issues[]" value="Software Issue" onchange="updateSelectedConcerns(); toggleSubDropdown('softwareissueDropdown', this); setPriority('high')"> Software Issue</label>
-                                <label><input type="radio" name="issues[]" value="File Transfer" onchange="updateSelectedConcerns(); toggleSubDropdown('filetransferDropdown', this); setPriority('low')"> File Transfer</label>
-                                <label><input type="radio" name="issues[]" value="Network Connectivity" onchange="updateSelectedConcerns(); toggleSubDropdown('networkconnectivityDropdown', this); setPriority('medium')"> Network Connectivity</label>
-                                <label><input type="radio" name="issues[]" value="Other" id="otherIssueCheckbox" onchange="toggleOtherInput(); updateSelectedConcerns(); setPriority('medium')"> Other: Specify</label>
+                            <button class="issue-dropbtn" id="selectedConcerns" disabled>Select Concern</button>
+                            <div class="issue-dropdown-content" id="mainConcernsDropdown">
+                                <!-- Main concerns will be loaded dynamically from database -->
+                                @foreach($mainConcerns as $concern)
+                                    <label>
+                                        <input type="radio" name="issues[]" value="{{ $concern->name }}" 
+                                            data-concern-id="{{ $concern->id }}"
+                                            data-assigned-user-id="{{ $concern->assigned_user_id }}"
+                                            data-assign-to-all="{{ $concern->assign_to_all_tech }}"
+                                            data-default-priority="{{ $concern->default_priority }}"
+                                            onchange="loadSubConcerns(this); updateSelectedConcerns(); setPriority(this.dataset.defaultPriority || 'medium')">
+                                        {{ $concern->name }}
+                                    </label>
+                                @endforeach
+                                <label>
+                                    <input type="radio" name="issues[]" value="Other" id="otherIssueCheckbox" 
+                                        onchange="toggleOtherInput(); updateSelectedConcerns(); setPriority('medium')">
+                                    Other: Specify
+                                </label>
                             </div>
                         </div>
 
-                        <!-- Sub-dropdowns for specific concerns -->
-                        <div id="hardwareissueDropdown" class="sub-dropdown" style="display: none;">
-                            <label for="hardwareIssue">Hardware Issues:</label>
-                            <select id="hardwareIssue" name="hardwareIssue" onchange="toggleOtherSubInput(this, 'hardwareOtherInput'); updateSelectedConcerns()">
-                                <option value="">Select Hardware Issue</option>
-                                <option value="Broken Screen">Broken Screen</option>
-                                <option value="Battery Issue">Battery Issue</option>
-                                <option value="Keyboard Malfunction">Keyboard Malfunction</option>
-                                <option value="Printer Not Working">Printer Not Working</option>
-                                <option value="Mouse Not Responding">Mouse Not Responding</option>
-                                <option value="Power Supply Failure">Power Supply Failure</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <input type="text" id="hardwareOtherInput" class="other-sub-issue" placeholder="Specify hardware issue" style="display: none;" oninput="updateSelectedConcerns()">
-                        </div>
-
-                        <div id="softwareissueDropdown" class="sub-dropdown" style="display: none;">
-                            <label for="softwareIssue">Software Issues:</label>
-                            <select id="softwareIssue" name="softwareIssue" onchange="toggleOtherSubInput(this, 'softwareOtherInput'); updateSelectedConcerns()">
-                                <option value="">Select Software Issue</option>
-                                <option value="System Crash">System Crash</option>
-                                <option value="Application Not Responding">Application Not Responding</option>
-                                <option value="License Expired">License Expired</option>
-                                <option value="Operating System Error">Operating System Error</option>
-                                <option value="Software Installation Failure">Software Installation Failure</option>
-                                <option value="Virus/Malware Infection">Virus/Malware Infection</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <input type="text" id="softwareOtherInput" class="other-sub-issue" placeholder="Specify software issue" style="display: none;" oninput="updateSelectedConcerns()">
-                        </div>
-
-                        <div id="filetransferDropdown" class="sub-dropdown" style="display: none;">
-                            <label for="fileTransferIssue">File Transfer Issues:</label>
-                            <select id="fileTransferIssue" name="fileTransferIssue" onchange="toggleOtherSubInput(this, 'fileTransferOtherInput'); updateSelectedConcerns()">
-                                <option value="">Select File Transfer Issue</option>
-                                <option value="Slow Transfer">Slow Transfer</option>
-                                <option value="File Corruption">File Corruption</option>
-                                <option value="Permission Denied">Permission Denied</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <input type="text" id="fileTransferOtherInput" class="other-sub-issue" placeholder="Specify file transfer issue" style="display: none;" oninput="updateSelectedConcerns()">
-                        </div>
-
-                        <div id="networkconnectivityDropdown" class="sub-dropdown" style="display: none;">
-                            <label for="networkIssue">Network Connectivity Issues:</label>
-                            <select id="networkIssue" name="networkIssue" onchange="toggleOtherSubInput(this, 'networkOtherInput'); updateSelectedConcerns()">
-                                <option value="">Select Network Issue</option>
-                                <option value="No Internet">No Internet</option>
-                                <option value="Slow Connection">Slow Connection</option>
-                                <option value="Frequent Disconnections">Frequent Disconnections</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <input type="text" id="networkOtherInput" class="other-sub-issue" placeholder="Specify network issue" style="display: none;" oninput="updateSelectedConcerns()">
+                        <!-- Dynamic sub-dropdown container -->
+                        <div id="subConcernsContainer">
+                            <!-- Sub-concerns will be loaded here dynamically -->
                         </div>
 
                         <div id="otherConcernContainer" style="display: none;">
@@ -124,14 +86,13 @@
 
                         <label for="category">Priority:</label>
                         <select id="category" name="category" required onchange="setPriority(this.value)" {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
-                            <option value="" disabled selected>Select Priority</option>
+                            <option value="" readonly selected>Select Priority</option>
                             <option value="urgent">Urgent (1-3 days)</option>
                             <option value="high">High (4-12 hours)</option>
                             <option value="medium">Medium (30 min - 4 hours)</option>
                             <option value="low">Low (10-30 min)</option>
                         </select>
-                        <!-- Hidden input for priority -->
-                        <input type="hidden" name="category" value="medium"> <!-- Set a default value or dynamically update it -->
+                        <input type="hidden" name="category" value="">
 
                         <!-- Priority Description -->
                         <div id="priorityDescription" style="margin-top: 10px; font-style: italic; color: #555;"></div>
@@ -152,11 +113,12 @@
                             <select id="technicalSupport" name="technicalSupport" required {{ Auth::user()->account_type === 'end_user' ? 'disabled' : '' }}>
                                 <option value="" disabled selected>Select Technical Support</option>
                                 @foreach($technicalSupports as $tech)
-                                    <option value="{{ $tech->employee_id }}">{{ $tech->first_name }} {{ $tech->last_name }}</option>
+                                    <option value="{{ $tech->employee_id }}" 
+                                        data-user-id="{{ $tech->id }}">{{ $tech->first_name }} {{ $tech->last_name }}</option>
                                 @endforeach
                             </select>
                             <!-- Hidden input for technicalSupport -->
-                            <input type="hidden" name="technicalSupport" value="{{ $technicalSupports->isNotEmpty() ? $technicalSupports[0]->employee_id : '' }}">
+                            <input type="hidden" name="technicalSupport" value="">
                         </div>
                     </div>
                 </fieldset>
@@ -174,434 +136,404 @@
         </div>
     </div>
 <script>
-    // Function to fetch departments and populate the dropdown
+    // DOM Elements
+    const elements = {
+        employeeId: document.getElementById('employeeId'),
+        errorMessage: document.getElementById('error-message'),
+        otherIssueCheckbox: document.getElementById('otherIssueCheckbox'),
+        otherConcernContainer: document.getElementById('otherConcernContainer'),
+        otherConcern: document.getElementById('otherConcern'),
+        selectedConcerns: document.getElementById('selectedConcerns'),
+        priorityDropdown: document.getElementById('category'),
+        priorityDescription: document.getElementById('priorityDescription'),
+        form: document.getElementById('ticketForm'),
+        subConcernsContainer: document.getElementById('subConcernsContainer'),
+        technicalSupportSelect: document.getElementById('technicalSupport')
+    };
+
+    // Department Functions
     async function populateDepartments() {
         try {
-            // Fetch departments from the API
             const response = await fetch('/departments');
             if (!response.ok) throw new Error('Failed to fetch departments');
             const departments = await response.json();
 
-            // Get all select elements with the class 'department-select'
-            const selectElements = document.querySelectorAll('.department-select');
-
-            // Loop through each select element
-            selectElements.forEach(select => {
-                // Clear any existing options
+            document.querySelectorAll('.department-select').forEach(select => {
                 select.innerHTML = '';
+                const defaultOption = new Option('Select Department', '');
+                select.add(defaultOption);
 
-                // Add the default option
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.text = 'Select Department';
-                select.appendChild(defaultOption);
-
-                // Loop through the grouped departments
                 for (const [groupName, groupDepartments] of Object.entries(departments)) {
-                    // Create an optgroup element
                     const optgroup = document.createElement('optgroup');
                     optgroup.label = groupName;
 
-                    // Loop through the departments in the group
                     groupDepartments.forEach(department => {
-                        // Create an option element
-                        const option = document.createElement('option');
-                        option.value = department.name;
-                        option.text = department.name;
-
-                        // Preselect the user's department (if applicable)
+                        const option = new Option(department.name, department.name);
                         if (department.name === "{{ Auth::user()->department }}") {
                             option.selected = true;
                         }
-
-                        // Append the option to the optgroup
                         optgroup.appendChild(option);
                     });
 
-                    // Append the optgroup to the select element
                     select.appendChild(optgroup);
                 }
             });
         } catch (error) {
             console.error('Error fetching departments:', error);
-            // Display a user-friendly error message in all select elements
             document.querySelectorAll('.department-select').forEach(select => {
                 select.innerHTML = '<option value="">Failed to load departments. Please try again later.</option>';
             });
         }
     }
 
-    // Call the function to populate the dropdown when the page loads
-    document.addEventListener('DOMContentLoaded', populateDepartments);
-
     // Employee ID Validation
-    const employeeIdInput = document.getElementById('employeeId');
-    const errorMessage = document.getElementById('error-message');
+    function setupEmployeeIdValidation() {
+        elements.employeeId.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').slice(0, 7);
+            if (this.value.length === 7) {
+                elements.errorMessage.style.display = 'none';
+                this.setCustomValidity('');
+            } else {
+                elements.errorMessage.style.display = 'inline';
+                this.setCustomValidity('Invalid Employee ID');
+            }
+        });
+    }
 
-    employeeIdInput.addEventListener('input', function () {
-        this.value = this.value.replace(/\D/g, '').slice(0, 7); // Allow only digits and limit to 7 characters
-
-        if (this.value.length === 7) {
-            errorMessage.style.display = 'none';
-            this.setCustomValidity('');
-        } else {
-            errorMessage.style.display = 'inline';
-            this.setCustomValidity('Invalid Employee ID');
-        }
-    });
-
-    // Toggle "Other Concern" Input Field
-    document.getElementById('otherIssueCheckbox').addEventListener('change', function() {
-        const otherContainer = document.getElementById('otherConcernContainer');
-        otherContainer.style.display = this.checked ? 'block' : 'none';
-        updateSelectedConcerns(); // Update selected concerns when toggling "Other"
-    });
-
-    // Function to hide all sub-dropdowns and the "Other Concern" input field
-    function hideAllSubDropdownsAndOtherInput() {
-        const subDropdowns = document.querySelectorAll('.sub-dropdown');
-        subDropdowns.forEach(dropdown => {
-            dropdown.style.display = 'none';
+   // Update the setupConcernHandlers function
+    function setupConcernHandlers() {
+        // Toggle "Other Concern" input
+        elements.otherIssueCheckbox.addEventListener('change', function() {
+            // Hide all sub-dropdowns first
+            hideAllSubDropdownsAndOtherInput();
+            
+            // Then show the "Other" input if checked
+            elements.otherConcernContainer.style.display = this.checked ? 'block' : 'none';
+            updateSelectedConcerns();
+            
+            // Reset technical support selection when "Other" is selected
+            if (this.checked) {
+                resetTechnicalSupport();
+            }
         });
 
-        // Hide the "Other Concern" input field
-        const otherContainer = document.getElementById('otherConcernContainer');
-        otherContainer.style.display = 'none';
-        document.getElementById('otherConcern').value = ""; // Clear the input field
+        // Event listeners for radio buttons
+        document.querySelectorAll('.issue-dropdown-content input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.id !== 'otherIssueCheckbox') {
+                    const dropdownId = `${this.value.toLowerCase().replace(/ /g, '')}Dropdown`;
+                    toggleSubDropdown(dropdownId, this);
+                }
+                updateSelectedConcerns();
+            });
+        });
+
+        // Event listener for "Other Concern" input
+        elements.otherConcern.addEventListener('input', updateSelectedConcerns);
     }
 
-    // Function to toggle sub-dropdowns
+    function hideAllSubDropdownsAndOtherInput() {
+        elements.subConcernsContainer.innerHTML = '';
+        elements.otherConcernContainer.style.display = 'none';
+        elements.otherConcern.value = '';
+    }
+
+    // Update the toggleSubDropdown function
     function toggleSubDropdown(dropdownId, radio) {
-        // Hide all sub-dropdowns and the "Other Concern" input field first
-        hideAllSubDropdownsAndOtherInput();
-
+        // Hide all sub-dropdowns
+        elements.subConcernsContainer.innerHTML = '';
+        
+        // Hide the "Other Concern" input when a different radio is selected
+        elements.otherConcernContainer.style.display = 'none';
+        elements.otherConcern.value = '';
+        
         // Show the selected sub-dropdown if the radio is checked
-        if (radio.checked) {
-            let dropdown = document.getElementById(dropdownId);
-            if (dropdown) {
-                dropdown.style.display = "block";
-            }
+        if (radio.checked && radio.id !== 'otherIssueCheckbox') {
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown) dropdown.style.display = "block";
         }
     }
 
-    // Function to toggle "Other" input in sub-dropdowns
-    function toggleOtherSubInput(selectElement, otherInputId) {
-        let otherInput = document.getElementById(otherInputId);
-        if (selectElement.value === "Other") {
-            otherInput.style.display = "block";
+    // Priority Management
+    function setPriority(priority) {
+        if (elements.priorityDropdown) {
+            elements.priorityDropdown.value = priority;
+        }
+
+        const descriptions = {
+            'urgent': 'Critical issues that need immediate attention, significantly impacting operations. (1-3 days)',
+            'high': 'Important issues that need to be addressed quickly but are not system-critical. (4-12 hours)',
+            'medium': 'Moderate impact issues that should be resolved soon but do not halt work. (30 min - 4 hours)',
+            'low': 'Minor issues or routine tasks that have minimal impact and can be scheduled later. (10-30 min)',
+            'default': 'Please select a priority level.'
+        };
+
+        if (elements.priorityDescription) {
+            elements.priorityDescription.textContent = descriptions[priority] || descriptions.default;
+        }
+    }
+
+    // Form Submission
+    function validateForm() {
+        const requiredFields = [
+            document.getElementById('first-name').value,
+            document.getElementById('last-name').value,
+            document.getElementById('department').value,
+            document.querySelector("input[name='concern']")?.value,
+            elements.priorityDropdown.value,
+            elements.employeeId.value,
+            document.getElementById('technicalSupport').value
+        ];
+
+        const otherConcernCheck = elements.otherIssueCheckbox.checked && !elements.otherConcern.value.trim();
+        const isValid = requiredFields.every(field => field) && !otherConcernCheck;
+
+        document.getElementById('errorMessage').style.display = isValid ? 'none' : 'block';
+        return isValid;
+    }
+
+    function setupFormSubmission() {
+        document.querySelector('.submit-btn').addEventListener('click', function(event) {
+            if (!validateForm()) {
+                event.preventDefault();
+            }
+        });
+    }
+
+    // Reset technical support selection
+    function resetTechnicalSupport() {
+        if (elements.technicalSupportSelect) {
+            elements.technicalSupportSelect.selectedIndex = 0;
+            document.querySelector('input[name="technicalSupport"]').value = '';
+        }
+    }
+
+    // Auto-assign technical support based on concern
+    function autoAssignTechnicalSupport(concernId, assignedUserId, assignToAllTech) {
+        if (!elements.technicalSupportSelect) return;
+        
+        // If assign_to_all_tech is true (1), auto-assign to a random technician
+        if (assignToAllTech === '1') {
+            assignRandomTechnician();
+            return;
+        }
+        
+        // If no assigned user ID, assign to a random technician
+        if (!assignedUserId || assignedUserId === 'null') {
+            assignRandomTechnician();
+            return;
+        }
+        
+        // Find the option with matching user ID
+        for (let i = 0; i < elements.technicalSupportSelect.options.length; i++) {
+            const option = elements.technicalSupportSelect.options[i];
+            if (option.dataset.userId === assignedUserId) {
+                elements.technicalSupportSelect.selectedIndex = i;
+                document.querySelector('input[name="technicalSupport"]').value = option.value;
+                return;
+            }
+        }
+        
+        // If no match found, assign to a random technician
+        assignRandomTechnician();
+    }
+
+    // Assign to a random technician
+    function assignRandomTechnician() {
+        if (!elements.technicalSupportSelect || elements.technicalSupportSelect.options.length <= 1) return;
+        
+        // Skip the first option (disabled "Select Technical Support")
+        const randomIndex = Math.floor(Math.random() * (elements.technicalSupportSelect.options.length - 1)) + 1;
+        const randomOption = elements.technicalSupportSelect.options[randomIndex];
+        
+        elements.technicalSupportSelect.selectedIndex = randomIndex;
+        document.querySelector('input[name="technicalSupport"]').value = randomOption.value;
+    }
+
+    // Dynamic Sub-Concerns
+    async function loadSubConcerns(selectedRadio) {
+        const concernId = selectedRadio.dataset.concernId;
+        if (!concernId) return;
+
+        try {
+            const response = await fetch(`/concerns/${concernId}/sub-concerns`);
+            if (!response.ok) throw new Error('Failed to fetch sub-concerns');
+            const subConcerns = await response.json();
+
+            if (subConcerns.length > 0) {
+                const dropdownId = `subConcernDropdown_${concernId}`;
+                const optionsHTML = subConcerns.map(concern => 
+                    `<option value="${concern.name}" 
+                        data-default-priority="${concern.default_priority || 'medium'}"
+                        data-assigned-user-id="${concern.assigned_user_id}"
+                        data-assign-to-all="${concern.assign_to_all_tech}"
+                        data-concern-id="${concern.id}">
+                        ${concern.name}
+                    </option>`
+                ).join('');
+
+                elements.subConcernsContainer.innerHTML = `
+                    <div id="${dropdownId}" class="sub-dropdown" style="display: block;">
+                        <label for="subConcern_${concernId}">${selectedRadio.value} Options:</label>
+                        <select id="subConcern_${concernId}" name="subConcern_${concernId}" 
+                                onchange="handleSubConcernChange(this, '${selectedRadio.value}', '${dropdownId}')">
+                            <option value="">Select ${selectedRadio.value} Option</option>
+                            ${optionsHTML}
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" id="subConcernOther_${concernId}" 
+                            class="other-sub-issue" placeholder="Specify ${selectedRadio.value.toLowerCase()} issue" 
+                            style="display: none;" oninput="updateSelectedConcerns()">
+                    </div>
+                `;
+            }
+            
+            // Auto-assign technical support based on main concern
+            autoAssignTechnicalSupport(
+                concernId,
+                selectedRadio.dataset.assignedUserId,
+                selectedRadio.dataset.assignToAll
+            );
+        } catch (error) {
+            console.error('Error loading sub-concerns:', error);
+        }
+    }
+
+    function handleSubConcernChange(selectElement, mainConcernName, dropdownId) {
+        const concernId = dropdownId.split('_')[1];
+        const otherInput = document.getElementById(`subConcernOther_${concernId}`);
+        
+        otherInput.style.display = selectElement.value === "Other" ? "block" : "none";
+        if (selectElement.value !== "Other") otherInput.value = "";
+        
+        const defaultPriority = selectElement.selectedOptions[0]?.dataset.defaultPriority || 'medium';
+        setPriority(defaultPriority);
+        updateSelectedConcerns();
+        
+        // Auto-assign technical support based on sub-concern
+        if (selectElement.value !== "Other") {
+            autoAssignTechnicalSupport(
+                selectElement.selectedOptions[0]?.dataset.concernId,
+                selectElement.selectedOptions[0]?.dataset.assignedUserId,
+                selectElement.selectedOptions[0]?.dataset.assignToAll
+            );
         } else {
-            otherInput.style.display = "none";
-            otherInput.value = "";
+            assignRandomTechnician();
         }
     }
 
-    // Function to toggle "Other Concern" Input Field
-    function toggleOtherInput() {
-        let otherCheckbox = document.getElementById("otherIssueCheckbox");
-        let otherContainer = document.getElementById("otherConcernContainer");
-        if (otherCheckbox.checked) {
-            otherContainer.style.display = "block";
-        } else {
-            otherContainer.style.display = "none";
-            document.getElementById("otherConcern").value = "";
+    function updateSelectedConcerns() {
+        const mainConcernRadio = document.querySelector('input[name="issues[]"]:checked');
+        if (!mainConcernRadio) {
+            elements.selectedConcerns.textContent = "Select Concern";
+            return;
         }
-    }
 
-    // Function to update selected concerns and set priority
-function updateSelectedConcerns() {
-    let selectedConcerns = [];
-    let priority = "medium"; // Default priority
+        const mainConcern = mainConcernRadio.value;
+        let selectedConcern = "";
+        let priority = "";
 
-    // Iterate through all checked radio buttons
-    document.querySelectorAll("input[name='issues[]']:checked").forEach(checkbox => {
-        let mainConcern = checkbox.value;
-        let subDropdown = document.getElementById(checkbox.getAttribute("onchange")?.match(/'(.*?)'/)?.[1]);
-
-        if (subDropdown) {
-            let selectElement = subDropdown.querySelector("select");
-            let subConcern = selectElement && selectElement.value ? selectElement.value : "";
-
-            let otherInput = subDropdown.querySelector(".other-sub-issue");
-            if (subConcern === "Other" && otherInput && otherInput.value.trim() !== "") {
-                subConcern = otherInput.value;
-            }
-
-            if (subConcern) {
-                selectedConcerns.push(`${mainConcern} - ${subConcern}`);
-            } else {
-                selectedConcerns.push(mainConcern);
-            }
-
-            // Set priority based on sub-concern
-            if (mainConcern === "Hardware Issue") {
-                switch (subConcern) {
-                    case "Broken Screen":
-                        priority = "urgent";
-                        break;
-                    case "Battery Issue":
-                    case "Keyboard Malfunction":
-                    case "Printer Not Working":
-                    case "Power Supply Failure":
-                        priority = "high";
-                        break;
-                    case "Mouse Not Responding":
-                        priority = "medium";
-                        break;
-                    default:
-                        priority = "medium";
-                }
-            } else if (mainConcern === "Software Issue") {
-                switch (subConcern) {
-                    case "Operating System Error":
-                        priority = "high";
-                        break;
-                    case "Virus/Malware Infection":
-                        priority = "medium";
-                        break;
-                    case "System Crash":
-                    case "Application Not Responding":
-                    case "License Expired":
-                    case "Software Installation Failure":
-                        priority = "low";
-                        break;
-                    default:
-                        priority = "medium";
-                }
-            } else if (mainConcern === "File Transfer") {
-                priority = "low";
-            } else if (mainConcern === "Network Connectivity") {
+        if (mainConcern === "Other") {
+            if (elements.otherConcern.value.trim()) {
+                selectedConcern = elements.otherConcern.value.trim();
                 priority = "medium";
             }
         } else {
-            selectedConcerns.push(mainConcern);
-
-            // Set priority for main concerns without sub-dropdowns
-            switch (mainConcern) {
-                case "Hardware Issue":
-                    priority = "high";
-                    break;
-                case "Software Issue":
-                    priority = "medium";
-                    break;
-                case "File Transfer":
-                    priority = "low";
-                    break;
-                case "Network Connectivity":
-                    priority = "medium";
-                    break;
-                case "Other":
-                    priority = "medium";
-                    break;
-                default:
-                    priority = "medium";
+            const concernId = mainConcernRadio.dataset.concernId;
+            
+            if (concernId) {
+                const subConcernSelect = document.getElementById(`subConcern_${concernId}`);
+                if (subConcernSelect?.value) {
+                    let subConcern = subConcernSelect.value;
+                    const otherInput = document.getElementById(`subConcernOther_${concernId}`);
+                    
+                    if (subConcern === "Other" && otherInput?.value.trim()) {
+                        subConcern = otherInput.value.trim();
+                    }
+                    
+                    if (subConcern) {
+                        selectedConcern = `${mainConcern} - ${subConcern}`;
+                    } else {
+                        selectedConcern = mainConcern;
+                    }
+                    
+                    priority = subConcernSelect.selectedOptions[0]?.dataset.defaultPriority || 'medium';
+                } else {
+                    selectedConcern = mainConcern;
+                    priority = mainConcernRadio.dataset.defaultPriority || 'medium';
+                }
+            } else {
+                selectedConcern = mainConcern;
+                priority = "medium";
             }
         }
-    });
 
-    // Handle "Other: Specify" input
-    let otherCheckbox = document.getElementById("otherIssueCheckbox");
-    let otherConcernInput = document.getElementById("otherConcern");
-
-    if (otherCheckbox?.checked && otherConcernInput?.value.trim() !== "") {
-        selectedConcerns.push(otherConcernInput.value);
-    }
-
-    // Ensure the form has an input field for concerns
-    let form = document.getElementById("ticketForm"); // Update with your actual form ID
-    let existingInput = document.querySelector("input[name='concern']");
-
-    if (!existingInput) {
-        let concernInput = document.createElement("input");
-        concernInput.type = "hidden";
-        concernInput.name = "concern";
-        form.appendChild(concernInput);
-        existingInput = concernInput;
-    }
-
-    // Assign selected concerns as value before form submission
-    existingInput.value = selectedConcerns.join(", ");
-
-    // Update the selected concerns button text
-    document.getElementById("selectedConcerns").textContent = selectedConcerns.length > 0 ? selectedConcerns.join(", ") : "Select Concern";
-
-    // Set the priority in a hidden input field
-    let priorityInput = document.querySelector("input[name='priority']");
-    if (!priorityInput) {
-        priorityInput = document.createElement("input");
-        priorityInput.type = "hidden";
-        priorityInput.name = "priority";
-        form.appendChild(priorityInput);
-    }
-    priorityInput.value = priority;
-
-    // Call setPriority to update the dropdown and description
-    setPriority(priority);
-
-    console.log("Priority set to:", priority); // For debugging
-}
-
-// Function to set priority and description based on the selected concern
-function setPriority(priority) {
-    const priorityDropdown = document.getElementById('category');
-    const descriptionElement = document.getElementById('priorityDescription');
-
-    // Set the priority value in the dropdown
-    if (priorityDropdown) {
-        priorityDropdown.value = priority;
-    }
-
-    // Update the description based on the selected priority
-    let description = '';
-    switch (priority) {
-        case 'urgent':
-            description = 'Critical issues that need immediate attention, significantly impacting operations. (1-3 days)';
-            break;
-        case 'high':
-            description = 'Important issues that need to be addressed quickly but are not system-critical. (4-12 hours)';
-            break;
-        case 'medium':
-            description = 'Moderate impact issues that should be resolved soon but do not halt work. (30 min - 4 hours)';
-            break;
-        case 'low':
-            description = 'Minor issues or routine tasks that have minimal impact and can be scheduled later. (10-30 min)';
-            break;
-        default:
-            description = 'Please select a priority level.';
-    }
-
-    // Display the description
-    if (descriptionElement) {
-        descriptionElement.textContent = description;
-    }
-}
-
-    // Add Event Listeners to Radio Buttons for Sub-Dropdowns
-    document.querySelectorAll('.issue-dropdown-content input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const dropdownId = `${this.value.toLowerCase().replace(/ /g, '')}Dropdown`;
-            toggleSubDropdown(dropdownId, this);
-        });
-    });
-
-    // Add Event Listeners to Sub-Dropdowns
-    document.querySelectorAll('.sub-dropdown select').forEach(select => {
-        select.addEventListener('change', updateSelectedConcerns);
-    });
-
-    // Add Event Listener to "Other Concern" Input Field
-    document.getElementById('otherConcern').addEventListener('input', updateSelectedConcerns);
-
-    // Auto-pick first available option in technical support dropdown
-    document.addEventListener("DOMContentLoaded", function () {
-        let techSelect = document.getElementById("technicalSupport");
-        if (techSelect.options.length > 1) {
-            techSelect.selectedIndex = 1; // Auto-pick first available option
+        // Update hidden concern input (still stores full path for backend)
+        let concernInput = elements.form.querySelector("input[name='concern']");
+        if (!concernInput) {
+            concernInput = document.createElement("input");
+            concernInput.type = "hidden";
+            concernInput.name = "concern";
+            elements.form.appendChild(concernInput);
         }
-    });
+        concernInput.value = selectedConcern;
 
-    // Form Validation
-    function validateForm() {
-        const firstName = document.getElementById('first-name').value;
-        const lastName = document.getElementById('last-name').value;
-        const department = document.getElementById('department').value;
-        const concern = document.getElementById('concern').value;
-        const category = document.getElementById('category').value;
-        const employeeId = document.getElementById('employeeId').value;
-        const technicalSupport = document.getElementById('technicalSupport').value;
-        const errorMessage = document.getElementById('errorMessage');
+        // Update UI - show only the most specific level
+        elements.selectedConcerns.textContent = selectedConcern || "Select Concern";
 
-        // Check if all required fields are filled
-        if (!firstName || !lastName || !department || !concern || !category || !employeeId || !technicalSupport) {
-            errorMessage.style.display = 'block';
-            return false;
+        if (priority) {
+            setPriority(priority);
+            document.querySelector('input[name="category"]').value = priority;
         }
-
-        // Check if "Other" concern is selected but no input is provided
-        if (document.getElementById('otherIssueCheckbox').checked && !document.getElementById('otherConcern').value.trim()) {
-            errorMessage.style.display = 'block';
-            return false;
-        }
-
-        errorMessage.style.display = 'none';
-        return true;
     }
 
-    // Submit Button Event Listener
-    document.querySelector('.submit-btn').addEventListener('click', function(event) {
-        if (!validateForm()) {
-            event.preventDefault(); // Prevent form submission if validation fails
-        } else {
-            submitForm();
-        }
-    });
-
-    // Submit Form
-    function submitForm() {
-        document.getElementById('ticketForm').submit();
-    }
-
-    // Print Modal Functionality
+    // Print Functionality
     function printModal() {
         const modalContent = document.querySelector('#ticketModal .ticket-modal-content');
         const originalContent = document.body.innerHTML;
 
-        // Temporarily hide the navigation, sidebar, and modal buttons
-        const nav = document.querySelector('.navbar');
-        const sidebar = document.querySelector('.sidebar');
-        const header = document.querySelector('.head');
-        const closeModalButton = modalContent.querySelector('.close-modal'); // Target close button inside modal
-        const printModalButton = modalContent.querySelector('.print-modal'); // Target print button inside modal
+        // Hide elements
+        const elementsToHide = [
+            document.querySelector('.navbar'),
+            document.querySelector('.sidebar'),
+            document.querySelector('.head'),
+            modalContent?.querySelector('.close-modal'),
+            modalContent?.querySelector('.print-modal')
+        ];
 
-        if (nav) nav.style.display = 'none';
-        if (sidebar) sidebar.style.display = 'none';
-        if (header) {
-            header.style.marginTop = '70px';
-        }
-        if (closeModalButton) closeModalButton.style.display = 'none';
-        if (printModalButton) printModalButton.style.display = 'none';
+        elementsToHide.forEach(el => el && (el.style.display = 'none'));
 
-        // Get the HTML content of the modal (exclude close and print buttons)
-        const printContent = modalContent.innerHTML;
-
-        // Add CSS to control print layout and page breaks
-        const style = `
-            <style>
-                @page {
-                    size: A4
-                    margin: 0;
-                }
-                body {
-                    margin: 0;
-                    padding: 0;
-                }
-                .ticket-modal-content {
-                    width: 100%;
-                    height: auto;
-                    overflow: hidden;
-                    page-break-before: always;
-                }
-                .ticket-modal-content * {
-                    font-size: 12px; /* Adjust size as needed */
-                    word-wrap: break-word;
-                }
-            </style>
+        // Add print styles
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @page { size: A4; margin: 0; }
+            body { margin: 0; padding: 0; }
+            .ticket-modal-content { 
+                width: 100%; height: auto; 
+                overflow: hidden; page-break-before: always; 
+            }
+            .ticket-modal-content * { font-size: 12px; word-wrap: break-word; }
         `;
+        document.head.appendChild(style);
 
-        // Insert print styles into the document
-        const head = document.querySelector('head');
-        const styleTag = document.createElement('style');
-        styleTag.innerHTML = style;
-        head.appendChild(styleTag);
-
-        // Print the content
         window.print();
-
-        // Restore original content after printing
         document.body.innerHTML = originalContent;
-
-        // Reload the page to restore JavaScript functionality
         location.reload();
     }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        populateDepartments();
+        setupEmployeeIdValidation();
+        setupConcernHandlers();
+        setupFormSubmission();
+        
+        // Auto-select first technical support option if no auto-assignment
+        const techSelect = document.getElementById('technicalSupport');
+        if (techSelect?.options.length > 1) {
+            techSelect.selectedIndex = 1;
+        }
+    });
 </script>
 </body>
 </html>

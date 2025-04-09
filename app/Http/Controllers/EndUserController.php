@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Concern;
 use App\Models\User;
 use App\Models\Approval;
 use App\Models\Announcement;
@@ -62,6 +63,7 @@ class EndUserController extends Controller
                     ->take(3)
                     ->get();
 
+        $mainConcerns = Concern::where('type', 'main')->with('children')->get();
         // Pass variables to the view
         return view('employee.home', compact(
             'technicalSupports', 
@@ -71,7 +73,8 @@ class EndUserController extends Controller
             'resolvedTickets', 
             'announcements',
             'events', // Pass events to the view
-            'recentTickets'
+            'recentTickets',
+            'mainConcerns'
         ));
     }   
 
@@ -208,11 +211,11 @@ class EndUserController extends Controller
         if ($user->account_type === 'administrator') {
             $tickets = $tickets->filter(fn($ticket) => !$ticket->isApproved);
         }
-
+        $mainConcerns = Concern::where('type', 'main')->with('children')->get();
         return view('employee.ticket', compact(
             'tickets', 'technicalAssistSupports', 'technicalSupports', 
             'formattedControlNo', 'nextFormNo', 'inProgressCount', 'endorsedCount' ,
-            'technicalReportCount','pullOutCount','inProcessingCount'
+            'technicalReportCount','pullOutCount','inProcessingCount', 'mainConcerns'
         ));
     }
 
@@ -315,8 +318,8 @@ class EndUserController extends Controller
         $latestFormNo = ServiceRequest::latest('form_no')->first();
         $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
         $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
-
-        return view('components.employee.ticket-list', compact('tickets', 'technicalSupports', 'technicalAssistSupports', 'nextFormNo'))->render();
+        $mainConcerns = Concern::where('type', 'main')->with('children')->get();
+        return view('components.employee.ticket-list', compact('tickets', 'technicalSupports', 'technicalAssistSupports', 'nextFormNo', 'mainConcerns'))->render();
     }
 
 

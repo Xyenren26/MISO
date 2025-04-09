@@ -44,6 +44,10 @@
             font-weight: bold;
         }
 
+        .exportButton{
+            cursor: pointer;
+        }
+
         .close:hover,
         .close:focus {
             color: black;

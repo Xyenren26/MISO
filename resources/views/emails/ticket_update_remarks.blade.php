@@ -36,6 +36,19 @@
             font-size: 12px;
             color: #777;
         }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -44,6 +57,12 @@
         <h2>Ticket Request Update</h2>
         <p>Hello, </p>
         <p>Your technical service request with Form No: <strong>{{ $control_no }}</strong> has been updated to <strong>{{ $status }}</strong>.</p>
+        
+        <!-- Added button that links to employee ticket management -->
+        <a href="{{ route('employee.tickets') }}" class="button">
+            View Your Tickets
+        </a>
+
         <p>Thank you.</p>
 
         <p class="footer">Regards, <br> <strong>{{ config('app.name') }}</strong></p>

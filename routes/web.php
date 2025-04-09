@@ -11,6 +11,7 @@ use App\Http\Controllers\Login_Controller;
 use App\Http\Controllers\Signup_Controller;
 use App\Http\Controllers\AccountSecurityController;
 use App\Http\Controllers\Home_Controller;
+use App\Http\Controllers\ConcernController;
 use App\Http\Controllers\Department_Controller;
 use App\Http\Controllers\EndUserController;
 use App\Http\Controllers\EventController;
@@ -35,6 +36,20 @@ use App\Http\Controllers\PDFController;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use Illuminate\Support\Facades\Broadcast;
+
+use App\Models\Concern;
+use App\Models\User;
+
+Route::get('/check-assigned-tech/{concern}', function(Concern $concern) {
+    $assignedUser = $concern->assigned_user_id 
+        ? User::find($concern->assigned_user_id)
+        : null;
+
+    return response()->json([
+        'employee_id' => $assignedUser?->employee_id,
+        'is_active' => $assignedUser && $assignedUser->isCurrentlyActive()
+    ]);
+})->middleware('auth');
 
 
 
@@ -110,7 +125,16 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::get('/ticket', [Ticket_Controller::class, 'showTicket'])->name('ticket'); // GET request for displaying the form
     Route::post('/ticket', [Ticket_Controller::class, 'store'])->name('ticket.store'); // POST request for submitting the form
     Route::get('/tickets/filter', [Ticket_Controller::class, 'filterTickets'])->name('tickets.filter');
+    Route::resource('concerns', ConcernController::class);
+    Route::get('/concerns/index', [ConcernController::class, 'show']);
+    Route::get('/concerns/{concern}/edit', [ConcernController::class, 'edit'])->name('concerns.edit');
+    Route::get('/api/concerns', [ConcernController::class, 'apiConcerns']);
+    Route::get('/concerns/{parentId}/sub-concerns', function ($parentId) {
+        $subConcerns = App\Models\Concern::where('parent_id', $parentId)->get();
+        return response()->json($subConcerns);
+    });
 
+    
     // Route for fetching ticket details by control_no
     Route::get('/ticket-details/{control_no}', [Ticket_Controller::class, 'show']);
     Route::post('/api/pass-ticket', [Ticket_Controller::class, 'passTicket']);

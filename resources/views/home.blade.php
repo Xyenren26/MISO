@@ -92,7 +92,7 @@
             <!-- Ticket Management Records -->
             <div class="ticket-table-container">
                 <div class="ticket-table-wrapper">
-                    <h3>Ticket Summary Record</h3>
+                    <h3>Ticket List Record</h3>
                     
                     <!-- Filters -->
                     <div class="filters">
@@ -218,7 +218,6 @@
         </div>
     </div>
 </div>
-@include('components.chatbot')
 
 <script>
     // Keep the PHP variables in the Blade file

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TicketArchive;
 use App\Models\TicketHistory;
 use App\Models\Approval;
+use App\Models\Concern;
 use App\Models\Ticket;
 use App\Models\Rating;
 use App\Models\User;
@@ -176,10 +177,12 @@ class Ticket_Controller extends Controller
             $tickets = $tickets->filter(fn($ticket) => !$ticket->isApproved);
         }
 
+        $mainConcerns = Concern::where('type', 'main')->with('children')->get();
+
         return view('ticket', compact(
             'tickets', 'technicalAssistSupports', 'technicalSupports', 
             'formattedControlNo', 'nextFormNo', 'inProgressCount', 'endorsedCount' ,
-            'technicalReportCount','pullOutCount'
+            'technicalReportCount','pullOutCount', 'mainConcerns'
         ));
     }
 
@@ -198,18 +201,33 @@ class Ticket_Controller extends Controller
         // Start building the query for tickets
         $query = Ticket::query();
 
-        // Filter by technical support ID if the user is not an admin
-        if ($user->account_type === 'technical_support') {
-            $query->where('technical_support_id', $user->employee_id);
-        }
-
-        // Add search filter for control_no and name
+       // If there is a search, show all matching regardless of technical_support assignment
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
+                // Search directly in tickets table
                 $q->where('control_no', 'LIKE', "%{$search}%")
-                ->orWhere('name', 'LIKE', "%{$search}%");
+                ->orWhere('name', 'LIKE', "%{$search}%")
+
+                // Search in related serial_no
+                ->orWhere(function ($subQuery) use ($search) {
+                    $subQuery->whereIn('control_no', function ($query) use ($search) {
+                        $query->select('ticket_id')
+                                ->from('service_requests')
+                                ->whereIn('form_no', function ($query) use ($search) {
+                                    $query->select('form_no')
+                                        ->from('equipment_descriptions')
+                                        ->where('serial_no', 'LIKE', "%{$search}%");
+                                });
+                    });
+                });
             });
+        } else {
+            // If no search and user is technical_support, limit results
+            if ($user->account_type === 'technical_support') {
+                $query->where('technical_support_id', $user->employee_id);
+            }
         }
+
 
         if (!empty($startDate) && !empty($endDate)) {
             $query->whereDate('created_at', '>=', $startDate)
@@ -281,9 +299,10 @@ class Ticket_Controller extends Controller
         $latestFormNo = ServiceRequest::latest('form_no')->first();
         $nextNumber = $latestFormNo ? str_pad((int)substr($latestFormNo->form_no, 9) + 1, 6, '0', STR_PAD_LEFT) : '000001';
         $nextFormNo = 'SRF-' . date('Y') . '-' . $nextNumber;
-
+        
+        $mainConcerns = Concern::where('type', 'main')->with('children')->get();
         // Render the ticket list view
-        return view('components.ticket-list', compact('tickets', 'technicalSupports', 'technicalAssistSupports', 'nextFormNo'))->render();
+        return view('components.ticket-list', compact('tickets', 'technicalSupports', 'technicalAssistSupports', 'nextFormNo', 'mainConcerns'))->render();
     }
 
     // Render the ticket view
@@ -411,7 +430,14 @@ class Ticket_Controller extends Controller
     public function passTicket(Request $request)
     {
         $ticketControlNo = $request->input('ticket_control_no');
-        $newTechnicalSupport = $request->input('new_technical_support');
+        $newTechnicalSupportId = $request->input('new_technical_support');
+
+        // Get the new technical support user's name
+        $newTechnicalSupportUser = \App\Models\User::where('employee_id', $newTechnicalSupportId)->first();
+        
+        if (!$newTechnicalSupportUser) {
+            return response()->json(['error' => 'New technical support user not found.'], 404);
+        }
 
         $ticket = Ticket::where('control_no', $ticketControlNo)->first();
 
@@ -426,17 +452,25 @@ class Ticket_Controller extends Controller
             return response()->json(['error' => 'This ticket has already been passed once and cannot be reassigned.'], 400);
         }
 
+        // Get the previous technical support user's name
+        $previousTechnicalSupportUser = \App\Models\User::where('employee_id', $ticket->technical_support_id)->first();
+        $previousTechnicalSupportName = $previousTechnicalSupportUser ? $previousTechnicalSupportUser->name : null;
+
         // Proceed with creating history and updating the ticket
         $ticket->history()->create([
             'previous_technical_support' => $ticket->technical_support_id,
-            'new_technical_support' => $newTechnicalSupport,
+            'previous_technical_support_name' => $previousTechnicalSupportName,
+            'new_technical_support' => $newTechnicalSupportId,
+            'new_technical_support_name' => $newTechnicalSupportUser->name,
             'ticket_id' => $ticket->control_no,
         ]);
 
-        $ticket->technical_support_id = $newTechnicalSupport;
+        // Update both the ID and name on the ticket
+        $ticket->technical_support_id = $newTechnicalSupportId;
+        $ticket->technical_support_name = $newTechnicalSupportUser->name;
         $ticket->save();
 
-        return response()->json(['success' => 'Pass Ticket created successfully!'], 200);
+        return response()->json(['success' => 'Ticket passed successfully!'], 200);
     }
     public function updateRemarks(Request $request)
     {

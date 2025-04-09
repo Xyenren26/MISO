@@ -336,7 +336,7 @@ function updateTable(tickets) {
             <td class="px-6 py-4">${ticket.concern}</td>
             <td class="px-6 py-4">${capitalizeWords(ticket.priority)}</td>
             <td class="px-6 py-4">${capitalizeWords(ticket.status)}</td>
-            <td class="px-6 py-4">${ticket.remarks}</td>
+            <td class="px-6 py-4">${ticket.remarks ?? 'N/A'}</td>
             <td class="px-6 py-4">${ticket.rating_percentage ? ticket.rating_percentage + '%' : 'N/A'}</td>
             <td class="px-6 py-4">${ticket.remark ?? 'N/A'}</td>
             <td class="px-6 py-4">${calculateDuration(ticket.time_in, ticket.time_out)}</td> <!-- Duration Column -->
@@ -422,58 +422,150 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchTickets(); // Fetch the first page of tickets
 });
 
+
 async function exportTickets() {
-    const filter = document.getElementById('filter').value;
-    const monthFilter = document.getElementById('monthFilter').value;
-    const yearFilter = document.getElementById('yearFilter').value;
-    const userName = document.getElementById('userName').value; // Get the user's name
-
-    let fileName = '';
-    if (filter === 'weekly') {
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - startDate.getDay());
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
-        fileName = `${userName}_weekly_report_${startDate.toISOString().split('T')[0]}_to_${endDate.toISOString().split('T')[0]}.csv`;
-    } else if (filter === 'monthly') {
-        fileName = `${userName}_monthly_report_${monthFilter}_${yearFilter}.csv`;
-    } else if (filter === 'annually') {
-        fileName = `${userName}_annual_report_${yearFilter}.csv`;
-    }
-
+    const exportBtn = document.querySelector('.export-button');
     try {
-        // Fetch all records from the server (ignoring pagination)
-        const response = await fetch(`/tickets/export?filter=${filter}&month=${monthFilter}&year=${yearFilter}`);
-        const data = await response.json();
+        // Set loading state
+        exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        exportBtn.disabled = true;
 
-        if (!data.length) {
-            alert('No records found to export.');
-            return;
+        // Get filter values
+        const filter = document.getElementById('filter').value;
+        const month = document.getElementById('monthFilter').value;
+        const year = document.getElementById('yearFilter').value;
+
+        // Fetch PDF
+        const response = await fetch(`/tickets/export?filter=${filter}&month=${month}&year=${year}`);
+        
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
         }
 
-        // Create CSV content
-        let csvContent = "data:text/csv;charset=utf-8,";
+        const { pdf, passwords, download_name } = await response.json();
 
-        // Add headers
-        const headers = Object.keys(data[0]);
-        csvContent += headers.join(',') + '\n';
-
-        // Add rows
-        data.forEach(row => {
-            const cols = headers.map(header => row[header]);
-            csvContent += cols.join(',') + '\n';
-        });
-
-        // Trigger download
-        const encodedUri = encodeURI(csvContent);
+        // Download PDF
         const link = document.createElement('a');
-        link.setAttribute('href', encodedUri);
-        link.setAttribute('download', fileName);
+        link.href = pdf;
+        link.download = download_name;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+
+        // Show passwords modal
+        showPasswordModal({
+            openPassword: passwords.open,
+            //ownerPassword: passwords.owner,
+            expiresAt: passwords.expires_at
+        });
+
     } catch (error) {
-        console.error('Error exporting tickets:', error);
-        alert('Failed to export tickets. Please try again.');
+        console.error('Export failed:', error);
+        alert('Export failed: ' + error.message);
+    } finally {
+        if (exportBtn) {
+            exportBtn.innerHTML = 'Export';
+            exportBtn.disabled = false;
+        }
     }
+}
+
+function showPasswordModal({ openPassword, expiresAt }) { //include ownerPassword for testing
+    // Remove existing modal if present
+    const existingModal = document.getElementById('passwordModal');
+    if (existingModal) existingModal.remove();
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'passwordModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        ">
+            <h3 style="margin-top: 0; color: #003067;">Document Passwords</h3>
+            <p><strong>Open Password:</strong> <span id="openPass">${openPassword}</span></p>
+            
+            <p><em>Ticket list Record should be pass until: ${new Date(expiresAt).toLocaleString()}</em></p>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button onclick="copyPassword('openPass')" style="
+                    padding: 8px 16px;
+                    background: #003067;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                ">Copy Open</button>
+                
+            </div>
+            <div style="margin-top: 2rem;">
+                <button onclick="closeModal()" style="
+                    padding: 8px 16px;
+                    background: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                ">Close</button>
+            </div>
+        </div>
+    `;
+    //<p><strong>Owner Password:</strong> <span id="ownerPass">${ownerPassword}</span></p> remove include it for testing
+    
+    /*<button onclick="copyPassword('ownerPass')" style="
+                    padding: 8px 16px;
+                    background: #3a5a87;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                ">Copy Owner</button>
+                */
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    const modal = document.getElementById('passwordModal');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = '';
+    }
+}
+
+function copyPassword(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    navigator.clipboard.writeText(element.textContent)
+        .then(() => {
+            const originalText = element.textContent;
+            element.textContent = 'Copied!';
+            element.style.color = '#4CAF50';
+            setTimeout(() => {
+                element.textContent = originalText;
+                element.style.color = '';
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Copy failed:', err);
+            alert('Please copy manually: ' + element.textContent);
+        });
 }

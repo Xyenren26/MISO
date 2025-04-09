@@ -21,13 +21,17 @@
         'Low' => '10-30 min'
     ];
 
-    echo "<div style='display: flex; gap: 20px;'>"; // Flex container for horizontal alignment
+    echo "<div style='display: flex; gap: 20px; cursor: pointer;'>"; // Added cursor:pointer for better UX
 
     foreach ($priorities as $priority => $duration) {
         $priorityClass = getPriorityClass($priority);
-        echo "<div class='$priorityClass'><strong>$priority</strong> ($duration)</div>";
+        $priorityLower = strtolower($priority);
+        echo "<div class='$priorityClass' onclick='filterByPriority(\"$priorityLower\")'><strong>$priority</strong> ($duration)</div>";
     }
 
+    // Add "All" option
+    echo "<div onclick='filterByPriority(null)' style='cursor: pointer;'><strong>All</strong></div>";
+    
     echo "</div>";
 
     function getStatusClass($status) {
@@ -38,7 +42,6 @@
                 return 'status-completed';
             case 'pull-out':
                 return 'status-pull-out';
-
             case 'in-progress':
                 return 'status-in-progress';
             case 'technical-report':
@@ -194,7 +197,7 @@
                                 Auth::user()->account_type === 'technical_support_head' &&
                                 $ticket->existsInModels &&
                                 $ticket->status == 'pull-out' &&
-                                $ticket->formfillup && &&
+                                $ticket->formfillup &&
                                 !$ticket->isRepaired
                             )
 

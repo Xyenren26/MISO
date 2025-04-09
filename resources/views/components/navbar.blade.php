@@ -27,17 +27,6 @@
     channel.bind("new-notification", function (data) {
         console.log("New notification received:", data); // Debugging log
         
-        let message = `Check Your Notification a Ticket has been Assigned to you.`;
-        
-        toastr.options = {
-            "closeButton": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "timeOut": "5000", // 5 seconds
-        };
-
-        toastr.success(message, "New Ticket Alert");
-        
         fetchNotifications(); // Update notifications in real-time
     });
     </script>
@@ -55,7 +44,7 @@
         <div class="navbar-icons">
             <div class="nav-item dropdown">
                 <i class="fas fa-bell navbar-icon" id="notificationDropdown" onclick="toggleNotifications()"></i>
-                <span class="badge" id="notificationBadge" style="display: none;">0</span>
+                <span class="notifbadge" id="notificationBadge" style="display: none;">0</span>
                 <div class="dropdown-menu notification-dropdown" id="notificationMenu">
                     <div class="notification-header">
                         <h3>Notifications</h3>
@@ -106,6 +95,7 @@
 
         </div>
     </div>
+    @include('components.chatbot')
 <script>
     // Function to toggle user dropdown
     function toggleDropdown() {
